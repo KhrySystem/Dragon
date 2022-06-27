@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+
+local_clone.bat
+bin/
+build/

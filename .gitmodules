@@ -1,0 +1,36 @@
+[submodule "lib/GLFW"]
+	path = lib/GLFW
+	url = https://github.com/glfw/GLFW
+[submodule "lib/GLM"]
+	path = lib/GLM
+	url = https://github.com/g-truc/GLM
+[submodule "lib/Robin-Hood-Hashing"]
+	path = lib/Robin-Hood-Hashing
+	url = https://github.com/martinus/Robin-Hood-Hashing
+[submodule "lib/SPIRV-Headers"]
+	path = lib/SPIRV-Headers
+	url = https://github.com/KhronosGroup/SPIRV-Headers
+[submodule "lib/SPIRV-Tools"]
+	path = lib/SPIRV-Tools
+	url = https://github.com/KhronosGroup/SPIRV-Tools
+[submodule "lib/Vulkan-ExtensionLayer"]
+	path = lib/Vulkan-ExtensionLayer
+	url = https://github.com/KhronosGroup/Vulkan-ExtensionLayer
+[submodule "lib/Vulkan-Headers"]
+	path = lib/Vulkan-Headers
+	url = https://github.com/KhronosGroup/Vulkan-Headers
+[submodule "lib/Vulkan-ValidationLayers"]
+	path = lib/Vulkan-ValidationLayers
+	url = https://github.com/KhronosGroup/Vulkan-ValidationLayers
+[submodule "lib/Vulkan-Loader"]
+	path = lib/Vulkan-Loader
+	url = https://github.com/KhronosGroup/Vulkan-Loader
+[submodule "lib/GLSLang"]
+	path = lib/GLSLang
+	url = https://github.com/KhronosGroup/GLSLang
+[submodule "lib/Bullet3"]
+	path = lib/Bullet3
+	url = https://github.com/bulletphysics/Bullet3
+[submodule "lib/googletest"]
+	path = lib/googletest
+	url = https://github.com/google/googletest
