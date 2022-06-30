@@ -17,7 +17,7 @@ namespace Dragon
 				int height;
 				char* title;
 
-				glfwWindow* window;
+				GLFWwindow* window;
 
 				bool isFullscreen;
 				bool isBorderless;

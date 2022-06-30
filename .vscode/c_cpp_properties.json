@@ -6,7 +6,9 @@
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/lib/**",
                 "${workspaceFolder}/lib/GLFW/include/**",
-                "${workspaceFolder}/lib/GLM/**"
+                "${workspaceFolder}/lib/GLM/**",
+                "${workspaceFolder}/lib/Bullet3/src",
+                "${workspaceFolder}/lib/Bullet3/src"
             ],
             "defines": [
                 "_DEBUG",

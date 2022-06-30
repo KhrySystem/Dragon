@@ -1,0 +1,6 @@
+set(GLSLANG_INSTALL_DIR "C:/Dragon/lib/glslang/build/install" CACHE STRING "" FORCE)
+set(VULKAN_HEADERS_INSTALL_DIR "C:/Dragon/lib/Vulkan-Headers/build/install" CACHE STRING "" FORCE)
+set(SPIRV_HEADERS_INSTALL_DIR "C:/Dragon/lib/SPIRV-Headers/build/install" CACHE STRING "" FORCE)
+set(SPIRV_TOOLS_INSTALL_DIR "C:/Dragon/lib/SPIRV-Tools/build/install" CACHE STRING "" FORCE)
+set(ROBIN_HOOD_HASHING_INSTALL_DIR "C:/Dragon/lib/robin-hood-hashing/build/install" CACHE STRING "" FORCE)
+set(GOOGLETEST_INSTALL_DIR "C:/Dragon/lib/googletest/build/install" CACHE STRING "" FORCE)

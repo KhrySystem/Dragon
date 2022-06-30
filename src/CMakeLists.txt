@@ -1,20 +1,14 @@
 cmake_minimum_required(VERSION 3.22)
 
-include_directories(../lib)
-include_directories(../lib/Bullet3)
-include_directories(../lib/Bullet3/src)
-include_directories(../lib/GLFW)
-include_directories(../lib/GLFW/include)
-include_directories(../lib/GLFW/src)
-include_directories(../lib/GLFW/deps)
-include_directories(../lib/GLM)
-include_directories(../lib/GLSLang)
-include_directories(../lib/GLSLang/glslang)
-include_directories(../lib/GLSLang/glslang/Include)
-include_directories(../lib/GLSLang/hlsl)
-include_directories(../lib/Robin-Hood-Hashing)
+project(Dragon VERSION 0.1.0)
 
-project(Dragon)
 
-add_subdirectory(../lib dgLibs)
-target_link_libraries(${PROJECT_NAME} dgLibs)
+
+add_library(${PROJECT_NAME} SHARED
+
+	${DRAGON_LIBRARY_DIR}/dragon_include_lib.hpp
+
+	video/dgVideoInclude.hpp
+	video/dgWindow.hpp video/dgWindow.cpp
+)
+
