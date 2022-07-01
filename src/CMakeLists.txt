@@ -8,7 +8,9 @@ add_library(${PROJECT_NAME} SHARED
 
 	${DRAGON_LIBRARY_DIR}/dragon_include_lib.hpp
 
-	video/dgVideoInclude.hpp
+	include/dragon/dragon10.hpp
+
+	object/dgObject.hpp
 	video/dgWindow.hpp video/dgWindow.cpp
 )
 

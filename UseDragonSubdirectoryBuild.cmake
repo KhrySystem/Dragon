@@ -1,0 +1,16 @@
+if(BUILD_TESTS)
+	add_subdirectory(${DRAGON_LIBRARY_DIR}/googletest GTest) # For Building tests. 
+	set(Gtest_DIR ${CMAKE_BINARY_DIR}/src/googletest/googletest/generated)
+endif()
+
+add_subdirectory(${DRAGON_LIBRARY_DIR}/Bullet3 Bullet3)
+add_subdirectory(${DRAGON_LIBRARY_DIR}/GLFW GLFW)
+add_subdirectory(${DRAGON_LIBRARY_DIR}/GLM GLM)
+add_subdirectory(${DRAGON_LIBRARY_DIR}/Robin-Hood-Hashing Robin-Hood-Hashing)
+add_subdirectory(${DRAGON_LIBRARY_DIR}/SPIRV-Headers SPIRV/Headers)
+add_subdirectory(${DRAGON_LIBRARY_DIR}/SPIRV-Tools SPIRV/Tools)
+add_subdirectory(${DRAGON_LIBRARY_DIR}/GLSLang GLSLang)
+add_subdirectory(${DRAGON_LIBRARY_DIR}/Vulkan-Headers Vulkan/Headers)
+add_subdirectory(${DRAGON_LIBRARY_DIR}/Vulkan-ExtensionLayer Vulkan/ExtensionLayer)
+add_subdirectory(${DRAGON_LIBRARY_DIR}/Vulkan-Loader Vulkan/Loader)
+add_subdirectory(${DRAGON_LIBRARY_DIR}/Vulkan-ValidationLayers Vulkan/ValidationLayers)
