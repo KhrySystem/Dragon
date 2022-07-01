@@ -1,7 +1,13 @@
 cmake_minimum_required(VERSION 3.22)
+
+set(DRAGON_VERSION_MAJOR 1)
+set(DRAGON_VERSION_MINOR 0)
+
 project(dgConfigure10)
+
 option(BUILD_DRAGON_TESTS "Build the tests for Dragon." ON)
 option(BUILD_SHARED_LIBS "Force-Build EVERYTHING as a DLL." OFF)
+option(BUILD_DRAGON_SHARED "Build specifically Dragon as a DLL. " OFF)
 
 cmake_policy(SET CMP0077 NEW)
 
@@ -41,6 +47,13 @@ if(Python3_FOUND)
 
 else()
 	message(WARNING "Python3 - NOT FOUND")
+endif()
+
+if(BUILD_DRAGON_SHARED)
+	message(STATUS "Building Dragon as a DLL.")
+	add_compile_definitions(DRAGON_BUILD_DLL)
+else()
+	message(STATUS "Building Dragon as a static LIB.")
 endif()
 
 include(UseDragon.cmake)

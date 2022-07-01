@@ -6,6 +6,7 @@
 defines Dragon::Video::dgWindow and assorted methods. 
 
 */
+#include <dragon/internal.hpp>
 #include <dragon_include_lib.hpp>
 #include <object/dgObject.hpp>
 
@@ -13,7 +14,7 @@ namespace Dragon
 {
 	namespace Video
 	{
-		struct dgWindow
+		DGAPI struct dgWindow
 		{
 			/*
 			dgWindow - Vulkan wrapper around GLFWwindow. 
@@ -22,7 +23,10 @@ namespace Dragon
 			dgWindow(int width, int height, const char* title, bool IFS, bool IBL);
 
 			void updateWindow();
-			void update(double dTime);
+			void update();
+
+			void startTiming();
+			double getTime();
 
 			bool shouldWindowClose();
 
@@ -30,6 +34,8 @@ namespace Dragon
 
 			void setWindowBorderless(bool IBL);
 			void setWindowFullscreen(bool IFS);
+
+			void close();
 
 			private:
 				int width;

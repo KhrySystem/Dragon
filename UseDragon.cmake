@@ -62,4 +62,5 @@ if(NOT DG_USAGE)
 	include_directories(${DRAGON_SOURCE_DIR})
 	include_directories(${DRAGON_SOURCE_DIR}/include)
 	include(UseDragonLibs.cmake)
+	
 endif() #DG_USAGE
