@@ -3,7 +3,7 @@
 	
 
 	#include "internal.hpp"
-	#include <dragon_include_lib.hpp>
+	#include "dgBackendInclude.hpp"
 	
 	bool dgInit() {
 		std::cout << "Initialized Dragon. " << std::endl;
