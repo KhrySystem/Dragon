@@ -34,3 +34,6 @@
 [submodule "lib/googletest"]
 	path = lib/googletest
 	url = https://github.com/google/googletest
+[submodule "lib/Boost"]
+	path = lib/Boost
+	url = https://github.com/boostorg/Boost

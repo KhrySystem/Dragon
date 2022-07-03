@@ -1,5 +1,7 @@
 #include <dragon/dragon10.hpp>
 
+using namespace std::chrono;
+
 Dragon::Video::dgWindow::dgWindow(int w, int h, const char* t, bool IFS, bool IBL) 
 {
 	width = w;
@@ -13,8 +15,21 @@ void Dragon::Video::dgWindow::updateWindow() {
 	window = glfwCreateWindow(width, height, title, NULL, NULL);
 }
 
-void Dragon::Video::dgWindow::update() {
+void Dragon::Video::dgWindow::updateScreen() {
 
+}
+
+void Dragon::Video::dgWindow::startTiming() {
+
+	cFrameTime = duration_cast<microseconds>();
+}
+
+DG_TIME_UNIT Dragon::Video::dgWindow::getTime() {
+	cFrameTime = 
+}
+
+DG_TIME_UNIT Dragon::Video::dgWindow::getFPS() {
+	return;
 }
 
 bool Dragon::Video::dgWindow::shouldWindowClose() {

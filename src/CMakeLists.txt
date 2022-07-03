@@ -11,5 +11,6 @@ add_library(${PROJECT_NAME} ${DRAGON_BUILD_TYPE}
 
 	object/dgObject.hpp
 	video/dgWindow.hpp video/dgWindow.cpp
+	video/dgAsyncWindow.hpp
 )
 

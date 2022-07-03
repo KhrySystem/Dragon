@@ -14,19 +14,20 @@ namespace Dragon
 {
 	namespace Video
 	{
-		DGAPI struct dgWindow
+		struct dgWindow
 		{
 			/*
-			dgWindow - Vulkan wrapper around GLFWwindow. 
+			dgWindow - Dragon's wrapper around GLFWwindow to encompass Vulkan. 
 			Produces the root parent for dgObjects.
 			*/
 			dgWindow(int width, int height, const char* title, bool IFS, bool IBL);
 
 			void updateWindow();
-			void update();
+			void updateScreen();
 
 			void startTiming();
-			double getTime();
+			DG_TIME_UNIT getTime();
+			DG_TIME_UNIT getFPS();
 
 			bool shouldWindowClose();
 
@@ -37,17 +38,19 @@ namespace Dragon
 
 			void close();
 
-			private:
-				int width;
-				int height;
-				char* title;
+			int width;
+			int height;
+			char* title;
 
-				GLFWwindow* window;
+			GLFWwindow* window;
 
-				bool isFullscreen;
-				bool isBorderless;
+			DG_TIME_UNIT pFrameTime;
+			DG_TIME_UNIT cFrameTime;
 
-				std::vector<Dragon::Object::dgObject*> gameObjects();
+			bool isFullscreen;
+			bool isBorderless;
+
+			std::vector<Dragon::Object::dgObject*> gameObjects();
 		};
 		
 	} // namespace Video

@@ -6,9 +6,12 @@
 #include <stdexcept>
 #include <iostream>
 #include <cstdlib>
-#include <chrono>
+#include <future>
 
-// DGLib Predefinitions
+// Boost Headers
+#include <boost/chrono.hpp>
+
+// DGLib Predefinitions & Adjustments
 #define GLFW_INCLUDE_NONE
 
 // DGLib Headers

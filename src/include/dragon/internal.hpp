@@ -8,4 +8,12 @@
 	#else
 		#define DGAPI
 	#endif
+
+	// allows for time unit override
+	#ifndef DG_TIME_UNIT
+		/*
+		Optional time unit override. Disabled on dgAsyncWindow
+		*/
+		#define DG_TIME_UNIT std::chrono::nanoseconds
+	#endif
 #endif
