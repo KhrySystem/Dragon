@@ -1,0 +1,48 @@
+[submodule "src/dgAudioModule"]
+	path = src/dgAudioModule
+	url = https://github.com/Khrysystem/dgAudioModule
+[submodule "src/dgGraphicsModule"]
+	path = src/dgGraphicsModule
+	url = https://github.com/khrysystem/dgGraphicsModule
+[submodule "lib/glfw"]
+	path = lib/glfw
+	url = https://github.com/glfw/glfw
+[submodule "lib/Vulkan/Vulkan-ValidationLayers"]
+	path = lib/Vulkan/Vulkan-ValidationLayers
+	url = https://github.com/KhronosGroup/Vulkan-ValidationLayers
+[submodule "lib/Vulkan/Vulkan-Hpp"]
+	path = lib/Vulkan/Vulkan-Hpp
+	url = https://github.com/khronosgroup/Vulkan-Hpp
+[submodule "lib/Vulkan/Vulkan-Profiles"]
+	path = lib/Vulkan/Vulkan-Profiles
+	url = https://github.com/khronosgroup/Vulkan-Profiles
+[submodule "lib/Vulkan/Vulkan-Loader"]
+	path = lib/Vulkan/Vulkan-Loader
+	url = https://github.com/khronosgroup/Vulkan-Loader
+[submodule "lib/Vulkan/Vulkan-Tools"]
+	path = lib/Vulkan/Vulkan-Tools
+	url = https://github.com/khronosgroup/Vulkan-Tools
+[submodule "lib/Vulkan/Vulkan-Headers"]
+	path = lib/Vulkan/Vulkan-Headers
+	url = https://github.com/khronosgroup/Vulkan-Headers
+[submodule "lib/Vulkan/Vulkan-MemoryModel"]
+	path = lib/Vulkan/Vulkan-MemoryModel
+	url = https://github.com/khronosgroup/Vulkan-MemoryModel
+[submodule "lib/Vulkan/MoltenVK"]
+	path = lib/Vulkan/MoltenVK
+	url = https://github.com/khronosgroup/MoltenVK
+[submodule "lib/Vulkan/Vulkan-ExtensionLayer"]
+	path = lib/Vulkan/Vulkan-ExtensionLayer
+	url = https://github.com/khronosgroup/Vulkan-ExtensionLayer
+[submodule "lib/SPIRV/SPIRV-Tools"]
+	path = lib/SPIRV/SPIRV-Tools
+	url = https://github.com/khronosgroup/SPIRV-Tools
+[submodule "lib/SPIRV/SPIRV-Headers"]
+	path = lib/SPIRV/SPIRV-Headers
+	url = https://github.com/khronosgroup/SPIRV-Headers
+[submodule "src/dgInputModule"]
+	path = src/dgInputModule
+	url = https://github.com/khrysystem/dgInputModule
+[submodule "src/dgNetworkModule"]
+	path = src/dgNetworkModule
+	url = https://github.com/khrysystem/dgNetworkModule

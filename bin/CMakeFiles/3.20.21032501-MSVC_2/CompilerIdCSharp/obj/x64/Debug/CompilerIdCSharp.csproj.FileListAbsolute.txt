@@ -1,6 +1,0 @@
-E:\KhrySystem\src\vs\Dragon\bin\CMakeFiles\3.20.21032501-MSVC_2\CompilerIdCSharp\obj\x64\Debug\CompilerIdCSharp.csproj.AssemblyReference.cache
-E:\KhrySystem\src\vs\Dragon\bin\CMakeFiles\3.20.21032501-MSVC_2\CompilerIdCSharp\obj\x64\Debug\CompilerIdCSharp.csproj.CoreCompileInputs.cache
-E:\KhrySystem\src\vs\Dragon\bin\CMakeFiles\3.20.21032501-MSVC_2\CompilerIdCSharp\obj\x64\Debug\CompilerIdCSharp.exe
-E:\KhrySystem\src\vs\Dragon\bin\CMakeFiles\3.20.21032501-MSVC_2\CompilerIdCSharp\obj\x64\Debug\CompilerIdCSharp.pdb
-E:\KhrySystem\src\vs\Dragon\bin\CMakeFiles\3.20.21032501-MSVC_2\CompilerIdCSharp\CompilerIdCSharp.exe
-E:\KhrySystem\src\vs\Dragon\bin\CMakeFiles\3.20.21032501-MSVC_2\CompilerIdCSharp\CompilerIdCSharp.pdb

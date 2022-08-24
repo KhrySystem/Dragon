@@ -1,2 +1,0 @@
-E:\KhrySystem\src\vs\Dragon\bin\src\dgNetworkModule\obj\x64\Debug\dgNetworkModule.csproj.AssemblyReference.cache
-E:\KhrySystem\src\vs\Dragon\bin\src\dgNetworkModule\obj\x64\Debug\dgNetworkModule.csproj.CoreCompileInputs.cache
