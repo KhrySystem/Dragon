@@ -6,6 +6,9 @@ find_package(OpenGL REQUIRED)
 
 project(Dragon)
 
+cmake_policy(SET CMP0079 NEW)
+cmake_policy(SET CMP0002 OLD)
+
 include_directories(src)
 
 include_directories( ${OPENGL_INCLUDE_DIRS} )
