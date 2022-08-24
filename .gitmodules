@@ -10,9 +10,6 @@
 [submodule "lib/Vulkan/Vulkan-ValidationLayers"]
 	path = lib/Vulkan/Vulkan-ValidationLayers
 	url = https://github.com/KhronosGroup/Vulkan-ValidationLayers
-[submodule "lib/Vulkan/Vulkan-Hpp"]
-	path = lib/Vulkan/Vulkan-Hpp
-	url = https://github.com/khronosgroup/Vulkan-Hpp
 [submodule "lib/Vulkan/Vulkan-Profiles"]
 	path = lib/Vulkan/Vulkan-Profiles
 	url = https://github.com/khronosgroup/Vulkan-Profiles
@@ -46,3 +43,30 @@
 [submodule "src/dgNetworkModule"]
 	path = src/dgNetworkModule
 	url = https://github.com/khrysystem/dgNetworkModule
+[submodule "lib/SPIRV/SPIRV-Reflect"]
+	path = lib/SPIRV/SPIRV-Reflect
+	url = https://github.com/khronosgroup/SPIRV-Reflect
+[submodule "lib/glm"]
+	path = lib/glm
+	url = https://github.com/g-truc/glm
+[submodule "lib/OpenAL-Soft"]
+	path = lib/OpenAL-Soft
+	url = https://github.com/kcat/OpenAL-Soft
+[submodule "lib/SPIRV/SPIRV-Cross"]
+	path = lib/SPIRV/SPIRV-Cross
+	url = https://github.com/khronosgroup/SPIRV-Cross
+[submodule "lib/Cereal"]
+	path = lib/Cereal
+	url = https://github.com/USCiLab/Cereal
+[submodule "lib/GLSLang"]
+	path = lib/GLSLang
+	url = https://github.com/KhronosGroup/GLSLang
+[submodule "lib/GoogleTest"]
+	path = lib/GoogleTest
+	url = https://github.com/Google/GoogleTest
+[submodule "lib/Boost"]
+	path = lib/Boost
+	url = https://github.com/BoostOrg/Boost
+[submodule "lib/Robin-Hood-Hashing"]
+	path = lib/Robin-Hood-Hashing
+	url = https://github.com/martinus/Robin-Hood-Hashing
