@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="E:\KhrySystem\src\vs\Dragon\bin\CMakeFiles\e8be6212f2c28adc92efa6a30b34538b\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{0DF15C7A-F533-357F-9291-7500F1F18928}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

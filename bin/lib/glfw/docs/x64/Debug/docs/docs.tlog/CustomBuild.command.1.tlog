@@ -1,0 +1,24 @@
+^E:\KHRYSYSTEM\SRC\VS\DRAGON\BIN\LIB\GLFW\DOCS\DOXYFILE
+setlocal
+cd E:\KhrySystem\src\vs\Dragon\bin\lib\glfw\docs
+if %errorlevel% neq 0 goto :cmEnd
+E:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\doxygen\bin\doxygen.exe"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^E:\KHRYSYSTEM\SRC\VS\DRAGON\LIB\GLFW\DOCS\CMAKELISTS.TXT
+setlocal
+"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SE:/KhrySystem/src/vs/Dragon -BE:/KhrySystem/src/vs/Dragon/bin --check-stamp-file E:/KhrySystem/src/vs/Dragon/bin/lib/glfw/docs/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

@@ -1,0 +1,10 @@
+^E:\KHRYSYSTEM\SRC\VS\DRAGON\BIN\CMAKEFILES\E8BE6212F2C28ADC92EFA6A30B34538B\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SE:/KhrySystem/src/vs/Dragon -BE:/KhrySystem/src/vs/Dragon/bin --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file E:/KhrySystem/src/vs/Dragon/bin/Dragon.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

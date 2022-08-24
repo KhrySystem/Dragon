@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="E:\KhrySystem\src\vs\Dragon\bin\CMakeFiles\2f8c78b318d105dde53603d8c86a8452\update_mappings.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="E:\KhrySystem\src\vs\Dragon\lib\glfw\src\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="E:\KhrySystem\src\vs\Dragon\lib\glfw\src\mappings.h.in">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="E:\KhrySystem\src\vs\Dragon\lib\glfw\CMake\GenerateMappings.cmake" />
+    <None Include="E:\KhrySystem\src\vs\Dragon\bin\lib\glfw\src\CMakeFiles\update_mappings" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{0DF15C7A-F533-357F-9291-7500F1F18928}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{8299D3A7-5CF6-3EF1-B787-5341EF679676}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

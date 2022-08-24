@@ -1,0 +1,133 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{CE968EEC-3ACD-3A18-9F58-A232E0EF754F}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>x64</Platform>
+    <ProjectName>dgNetworkModule</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <DebugSymbols>true</DebugSymbols>
+    <DefineDebug>true</DefineDebug>
+    <OutputPath>E:\KhrySystem\src\vs\Dragon\bin\src\dgNetworkModule\Debug\</OutputPath>
+    <PlatformTarget>x64</PlatformTarget>
+    <PlatformToolset>v142</PlatformToolset>
+    <AssemblyName>dgNetworkModule</AssemblyName>
+    <DebugType>full</DebugType>
+    <DefineConstants>TRACE;DEBUG;DRAGON_VERSION_MAJOR;0;DRAGON_VERSION_MINOR;DRAGON_VERSION_REVISION;1</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <Optimize>false</Optimize>
+    <WarningLevel>3</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <OutputPath>E:\KhrySystem\src\vs\Dragon\bin\src\dgNetworkModule\Release\</OutputPath>
+    <PlatformTarget>x64</PlatformTarget>
+    <PlatformToolset>v142</PlatformToolset>
+    <AssemblyName>dgNetworkModule</AssemblyName>
+    <DebugType>none</DebugType>
+    <DefineConstants>TRACE;DRAGON_VERSION_MAJOR;0;DRAGON_VERSION_MINOR;DRAGON_VERSION_REVISION;1</DefineConstants>
+    <ErrorReport>queue</ErrorReport>
+    <Optimize>true</Optimize>
+    <WarningLevel>1</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <OutputPath>E:\KhrySystem\src\vs\Dragon\bin\src\dgNetworkModule\MinSizeRel\</OutputPath>
+    <PlatformTarget>x64</PlatformTarget>
+    <PlatformToolset>v142</PlatformToolset>
+    <AssemblyName>dgNetworkModule</AssemblyName>
+    <DebugType>none</DebugType>
+    <DefineConstants>TRACE;DRAGON_VERSION_MAJOR;0;DRAGON_VERSION_MINOR;DRAGON_VERSION_REVISION;1</DefineConstants>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <DebugSymbols>true</DebugSymbols>
+    <DefineDebug>true</DefineDebug>
+    <OutputPath>E:\KhrySystem\src\vs\Dragon\bin\src\dgNetworkModule\RelWithDebInfo\</OutputPath>
+    <PlatformTarget>x64</PlatformTarget>
+    <PlatformToolset>v142</PlatformToolset>
+    <AssemblyName>dgNetworkModule</AssemblyName>
+    <DebugType>full</DebugType>
+    <DefineConstants>TRACE;DRAGON_VERSION_MAJOR;0;DRAGON_VERSION_MINOR;DRAGON_VERSION_REVISION;1</DefineConstants>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.CSharp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.CSharp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemGroup>
+    <None Include="E:\KhrySystem\src\vs\Dragon\src\dgNetworkModule\CMakeLists.txt">
+      <Link>CMakeLists.txt</Link>
+    </None>
+  </ItemGroup>
+  <Target Condition="'$(Configuration)|$(Platform)'=='Debug|x64'"
+    Name="CustomCommand_Debug_3c579e1877692da903862d3b7858071a"
+    Inputs="E:/KhrySystem/src/vs/Dragon/src/dgNetworkModule/CMakeLists.txt;C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.20\Modules\CMakeCSharpInformation.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.20\Modules\CSharpUtilities.cmake;E:\KhrySystem\src\vs\Dragon\bin\CMakeFiles\3.20.21032501-MSVC_2\CMakeCSharpCompiler.cmake"
+    Outputs="E:\KhrySystem\src\vs\Dragon\bin\src\dgNetworkModule\CMakeFiles\generate.stamp">
+    <Exec Command="echo Building Custom Rule E:/KhrySystem/src/vs/Dragon/src/dgNetworkModule/CMakeLists.txt" />
+    <Exec Command="setlocal&#10;&quot;C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe&quot; -SE:/KhrySystem/src/vs/Dragon -BE:/KhrySystem/src/vs/Dragon/bin --check-stamp-file E:/KhrySystem/src/vs/Dragon/bin/src/dgNetworkModule/CMakeFiles/generate.stamp&#10;if %errorlevel% neq 0 goto :cmEnd&#10;:cmEnd&#10;endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone&#10;:cmErrorLevel&#10;exit /b %1&#10;:cmDone&#10;if %errorlevel% neq 0 goto :VCEnd" />
+  </Target>
+  <Target Condition="'$(Configuration)|$(Platform)'=='Release|x64'"
+    Name="CustomCommand_Release_3c579e1877692da903862d3b7858071a"
+    Inputs="E:/KhrySystem/src/vs/Dragon/src/dgNetworkModule/CMakeLists.txt;C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.20\Modules\CMakeCSharpInformation.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.20\Modules\CSharpUtilities.cmake;E:\KhrySystem\src\vs\Dragon\bin\CMakeFiles\3.20.21032501-MSVC_2\CMakeCSharpCompiler.cmake"
+    Outputs="E:\KhrySystem\src\vs\Dragon\bin\src\dgNetworkModule\CMakeFiles\generate.stamp">
+    <Exec Command="echo Building Custom Rule E:/KhrySystem/src/vs/Dragon/src/dgNetworkModule/CMakeLists.txt" />
+    <Exec Command="setlocal&#10;&quot;C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe&quot; -SE:/KhrySystem/src/vs/Dragon -BE:/KhrySystem/src/vs/Dragon/bin --check-stamp-file E:/KhrySystem/src/vs/Dragon/bin/src/dgNetworkModule/CMakeFiles/generate.stamp&#10;if %errorlevel% neq 0 goto :cmEnd&#10;:cmEnd&#10;endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone&#10;:cmErrorLevel&#10;exit /b %1&#10;:cmDone&#10;if %errorlevel% neq 0 goto :VCEnd" />
+  </Target>
+  <Target Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'"
+    Name="CustomCommand_MinSizeRel_3c579e1877692da903862d3b7858071a"
+    Inputs="E:/KhrySystem/src/vs/Dragon/src/dgNetworkModule/CMakeLists.txt;C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.20\Modules\CMakeCSharpInformation.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.20\Modules\CSharpUtilities.cmake;E:\KhrySystem\src\vs\Dragon\bin\CMakeFiles\3.20.21032501-MSVC_2\CMakeCSharpCompiler.cmake"
+    Outputs="E:\KhrySystem\src\vs\Dragon\bin\src\dgNetworkModule\CMakeFiles\generate.stamp">
+    <Exec Command="echo Building Custom Rule E:/KhrySystem/src/vs/Dragon/src/dgNetworkModule/CMakeLists.txt" />
+    <Exec Command="setlocal&#10;&quot;C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe&quot; -SE:/KhrySystem/src/vs/Dragon -BE:/KhrySystem/src/vs/Dragon/bin --check-stamp-file E:/KhrySystem/src/vs/Dragon/bin/src/dgNetworkModule/CMakeFiles/generate.stamp&#10;if %errorlevel% neq 0 goto :cmEnd&#10;:cmEnd&#10;endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone&#10;:cmErrorLevel&#10;exit /b %1&#10;:cmDone&#10;if %errorlevel% neq 0 goto :VCEnd" />
+  </Target>
+  <Target Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'"
+    Name="CustomCommand_RelWithDebInfo_3c579e1877692da903862d3b7858071a"
+    Inputs="E:/KhrySystem/src/vs/Dragon/src/dgNetworkModule/CMakeLists.txt;C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.20\Modules\CMakeCSharpInformation.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.20\Modules\CSharpUtilities.cmake;E:\KhrySystem\src\vs\Dragon\bin\CMakeFiles\3.20.21032501-MSVC_2\CMakeCSharpCompiler.cmake"
+    Outputs="E:\KhrySystem\src\vs\Dragon\bin\src\dgNetworkModule\CMakeFiles\generate.stamp">
+    <Exec Command="echo Building Custom Rule E:/KhrySystem/src/vs/Dragon/src/dgNetworkModule/CMakeLists.txt" />
+    <Exec Command="setlocal&#10;&quot;C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe&quot; -SE:/KhrySystem/src/vs/Dragon -BE:/KhrySystem/src/vs/Dragon/bin --check-stamp-file E:/KhrySystem/src/vs/Dragon/bin/src/dgNetworkModule/CMakeFiles/generate.stamp&#10;if %errorlevel% neq 0 goto :cmEnd&#10;:cmEnd&#10;endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone&#10;:cmErrorLevel&#10;exit /b %1&#10;:cmDone&#10;if %errorlevel% neq 0 goto :VCEnd" />
+  </Target>
+  <ItemGroup>
+    <Compile Include="E:\KhrySystem\src\vs\Dragon\src\dgNetworkModule\NetworkConnection.cs">
+      <Link>NetworkConnection.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="E:\KhrySystem\src\vs\Dragon\bin\ZERO_CHECK.vcxproj">
+      <Project>{734E09E6-8AC8-38CB-B074-07BCC4480BBB}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'MinSizeRel'">
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'RelWithDebInfo'">
+  </PropertyGroup>
+  <PropertyGroup>
+    <BuildDependsOn>
+      CustomCommand_Debug_3c579e1877692da903862d3b7858071a;
+      CustomCommand_MinSizeRel_3c579e1877692da903862d3b7858071a;
+      CustomCommand_RelWithDebInfo_3c579e1877692da903862d3b7858071a;
+      CustomCommand_Release_3c579e1877692da903862d3b7858071a;
+      $(BuildDependsOn)
+</BuildDependsOn>
+  </PropertyGroup>
+</Project>
