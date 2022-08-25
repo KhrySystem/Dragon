@@ -1,16 +1,20 @@
-cmake_minimum_required(VERSION 3.10)
-
 set(SKIP_PERFORMANCE_COMPARISON ON)
 
+set(BOOST_ENABLE_PYTHON ON)
 
-add_subdirectory(Robin-Hood-Hashing)
 add_subdirectory(Boost)
-add_subdirectory(GoogleTest)
-add_subdirectory(GLSLang)
-add_subdirectory(Cereal)
-add_subdirectory(OpenAL-Soft)
-add_subdirectory(glfw)
-add_subdirectory(glm)
 
-add_subdirectory(SPIRV)
-add_subdirectory(Vulkan)
+add_subdirectory(OpenAL-Soft)
+
+add_subdirectory(glfw)
+set(GLFW_INCLUDE_DIRECTORIES 
+	${CMAKE_CURRENT_SOURCE_DIR}/glfw 
+	${CMAKE_CURRENT_SOURCE_DIR}/glfw/src 
+	${CMAKE_CURRENT_SOURCE_DIR}/glfw/include
+	${CMAKE_CURRENT_SOURCE_DIR}/glfw/deps
+)
+
+add_subdirectory(glm)
+set(GLM_INCLUDE_DIRECTORIES
+	${CMAKE_CURRENT_SOURCE_DIR}/glm
+)
