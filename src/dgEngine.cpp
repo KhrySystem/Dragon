@@ -1,9 +1,10 @@
 #include <dragon/dragon.hpp>
 
-struct dgInstance_internal {
-	dgWindow* windows;
-};
+typedef struct dgInstance {
+	GLFWwindow** windows;
+} dgInstance;
 
-dgInstance_internal dgCreateInstance_internal() {
-
+dgInstance DGAPI dgCreateInstance_internal() {
+	dgInstance i = dgInstance();
+	return i;
 }

@@ -19,6 +19,3 @@
 [submodule "lib/OpenAL-Soft"]
 	path = lib/OpenAL-Soft
 	url = https://github.com/kcat/OpenAL-Soft
-[submodule "lib/Boost"]
-	path = lib/Boost
-	url = https://github.com/BoostOrg/Boost

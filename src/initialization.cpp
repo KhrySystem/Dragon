@@ -1,5 +1,6 @@
 #include <dragon/Dragon.hpp>
 
-DGBOOL dgInit_internal() {
-
+DGBOOL DGAPI dgInit_internal() {
+	if(!glfwInit()) return DGFALSE;
+	return DGTRUE;
 }
