@@ -1,12 +1,8 @@
-set(SKIP_PERFORMANCE_COMPARISON ON)
+set(DRAGON_BUILD_OPENAL_SOFT CACHE BOOL ON)
 
-set(BOOST_ENABLE_PYTHON ON)
-set(BOOST_ENABLE_MPI OFF)
-set(Boost_USE_STATIC_LIBS OFF)
-set(Boost_USE_MULTITHREADED ON)
-set(Boost_USE_STATIC_RUNTIME OFF)
-
-add_subdirectory(OpenAL-Soft)
+if(DRAGON_BUILD_OPENAL_SOFT)
+	add_subdirectory(OpenAL-Soft)
+endif()
 
 add_subdirectory(glfw)
 

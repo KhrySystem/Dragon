@@ -1,3 +1,9 @@
+*.exe 
+*.dll
+*.lib
+
+
 bin/
+build/
 external/
 .vscode/
