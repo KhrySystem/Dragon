@@ -3,10 +3,14 @@
 extern "C" {
 #endif
 
+#include <glfw/glfw3.h>
+
 #ifdef DRAGON_USE_VULKAN
 	#ifndef VULKAN_H_
 		#include <vulkan/vulkan.h>
 	#endif
+#endif
+#ifdef DRAGON_USE_OPENGL
 #endif
 
 #ifdef DRAGON_STATIC
@@ -14,8 +18,6 @@ extern "C" {
 #else
 	#define DGAPI __declspec(dllexport)
 #endif
-
-#include <glfw/glfw3.h>
 
 #define DGBOOL bool
 #define DGTRUE 1
