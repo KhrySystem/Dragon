@@ -15,8 +15,6 @@ DGAPI DGBOOL dgShouldWindowClose(dgEngine* engine) {
 	return glfwWindowShouldClose(engine->window);
 }
 
-DGAPI void dgUpdateWindow(dgEngine* engine) {
-	glClear(GL_COLOR_BUFFER_BIT);
-    glfwSwapBuffers(engine->window);
-    glfwPollEvents();
+DGAPI void dgUpdateEngine(dgEngine* engine) {
+	
 }

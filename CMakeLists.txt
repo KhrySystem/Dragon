@@ -6,8 +6,6 @@ project(Dragon)
 
 add_compile_definitions(DRAGON_CXX_STANDARD 20)
 
-option(DRAGON_INCLUDE_BOTH "Add Both Vulkan and OpenGL (if availible) to Dragon and choose the best subsystems of each. [NOT RECOMMENDED!!!!]" ON)
-
 message("Looking for a Vulkan installation...")
 find_package(Vulkan)
 if(Vulkan_FOUND)
@@ -62,58 +60,18 @@ else()
 	message("Failed to find a Vulkan installation.")
 endif()
 
-if( ( NOT Vulkan_FOUND ) OR (DRAGON_INCLUDE_BOTH))
-	message("Looking for an OpenGL installation...")
-	find_package(OpenGL)
-	if(OpenGL_FOUND)
-		message("OpenGL - FOUND")
-		list(APPEND DRAGON_INCLUDE_DIRECTORIES ${OPENGL_INCLUDE_DIR})
-		add_compile_definitions(DRAGON_USE_OPENGL)
-
-		if(OpenGL_OpenGL_FOUND)
-			message("OpenGL Binary Library - FOUND [${OPENGL_gl_LIBRARY}]")
-			add_compile_definitions(DRAGON_GL_OPENGL_FOUND)
-			list(APPEND DRAGON_LINK_LIBRARIES OpenGL::GL)
-		else()
-			message("OpenGL Binary Library - NOT FOUND")
-		endif()
-
-		if(OPENGL_XMESA_FOUND)
-			message("OpenGL XMesa Library - FOUND")
-			add_compile_definitions(DRAGON_GL_XMESA_FOUND)
-		else()
-			message("OpenGL XMesa Library - NOT FOUND")
-		endif()
-
-		if(OPENGL_GLU_FOUND)
-			message("OpenGL GLU Library - FOUND [${OPENGL_glu_LIBRARY}]")
-			add_compile_definitions(DRAGON_GL_GLU_FOUND)
-			list(APPEND DRAGON_LINK_LIBRARIES OpenGL::GLU)
-		else()
-			message("OpenGL GLU Library - NOT FOUND")
-		endif()
-
-		if(OpenGL_GLX_FOUND)
-			message("OpenGL GLX Library - FOUND [${OPENGL_glx_LIBRARY}]")
-			add_compile_definitions(DRAGON_GL_GLX_FOUND)
-			list(APPEND DRAGON_LINK_LIBRARIES OpenGL::GLX)
-		else()
-			message("OpenGL GLX Library - NOT FOUND")
-		endif()
-
-		if(OpenGL_EGL_FOUND)
-			message("OpenGL EGL Library - FOUND [${OPENGL_egl_LIBRARY}]")
-			list(APPEND DRAGON_INCLUDE_DIRECTORIES ${OPENGL_EGL_INCLUDE_DIRS})
-			add_compile_definitions(DRAGON_GL_EGL_FOUND)
-			list(APPEND DRAGON_LINK_LIBRARIES OpenGL::EGL)
-		else()
-			message("OpenGL EGL Library - NOT FOUND")
-		endif()
-	endif()
+if(NOT Vulkan_FOUND)
+	message(FATAL_ERROR "No Vulkan Installation found.")
 endif()
 
-if( ( NOT Vulkan_FOUND ) AND ( NOT OpenGL_FOUND ) )
-	message(FATAL_ERROR "No Graphics library found.")
+find_package(OpenCL)
+if(OpenCL_FOUND)
+	message("OpenCL Library NOT FOUND")
+	add_compile_definitions(DRAGON_USE_OPENCL)
+	list(APPEND DRAGON_INCLDUE_DIRECTORIES ${OpenCL_INCLUDE_DIRS})
+	list(APPEND DRAGON_LINK_LIBRARIES ${OpenCL_LIBRARIES})
+else()
+	message("OpenCL Libraries - NOT FOUND")
 endif()
 
 add_subdirectory(lib)
@@ -153,8 +111,16 @@ list(APPEND DRAGON_LINK_LIBRARIES
 )
 include_directories(${DRAGON_INCLUDE_DIRECTORIES})
 link_libraries(${DRAGON_LINK_LIBRARIES})
-add_subdirectory(src)
 add_subdirectory(tools)
 
-add_executable(OpenWindow tests/openWindow.cpp)
+add_library(Dragon SHARED
+	src/graphics/object.cpp
+	src/graphics/window.cpp
+	src/dgEngine.cpp 
+	src/initialization.cpp
+)
+
+add_executable(OpenWindow tools/tests/openWindow.cpp)
 target_link_libraries(OpenWindow Dragon)
+add_executable(TriangleTest tools/tests/triangleTest.cpp)
+target_link_libraries(TriangleTest Dragon)

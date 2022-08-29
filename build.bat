@@ -1,25 +1,36 @@
-@echo off
-cmake . -Bbin -G"Visual Studio 16 2019"
-MSBuild.exe bin/Dragon.sln -m
-copy "bin\Debug\OpenWindow.exe"		 				"binary_out\OpenWindow.exe"
-copy "bin\Debug\OpenWindow.pdb" 					"binary_out\OpenWindow.pdb"
-copy "bin\src\Debug\Dragon.dll" 					"binary_out\Dragon.dll"
-copy "bin\src\Debug\Dragon.lib" 					"binary_out\Dragon.lib"
-copy "bin\src\Debug\Dragon.exp" 					"binary_out\Dragon.exp"
-copy "bin\src\Debug\Dragon.pdb" 					"binary_out\Dragon.pdb"
-copy "bin\lib\glfw\src\Debug\glfw.lib" 				"binary_out\glfw.lib"
-copy "bin\lib\glfw\src\Debug\glfw.pdb"				"binary_out\glfw.pdb"
-copy "bin\lib\OpenAL-Soft\Debug\alrecord.exe"		"binary_out\alrecord.exe"
-copy "bin\lib\OpenAL-Soft\Debug\alrecord.pdb"		"binary_out\alrecord.pdb"
-copy "bin\lib\OpenAL-Soft\Debug\altonegen.exe"		"binary_out\altonegen.exe"
-copy "bin\lib\OpenAL-Soft\Debug\altonegen.pdb"		"binary_out\altonegen.pdb"
-copy "bin\lib\OpenAL-Soft\Debug\common.lib"			"binary_out\common.lib"
-copy "bin\lib\OpenAL-Soft\Debug\common.pdb"			"binary_out\common.pdb"
-copy "bin\lib\OpenAL-Soft\Debug\ex-common.lib"		"binary_out\ex-common.lib"
-copy "bin\lib\OpenAL-Soft\Debug\ex-common.pdb"		"binary_out\ex-common.pdb"
-copy "bin\lib\OpenAL-Soft\Debug\openal-info.exe"	"binary_out\openal-info.exe"
-copy "bin\lib\OpenAL-Soft\Debug\openal-info.pdb"	"binary_out\openal-info.pdb"
-copy "bin\lib\OpenAL-Soft\Debug\OpenAL32.dll"		"binary_out\OpenAL32.dll"
-copy "bin\lib\OpenAL-Soft\Debug\OpenAL32.exp"		"binary_out\OpenAL32.exp"
-copy "bin\lib\OpenAL-Soft\Debug\OpenAL32.lib"		"binary_out\OpenAL32.lib"
-copy "bin\lib\OpenAL-Soft\Debug\OpenAL32.pdb"		"binary_out\OpenAL32.pdb"
+@echo OFF
+
+if "%1"=="" (
+    set bType=Debug
+)
+
+set PWD=%cd%
+
+cmake . -Bbin -G"Visual Studio 16 2019" -DCMAKE_CONFIGURATION_TYPES=%bType%
+MSBuild bin/Dragon.sln -m
+rmdir %pwd%\binary_out /q /s
+mkdir binary_out
+copy %PWD%\bin\%bType%\OpenWindow.exe		 			%PWD%\binary_out\OpenWindow.exe
+copy %PWD%\bin\%bType%\OpenWindow.pdb 					%PWD%\binary_out\OpenWindow.pdb
+copy %PWD%\bin\%bType%\TriangleTest.exe		 			%PWD%\binary_out\TriangleTest.exe
+copy %PWD%\bin\%bType%\TriangleTest.pdb 				%PWD%\binary_out\TriangleTest.pdb
+copy %PWD%\bin\src\%bType%\Dragon.dll 					%PWD%\binary_out\Dragon.dll
+copy %PWD%\bin\src\%bType%\Dragon.lib 					%PWD%\binary_out\Dragon.lib
+copy %PWD%\bin\src\%bType%\Dragon.exp 					%PWD%\binary_out\Dragon.exp
+copy %PWD%\bin\src\%bType%\Dragon.pdb 					%PWD%\binary_out\Dragon.pdb
+copy %PWD%\bin\lib\glfw\src\%bType%\glfw3.lib 			%PWD%\binary_out\glfw3.lib
+copy %PWD%\bin\lib\glfw\src\%bType%\glfw3.pdb			%PWD%\binary_out\glfw3.pdb
+copy %PWD%\bin\lib\OpenAL-Soft\%bType%\alrecord.exe		%PWD%\binary_out\alrecord.exe
+copy %PWD%\bin\lib\OpenAL-Soft\%bType%\alrecord.pdb  	%PWD%\binary_out\alrecord.pdb
+copy %PWD%\bin\lib\OpenAL-Soft\%bType%\altonegen.exe 	%PWD%\binary_out\altonegen.exe
+copy %PWD%\bin\lib\OpenAL-Soft\%bType%\altonegen.pdb	%PWD%\binary_out\altonegen.pdb
+copy %PWD%\bin\lib\OpenAL-Soft\%bType%\common.lib		%PWD%\binary_out\common.lib
+copy %PWD%\bin\lib\OpenAL-Soft\%bType%\common.pdb		%PWD%\binary_out\common.pdb
+copy %PWD%\bin\lib\OpenAL-Soft\%bType%\ex-common.lib    %PWD%\binary_out\ex-common.lib
+copy %PWD%\bin\lib\OpenAL-Soft\%bType%\ex-common.pdb	%PWD%\binary_out\ex-common.pdb
+copy %PWD%\bin\lib\OpenAL-Soft\%bType%\openal-info.exe	%PWD%\binary_out\openal-info.exe
+copy %PWD%\bin\lib\OpenAL-Soft\%bType%\openal-info.pdb	%PWD%\binary_out\openal-info.pdb
+copy %PWD%\bin\lib\OpenAL-Soft\%bType%\OpenAL32.dll		%PWD%\binary_out\OpenAL32.dll
+copy %PWD%\bin\lib\OpenAL-Soft\%bType%\OpenAL32.exp		%PWD%\binary_out\OpenAL32.exp
+copy %PWD%\bin\lib\OpenAL-Soft\%bType%\OpenAL32.lib		%PWD%\binary_out\OpenAL32.lib
+copy %PWD%\bin\lib\OpenAL-Soft\%bType%\OpenAL32.pdb		%PWD%\binary_out\OpenAL32.pdb

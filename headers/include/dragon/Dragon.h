@@ -55,31 +55,30 @@ extern "C" {
 #include <glfw/glfw3.h>
 
 template<typename T> int len(T* obj) {
-	return sizeof(obj)/sizeof(obj[1]);
+	return (int)(sizeof(obj)/sizeof(obj[1]));
 }
 
-#ifdef DRAGON_STATIC
-	#define DGAPI
-#else
-	#define DGAPI __declspec(dllexport)
-#endif
+#include <dragon/DGAPIdef.h>
 
 #define DGBOOL bool
 #define DGTRUE 1
 #define DGFALSE 0
 
-
-#include <dragon/graphics/predef.h>
-#include <dragon/dgEngine.h>
+#include <dragon/graphics/dgBaseObj.h>
 #include <dragon/graphics/dgWindowCreateParams.h>
-
-#define dgWindow GLFWwindow*
+#include <dragon/graphics/Object.h>
+#include <dragon/graphics/predef.h>
+#include <dragon/graphics/shaders.h>
+#include <dragon/graphics/UIElement.h>
+#include <dragon/graphics/window.h>
+#include <dragon/dgEngine.h>
 
 DGAPI DGBOOL dgInit();
-#include <dragon/graphics/window.h>
 DGAPI void dgDestroyEngine(dgEngine* engine);
 
-#include <stdio.h>
+#define DRAGON_STATIC_OBJECT GL_STATIC_DRAW
+#define DRAGON_DYNAMIC_OBJECT GL_DYNAMIC_DRAW
+#define DRAGON_STREAM_OBJECT GL_STREAM_DRAW
 
 #ifdef _cplusplus
 }
