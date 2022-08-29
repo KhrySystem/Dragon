@@ -1,18 +1,6 @@
-[submodule "src/dgAudioModule"]
-	path = src/dgAudioModule
-	url = https://github.com/Khrysystem/dgAudioModule
-[submodule "src/dgGraphicsModule"]
-	path = src/dgGraphicsModule
-	url = https://github.com/khrysystem/dgGraphicsModule
 [submodule "lib/glfw"]
 	path = lib/glfw
 	url = https://github.com/glfw/glfw
-[submodule "src/dgInputModule"]
-	path = src/dgInputModule
-	url = https://github.com/khrysystem/dgInputModule
-[submodule "src/dgNetworkModule"]
-	path = src/dgNetworkModule
-	url = https://github.com/khrysystem/dgNetworkModule
 [submodule "lib/glm"]
 	path = lib/glm
 	url = https://github.com/g-truc/glm
