@@ -146,7 +146,5 @@
 	#define dgAccelAccumulators boost::accumulators;
 	#define dgAccelAlgorithm boost::algorithm;
 #endif
-#ifdef DRAGON_USE_VULKAN
-	#include <vulkan/vulkan.hpp>
-#endif
+
 #include "Dragon.h"

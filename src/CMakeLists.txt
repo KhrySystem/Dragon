@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.10)
 
-include(dgGraphicsModule/UseGraphics.cmake)
+set(DRAGON_SOURCE_DIR ${CMAKE_SYSTEM_PROCESSOR}/${CMAKE_SYSTEM_NAME})
 
-add_library(Dragon-Source SHARED dgEngine.cpp initialization.cpp
-    dgGraphicsModule/window.cpp
+add_library(Dragon SHARED 
+	${DRAGON_SOURCE_DIR}/dgEngine.cpp ${DRAGON_SOURCE_DIR}/initialization.cpp
+	${DRAGON_SOURCE_DIR}/graphics/window.cpp
 )

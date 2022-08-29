@@ -1,10 +1,12 @@
 cmake_minimum_required(VERSION 3.20)
 
+set(CMAKE_CXX_STANDARD 20)
+
 project(Dragon)
 
-option(DRAGON_INCLUDE_BOTH "Add Both Vulkan and OpenGL (if availible) to Dragon and choose the best subsystems of each. [NOT RECOMMENDED!!!!]" OFF)
+add_compile_definitions(DRAGON_CXX_STANDARD 20)
 
-include(.cmake/DragonGetVersionNumber.info)
+option(DRAGON_INCLUDE_BOTH "Add Both Vulkan and OpenGL (if availible) to Dragon and choose the best subsystems of each. [NOT RECOMMENDED!!!!]" ON)
 
 message("Looking for a Vulkan installation...")
 find_package(Vulkan)
@@ -134,7 +136,6 @@ endif()
 set(Boost_USE_MULTITHREADED ON)
 
 find_package(Boost)
-
 if(Boost_FOUND)
 	message("Boost.hpp Libraries - FOUND [${Boost_VERSION_STRING}]")
 	add_compile_definitions(DRAGON_BOOST_FOUND)
@@ -145,13 +146,15 @@ else()
 endif()
 
 list(APPEND DRAGON_INCLUDE_DIRECTORIES 
-	headers/include lib/glfw lib/glfw/include lib/glfw/src lib/glfw/deps
+	headers/include lib/glfw lib/glfw/include lib/glfw/src lib/glfw/deps lib/glm 
 )
 list(APPEND DRAGON_LINK_LIBRARIES
-	glfw
+	glfw OpenAL::OpenAL
 )
 include_directories(${DRAGON_INCLUDE_DIRECTORIES})
 link_libraries(${DRAGON_LINK_LIBRARIES})
-add_subdirectory(headers)
 add_subdirectory(src)
 add_subdirectory(tools)
+
+add_executable(OpenWindow tests/openWindow.cpp)
+target_link_libraries(OpenWindow Dragon)
