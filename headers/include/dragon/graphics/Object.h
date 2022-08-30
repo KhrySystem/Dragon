@@ -1,8 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include <dragon/graphics/dgBaseObj.h>
-#include <dragon/DGAPIdef.h>
+#include <dragon/dgEngine.h>
 
 struct Object : public dgBaseObj {
 	glm::vec3 position;
@@ -10,7 +9,6 @@ struct Object : public dgBaseObj {
 	glm::vec3 anchor;
 };
 
-DGAPI Object* dgCreate3DObject(dgEngine* engine, float[] verts);
-DGAPI UIElement* dgCreateUIElement(dgEngine* engine, float verts[], bool is2D);
+Object* dgCreate3DObject(dgEngine* engine, float verts[]);
 DGAPI void dgMakeElementVisible(dgBaseObj* element);
 DGAPI void dgMakeElementInvisible(dgBaseObj* element);

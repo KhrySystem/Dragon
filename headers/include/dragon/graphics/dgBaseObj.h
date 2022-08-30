@@ -2,5 +2,5 @@
 
 struct dgBaseObj {
 	bool isVisible;
-	float verticies[];
+	float *verticies;
 };

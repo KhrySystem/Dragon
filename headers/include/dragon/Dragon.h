@@ -52,26 +52,17 @@ extern "C" {
 	#endif
 #endif
 
+#include <dragon/dg_icl.h>
 #include <glfw/glfw3.h>
 
 template<typename T> int len(T* obj) {
 	return (int)(sizeof(obj)/sizeof(obj[1]));
 }
 
-#include <dragon/DGAPIdef.h>
-
 #define DGBOOL bool
 #define DGTRUE 1
 #define DGFALSE 0
 
-#include <dragon/graphics/dgBaseObj.h>
-#include <dragon/graphics/dgWindowCreateParams.h>
-#include <dragon/graphics/Object.h>
-#include <dragon/graphics/predef.h>
-#include <dragon/graphics/shaders.h>
-#include <dragon/graphics/UIElement.h>
-#include <dragon/graphics/window.h>
-#include <dragon/dgEngine.h>
 
 DGAPI DGBOOL dgInit();
 DGAPI void dgDestroyEngine(dgEngine* engine);

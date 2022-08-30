@@ -1,6 +1,6 @@
 #include <dragon/Dragon.hpp>
 
-DGAPI Object* dgCreate3DObject(dgEngine* engine, float[] verts, void* drawType) {
+DGAPI Object* dgCreate3DObject(dgEngine* engine, float verts[], void* drawType) {
     Object* obj = new Object();
     obj->verticies = verts;
     engine->objects.push_back(obj);
