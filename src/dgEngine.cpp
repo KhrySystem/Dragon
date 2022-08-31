@@ -1,12 +1,12 @@
-#include <dragon/dragon.hpp>
+#include <dragon/Dragon.h>
 
-DGAPI dgEngine* dgCreateEngine(const char* appName) {
-	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+DGAPI dgEngine* dgCreateEngine(char* appName) {
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
 	dgEngine* i = new dgEngine();
 	i->appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
 	i->appInfo.pApplicationName = appName;
-	i->appInfo.applicationVersion = VK_MAKE_API_VERSION(0, 0, 1, 0);
+	i->appInfo.applicationVersion = VK_MAKE_API_VERSION(DRAGON_VERSION_MAJOR, DRAGON_VERSION_MINOR, DRAGON_VERSION_REVISION, DRAGON_VERSION_PATCH);
 	i->appInfo.pEngineName = "DragonEngine";
 	i->appInfo.engineVersion = VK_MAKE_API_VERSION(1, 3, 204, 0);
 	i->appInfo.apiVersion = VK_API_VERSION_1_3;
@@ -20,7 +20,7 @@ DGAPI dgEngine* dgCreateEngine(const char* appName) {
 	i->createInfo.ppEnabledExtensionNames = i->glfwExtensions;
 
 	i->createInfo.enabledLayerCount = 0;
-	if(vkCreateInstance(&(i->createInfo), nullptr, &(i->vulkan)) != VK_SUCCESS)
+	if(vkCreateInstance(&(i->createInfo), nullptr, &(i->instance)) != VK_SUCCESS)
 		return NULL;
 
 	vkEnumerateInstanceExtensionProperties(nullptr, &(i->extensionCount), nullptr);

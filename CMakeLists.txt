@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.20)
 
 set(CMAKE_CXX_STANDARD 20)
-
-project(Dragon)
-
 add_compile_definitions(DRAGON_CXX_STANDARD 20)
+
+project(Dragon VERSION 0.1.0)
+
 
 message("Looking for a Vulkan installation...")
 find_package(Vulkan)
@@ -58,10 +58,7 @@ if(Vulkan_FOUND)
 
 else()
 	message("Failed to find a Vulkan installation.")
-endif()
-
-if(NOT Vulkan_FOUND)
-	message(FATAL_ERROR "No Vulkan Installation found.")
+	message("Failed to find a Vulkan installation.")
 endif()
 
 find_package(OpenCL)
@@ -104,23 +101,18 @@ else()
 endif()
 
 list(APPEND DRAGON_INCLUDE_DIRECTORIES 
-	headers/include lib/glfw lib/glfw/include lib/glfw/src lib/glfw/deps lib/glm 
+	lib/glfw lib/glfw/include lib/glfw/src lib/glfw/deps lib/glm include
 )
 list(APPEND DRAGON_LINK_LIBRARIES
 	glfw OpenAL::OpenAL
 )
+
 include_directories(${DRAGON_INCLUDE_DIRECTORIES})
-link_libraries(${DRAGON_LINK_LIBRARIES})
-add_subdirectory(tools)
 
-add_library(Dragon SHARED
-	src/graphics/object.cpp
-	src/graphics/window.cpp
-	src/dgEngine.cpp 
-	src/initialization.cpp
-)
+add_library(Dragon SHARED src/Dragon.cpp src/dgEngine.cpp src/dgVersionInfo.cpp)
+target_link_libraries(Dragon ${DRAGON_LINK_LIBRARIES})
 
-add_executable(OpenWindow tools/tests/openWindow.cpp)
+add_executable(dgVersionInfo tools/tests/dgVersion.cpp)
+target_link_libraries(dgVersionInfo Dragon)
+add_executable(OpenWindow tools/tests/OpenWindow.cpp)
 target_link_libraries(OpenWindow Dragon)
-add_executable(TriangleTest tools/tests/triangleTest.cpp)
-target_link_libraries(TriangleTest Dragon)
