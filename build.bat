@@ -6,8 +6,6 @@ if "%1"=="" (
 
 set PWD=%cd%
 
-cmake . -Bbin -G"Visual Studio 16 2019" -DCMAKE_CONFIGURATION_TYPES=%bType%
-MSBuild bin/Dragon.sln -m
 rmdir %pwd%\binary_out /q /s
 mkdir binary_out
 copy %PWD%\bin\%bType%\OpenWindow.exe		 			%PWD%\binary_out\OpenWindow.exe
