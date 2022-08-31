@@ -1,11 +1,11 @@
 #pragma once
 
 #ifdef _cplusplus
-#include <Dragon/BoostInclude.hpp>
+#include <dragon/BoostInclude.hpp>
 extern "C" {
 #endif
 
-#include "predef.h"
+#include <dragon/predef.h>
 
 DGAPI DG_BOOL dgInit();
 #include "dgEngine.h"

@@ -13,7 +13,7 @@
 
 struct dgEngine
 {
-    GLFWwindow* window;
+    dgWindow window;
 
     std::vector<UIElement*> uiElements;
     std::vector<Object*> objects;
