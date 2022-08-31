@@ -26,5 +26,25 @@ DGAPI dgEngine* dgCreateEngine(char* appName) {
 	vkEnumerateInstanceExtensionProperties(nullptr, &(i->extensionCount), nullptr);
 	i->extensions.resize(i->extensionCount);
 	vkEnumerateInstanceExtensionProperties(nullptr, &(i->extensionCount), i->extensions.data());
+	#ifndef DRAGON_FULL_POWER
+		vkEnumerateInstanceLayerProperties(&i->layerCount, nullptr);
+		i->availableLayers.resize(i->layerCount);
+		vkEnumerateInstanceLayerProperties(&(i->layerCount), i->availableLayers.data());
+		for (const char* layerName : i->requestedValidationLayers) {
+			bool layerFound = false;
+
+			for (const auto& layerProperties : i->availableLayers) {
+				if (strcmp(layerName, layerProperties.layerName) == 0) {
+					layerFound = true;
+					break;
+				}
+			}
+
+			if (!layerFound) {
+				printf("Layer %s not found.", layerName);
+			}
+		}
+	#endif
+
 	return i;
 }

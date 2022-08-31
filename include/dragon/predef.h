@@ -5,6 +5,8 @@
 #include <cstdlib>
 #include <string>
 
+#include <AL/al.h>
+
 #ifdef _cplusplus
     #include <vulkan/vulkan.hpp>
 #else
@@ -21,10 +23,10 @@
     #define DRAGON_VERSION_MINOR 0
     #define DRAGON_VERSION_REVISION 1
     #define DRAGON_VERSION_PATCH 0
-    #ifndef dgPrintVersionInfo
-        DGAPI void dgPrintVersionInfo();
-    #endif
 #endif
+
+DGAPI void dgPrintVersionInfo();
+
 
 #ifndef DG_BOOL
     #define DG_BOOL bool
