@@ -26,5 +26,5 @@ void dgPrintVersionInfo() {
     printf("%d.", GLFW_VERSION_MAJOR);
     printf("%d.", GLFW_VERSION_MINOR);
     printf("%d\n", GLFW_VERSION_REVISION);
-
+    printf("\t - Maximum Number of Concurrent Processes: %d", DRAGON_MAXIMUM_PROCESSES);
 }

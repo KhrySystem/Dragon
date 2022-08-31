@@ -7,4 +7,5 @@ struct WindowCreateParams
     int width;
     int height;
     dgMonitor monitor;
+    bool resizable;
 };

@@ -1,6 +1,6 @@
 #include <dragon/Dragon.h>
 
-DGAPI dgEngine* dgCreateEngine(char* appName) {
+DGAPI dgEngine* dgCreateEngine(const char* appName) {
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
 	dgEngine* i = new dgEngine();
@@ -45,6 +45,18 @@ DGAPI dgEngine* dgCreateEngine(char* appName) {
 			}
 		}
 	#endif
+	i->appName = appName;
 
+	vkEnumeratePhysicalDevices(i->instance, &i->deviceCount, DG_NULL);
+	if(i->deviceCount == 0) return DG_NULL;
 	return i;
+}
+
+DGAPI DG_BOOL dgShareResources(dgEngine* e1, dgEngine* e2) {
+	if(e1->window != NULL || e2->window != NULL) {
+		return DG_FALSE;
+	}
+	e1->shared = e2;
+	e2->shared = e1;
+	return DG_TRUE;
 }
