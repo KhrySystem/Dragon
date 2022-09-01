@@ -2,7 +2,8 @@
 
 int main(void) {
     if(!dgInit()) return 1;
-    dgPrintVersionInfo();
+    dgEngine* e = dgCreateEngine("dgVersionInfo");
+    dgPrintVersionInfo(e);
 
     return 0;
 }

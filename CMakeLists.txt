@@ -109,7 +109,7 @@ list(APPEND DRAGON_LINK_LIBRARIES
 
 include_directories(${DRAGON_INCLUDE_DIRECTORIES})
 
-add_library(Dragon SHARED src/Dragon.cpp src/dgEngine.cpp src/dgVersionInfo.cpp src/graphics/Window.cpp)
+add_library(Dragon SHARED src/Dragon.cpp src/dgEngine.cpp src/dgVersionInfo.cpp src/graphics/Window.cpp src/GPU.cpp)
 target_link_libraries(Dragon ${DRAGON_LINK_LIBRARIES})
 
 add_executable(dgVersionInfo tools/tests/dgVersion.cpp)

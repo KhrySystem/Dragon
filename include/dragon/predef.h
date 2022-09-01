@@ -1,12 +1,12 @@
 #pragma once
 
-#include <windows.h>
-#include <glfw/glfw3.h>
 #include <cstdlib>
 #include <string>
+#include <cmath>
 
+#include <windows.h>
+#include <glfw/glfw3.h>
 #include <AL/al.h>
-
 #ifdef _cplusplus
     #pragma message "Including hpp Vulkan."
     #include <vulkan/vulkan.hpp>
@@ -29,9 +29,8 @@ DGAPI unsigned int __dgGetMaximumProcesses__();
 #define DRAGON_VERSION_MINOR 0
 #define DRAGON_VERSION_REVISION 1
 #define DRAGON_VERSION_PATCH 0
-DGAPI void dgPrintVersionInfo();
 
-#define DG_BOOL bool
+typedef bool DG_BOOL;
 #define DG_TRUE GLFW_TRUE
 #define DG_FALSE GLFW_FALSE
 #define DG_NULL VK_NULL_HANDLE

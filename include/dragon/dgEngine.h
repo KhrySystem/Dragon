@@ -18,6 +18,7 @@
 #ifdef DRAGON_BOOST_FOUND
     #include <dragon/BoostInclude.h>
 #endif
+#include <dragon/GPU.h>
 #include <dragon/predef.h>
 #include <vector>
 #ifdef _cplusplus
@@ -46,8 +47,9 @@ struct dgEngine {
     std::vector<VkExtensionProperties> extensions;
 
     uint32_t deviceCount = 0;
-    VkPhysicalDevice device = VK_NULL_HANDLE;
-
+    GPU* device;
+    std::vector<GPU*> gpus;
+    
     #ifndef DRAGON_FULL_POWER
         const std::vector<const char*> requestedValidationLayers = {
             "VK_LAYER_KHRONOS_validation"
@@ -61,3 +63,5 @@ struct dgEngine {
 
 DGAPI dgEngine* dgCreateEngine(const char* appName);
 DGAPI DG_BOOL dgShareResources(dgEngine* e1, dgEngine* e2);
+DGAPI std::vector<GPU*> dgGetGPUs(dgEngine* engine);
+DGAPI void dgUpdateEngine(dgEngine* engine);

@@ -6,9 +6,9 @@ DGAPI dgEngine* dgCreateEngine(const char* appName) {
 	dgEngine* i = new dgEngine();
 	i->appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
 	i->appInfo.pApplicationName = appName;
-	i->appInfo.applicationVersion = VK_MAKE_API_VERSION(DRAGON_VERSION_MAJOR, DRAGON_VERSION_MINOR, DRAGON_VERSION_REVISION, DRAGON_VERSION_PATCH);
+	i->appInfo.applicationVersion = VK_MAKE_API_VERSION(DRAGON_VERSION_PATCH, DRAGON_VERSION_MAJOR, DRAGON_VERSION_MINOR, DRAGON_VERSION_REVISION);
 	i->appInfo.pEngineName = "DragonEngine";
-	i->appInfo.engineVersion = VK_MAKE_API_VERSION(1, 3, 204, 0);
+	i->appInfo.engineVersion = VK_HEADER_VERSION_COMPLETE;
 	i->appInfo.apiVersion = VK_API_VERSION_1_3;
 
 	i->createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
@@ -46,10 +46,20 @@ DGAPI dgEngine* dgCreateEngine(const char* appName) {
 		}
 	#endif
 	i->appName = appName;
-
-	vkEnumeratePhysicalDevices(i->instance, &i->deviceCount, DG_NULL);
-	if(i->deviceCount == 0) return DG_NULL;
+	std::vector<GPU*> gpus = dgGetGPUs(i);
 	return i;
+}
+
+DGAPI std::vector<GPU*> dgGetGPUs(dgEngine* engine) {
+	vkEnumeratePhysicalDevices(engine->instance, &engine->deviceCount, DG_NULL);
+	std::vector<VkPhysicalDevice> devices(engine->deviceCount);
+	std::vector<GPU*> out;
+	if(engine->deviceCount == 0) return out;
+	vkEnumeratePhysicalDevices(engine->instance, &engine->deviceCount, devices.data());
+	for(int i = 0; i >= engine->deviceCount; i++) {
+		out.push_back(dgCreateGPU(devices.at(i)));
+	}
+	return out;
 }
 
 DGAPI DG_BOOL dgShareResources(dgEngine* e1, dgEngine* e2) {
@@ -59,4 +69,8 @@ DGAPI DG_BOOL dgShareResources(dgEngine* e1, dgEngine* e2) {
 	e1->shared = e2;
 	e2->shared = e1;
 	return DG_TRUE;
+}
+
+DGAPI void dgUpdateEngine(dgEngine* engine) {
+	return;
 }

@@ -6,8 +6,10 @@ DGAPI DG_BOOL dgInit() {
     return DG_TRUE;
 }
 
-DGAPI void dgDestroyWindow(dgEngine* e) {
+DGAPI void dgDestroyEngine(dgEngine* e) {
     glfwDestroyWindow(e->window);
+    vkDestroyInstance(e->instance, DG_NULL);
+    delete e;
 }
 
 DGAPI unsigned int __dgGetMaximumProcesses__() {

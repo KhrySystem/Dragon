@@ -1,15 +1,16 @@
 #pragma once
 
 #ifdef _cplusplus
-#include <dragon/BoostInclude.hpp>
-extern "C" {
+	#include <dragon/BoostInclude.hpp>
+	extern "C" {
 #endif
 
 #include <dragon/predef.h>
-
 DGAPI DG_BOOL dgInit();
-#include "dgEngine.h"
-DGAPI void dgDestroyEngine();
+
+#include <dragon/dgEngine.h>
+DGAPI void dgPrintVersionInfo(dgEngine* e);
+DGAPI void dgDestroyEngine(dgEngine* e);
 
 #ifdef _cplusplus
 }
