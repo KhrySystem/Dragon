@@ -2,8 +2,11 @@
 
 int main(void) {
     if(!dgInit()) return 1;
-    dgEngine* e = dgCreateEngine("dgVersionInfo");
-    dgPrintVersionInfo(e);
+    try {
+        dgPrintVersionInfo();
+    } catch(std::exception e) {
+        printf(e.what());
+    }
 
     return 0;
 }

@@ -1,7 +1,7 @@
 #include <dragon/Dragon.h>
 #include <dragon/dgEngine.h>
 
-DGAPI void dgPrintVersionInfo(dgEngine* e) {
+DGAPI void dgPrintVersionInfo() {
     printf("Dragon Engine Version ");
     printf("%d.", DRAGON_VERSION_MAJOR);
     printf("%d.", DRAGON_VERSION_MINOR);
@@ -31,15 +31,18 @@ DGAPI void dgPrintVersionInfo(dgEngine* e) {
     printf("%d.", GLFW_VERSION_MINOR);
     printf("%d\n", GLFW_VERSION_REVISION);
     printf("\t - Maximum Number of Concurrent Processes: %d\n", DRAGON_MAXIMUM_PROCESSES);
-    std::vector<GPU*> gpus = dgGetGPUs(e);
+    std::vector<GPU*> gpus = dgGetGPUs(dgCreateEngine("dgPrintVersionInfo"));
+    printf("\t - GPUs in System:\n");
     if(gpus.size() > 0) {
-        printf("\t - GPUs in System:\n");
         for(int i = 0; i < gpus.size(); i++) {
             printf("\t\t - %i : %s\n", i, gpus.at(i)->deviceProperties.deviceName);
             printf("\t\t\t - General Evaluation Score: %i", dgEvaluateGPU(gpus.at(i)));
+            printf("\t\t\t - Work Groups per Dispatch: %i", gpus.at(i)->deviceProperties.limits.maxComputeWorkGroupCount[3]);
+            printf("\t\t\t - Thread Count per Workgroup: %i", gpus.at(i)->deviceProperties.limits.maxComputeWorkGroupInvocations);
+            printf("\t\t\t - Maximum Thread Count: %i", gpus.at(i)->deviceProperties.limits.maxComputeWorkGroupSize[3]);
         }
     } else {
-        printf("\t - NO DETECTED GPU IN SYSTEM");
+        printf("\t\t - NO DETECTED GPU IN SYSTEM");
     }
     
 }

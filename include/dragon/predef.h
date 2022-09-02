@@ -2,7 +2,6 @@
 
 #include <cstdlib>
 #include <string>
-#include <cmath>
 
 #include <windows.h>
 #include <glfw/glfw3.h>

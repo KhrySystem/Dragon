@@ -9,7 +9,7 @@
 DGAPI DG_BOOL dgInit();
 
 #include <dragon/dgEngine.h>
-DGAPI void dgPrintVersionInfo(dgEngine* e);
+DGAPI void dgPrintVersionInfo();
 DGAPI void dgDestroyEngine(dgEngine* e);
 
 #ifdef _cplusplus

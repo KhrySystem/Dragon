@@ -21,11 +21,15 @@ DGAPI dgEngine* dgCreateEngine(const char* appName) {
 
 	i->createInfo.enabledLayerCount = 0;
 	if(vkCreateInstance(&(i->createInfo), nullptr, &(i->instance)) != VK_SUCCESS)
-		return NULL;
+		throw std::exception("vkCreateInstance(&(i->createInfo), nullptr, &(i->instance)) failed.");
 
-	vkEnumerateInstanceExtensionProperties(nullptr, &(i->extensionCount), nullptr);
+	if(vkEnumerateInstanceExtensionProperties(nullptr, &(i->extensionCount), nullptr) != VK_SUCCESS)
+		throw std::exception("vkEnumerateInstanceExtensionProperties(nullptr, &(i->extensionCount), nullptr) failed.");
+
 	i->extensions.resize(i->extensionCount);
-	vkEnumerateInstanceExtensionProperties(nullptr, &(i->extensionCount), i->extensions.data());
+	if(vkEnumerateInstanceExtensionProperties(nullptr, &(i->extensionCount), i->extensions.data()) != VK_SUCCESS)
+		throw std::exception("vkEnumerateInstanceExtensionProperties(nullptr, &(i->extensionCount), i->extensions.data())");
+
 	#ifndef DRAGON_FULL_POWER
 		vkEnumerateInstanceLayerProperties(&i->layerCount, nullptr);
 		i->availableLayers.resize(i->layerCount);
@@ -51,6 +55,9 @@ DGAPI dgEngine* dgCreateEngine(const char* appName) {
 }
 
 DGAPI std::vector<GPU*> dgGetGPUs(dgEngine* engine) {
+	if(engine == DG_NULL)
+		return std::vector<GPU*>(0);
+	
 	vkEnumeratePhysicalDevices(engine->instance, &engine->deviceCount, DG_NULL);
 	std::vector<VkPhysicalDevice> devices(engine->deviceCount);
 	std::vector<GPU*> out;

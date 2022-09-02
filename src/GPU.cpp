@@ -25,9 +25,13 @@ DGAPI int dgEvaluateGPU(GPU* gpu) {
 		default:
 			eval -= 100;
 	}
-	eval += (int)(log2(gpu->deviceProperties.limits.bufferImageGranularity) * 100);
-	eval += (int)(gpu->deviceProperties.limits.maxImageDimension1D * 0.1);
 	eval += (int)(gpu->deviceProperties.limits.maxImageDimension2D);
-	eval += (int)(gpu->deviceProperties.limits.maxImageDimension3D * 10);
-	eval += (int)(gpu->deviceProperties.limits.maxImageArrayLayers);
+	eval += (int)(gpu->deviceProperties.limits.maxComputeWorkGroupCount[3] * 
+			gpu->deviceProperties.limits.maxComputeWorkGroupInvocations / 
+			1000
+	);
+	if (!gpu->deviceFeatures.geometryShader) {
+        return 0;
+    }
+	return eval;
 }
