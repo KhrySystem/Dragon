@@ -6,8 +6,9 @@
 #include <windows.h>
 #include <glfw/glfw3.h>
 #include <AL/al.h>
-#include <CL/cl.hpp>
-
+#ifdef DRAGON_USE_OPENCL
+    #include <CL/cl.hpp>
+#endif
 #ifdef _cplusplus
     #pragma message "Including hpp Vulkan."
     #include <vulkan/vulkan.hpp>

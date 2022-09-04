@@ -63,7 +63,7 @@ endif()
 
 find_package(OpenCL)
 if(OpenCL_FOUND)
-	message("OpenCL Library NOT FOUND")
+	message("OpenCL Library - FOUND")
 	add_compile_definitions(DRAGON_USE_OPENCL)
 	list(APPEND DRAGON_INCLDUE_DIRECTORIES ${OpenCL_INCLUDE_DIRS})
 	list(APPEND DRAGON_LINK_LIBRARIES ${OpenCL_LIBRARIES})

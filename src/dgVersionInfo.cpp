@@ -21,6 +21,18 @@ DGAPI void dgPrintVersionInfo() {
         printf("1.0");
     #endif
     printf("\n");
+    #if !defined(DRAGON_USE_OPENCL)
+        printf("\t - OpenCL NOT AVAILIBLE");
+    #elif defined(CL_VERSION_2_0)
+        printf("\t - OpenCL Version 2.0");
+    #elif defined(CL_VERSION_1_2)
+        printf("\t - OpenCL Version 1.2");
+    #elif defined(CL_VERSION_1_1)
+        printf("\t - OpenCL Version 1.1");
+    #else
+        printf("\t - OpenCL Version 1.0");
+    #endif
+    printf("\n");
     printf("\t - GL Mathmatics Version ");
     printf("%d.", GLM_VERSION_MAJOR);
     printf("%d.", GLM_VERSION_MINOR);
