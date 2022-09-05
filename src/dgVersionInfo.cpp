@@ -2,6 +2,9 @@
 #include <dragon/dgEngine.h>
 
 DGAPI void dgPrintVersionInfo() {
+    #ifdef DRAGON_CXX_VERSION
+        printf("C++ Version %i", DRAGON_CXX_VERSION);
+    #endif
     printf("Dragon Engine Version ");
     printf("%d.", DRAGON_VERSION_MAJOR);
     printf("%d.", DRAGON_VERSION_MINOR);

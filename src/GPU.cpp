@@ -5,6 +5,7 @@ DGAPI GPU* dgCreateGPU(VkPhysicalDevice gpuHandle) {
 	GPU* gpu = new GPU();
 	vkGetPhysicalDeviceProperties(gpuHandle, &gpu->deviceProperties);
 	vkGetPhysicalDeviceFeatures(gpuHandle, &gpu->deviceFeatures);
+	gpu->score = dgEvaluateGPU(gpu);
 	return gpu;
 }
 

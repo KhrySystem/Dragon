@@ -4,6 +4,8 @@
 
 struct GPU
 {
+	int loadIndex;
+	int score;
 	VkPhysicalDevice handle;
 	VkPhysicalDeviceProperties deviceProperties;
 	VkPhysicalDeviceFeatures deviceFeatures;
