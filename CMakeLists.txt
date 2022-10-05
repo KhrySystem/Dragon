@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.24)
 
 project(Dragon)
 
+option(DG_BUILD_STATIC "Build Dragon and its submodules as static libraries" OFF)
 set(BUILD_SHARED_LIBS ON)
 
 set(DRAGON_DG_BACKEND_H Dragon-Headers/include/dragon/dg_backend.h)
@@ -23,7 +24,6 @@ set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
 
 option(DG_BUILD_TESTS "Build Dragon-specific tests" ON)
-option(DG_BUILD_STATIC "Build Dragon and its submodules as static libraries" ON)
 
 find_package(Vulkan REQUIRED)
 
@@ -45,4 +45,7 @@ set(DRAGON_LINK_INTERFACES Boost glm)
 add_subdirectory(Dragon-Headers)
 add_subdirectory(Dragon-Ironbreath)
 add_subdirectory(Dragon-Source)
-add_subdirectory(Dragon-Tools)
+
+if(DG_BUILD_TESTS)
+	add_subdirectory(Dragon-Tools)
+endif()
