@@ -1,3 +1,9 @@
 [submodule "headers"]
 	path = headers
 	url = ../Dragon-Headers
+[submodule "src"]
+	path = src
+	url = ../Dragon-Source
+[submodule "extensions/ironbreath"]
+	path = extensions/ironbreath
+	url = ../Dragon-Ironbreath
