@@ -3,15 +3,19 @@
         {
             "name": "Win32",
             "includePath": [
+                "C:/VulkanSDK/1.2.154.1/Include/**",
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/Dragon-Headers/boost/libs/predef/include",
-                "${workspaceFolder}/Dragon-Headers/glfw/include/**",
-                "${workspaceFolder}/Dragon-Headers/glfw/src/**",
-                "${workspaceFolder}/Dragon-Headers/glfw/deps/**",
-                "${workspaceFolder}/Dragon-Headers/glm/**",
-                "${workspaceFolder}/Dragon-Headers/include/**",
-                "C:/VulkanSDK/1.2.154.1/Include",
-                "${workspaceFolder}/Dragon-Headers/boost/libs/tuple/include"
+                "${workspaceFolder}/headers/boost/libs/predef/include",
+                "${workspaceFolder}/headers/glfw/include/**",
+                "${workspaceFolder}/headers/glfw/src/**",
+                "${workspaceFolder}/headers/glfw/deps/**",
+                "${workspaceFolder}/headers/glm/**",
+                "${workspaceFolder}/headers/include/**",
+                "${workspaceFolder}/extensions/ironbreath/include/**",
+                "${workspaceFolder}/extensions/streambreath/include/**",
+                "${workspaceFolder}/headers/boost/libs/config/include/**",
+                "${workspaceFolder}/headers/boost/libs/exception/include/**",
+                "${workspaceFolder}/headers/boost/libs/tuple/include/**"
             ],
             "defines": [
                 "_DEBUG",
