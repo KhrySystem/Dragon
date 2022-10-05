@@ -1,9 +1,3 @@
-[submodule "lib/glfw"]
-	path = lib/glfw
-	url = https://github.com/glfw/glfw
-[submodule "lib/glm"]
-	path = lib/glm
-	url = https://github.com/g-truc/glm
-[submodule "lib/OpenAL-Soft"]
-	path = lib/OpenAL-Soft
-	url = https://github.com/kcat/OpenAL-Soft
+[submodule "headers"]
+	path = headers
+	url = ../Dragon-Headers
