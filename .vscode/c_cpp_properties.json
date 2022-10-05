@@ -1,0 +1,29 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/Dragon-Headers/boost/libs/predef/include",
+                "${workspaceFolder}/Dragon-Headers/glfw/include/**",
+                "${workspaceFolder}/Dragon-Headers/glfw/src/**",
+                "${workspaceFolder}/Dragon-Headers/glfw/deps/**",
+                "${workspaceFolder}/Dragon-Headers/glm/**",
+                "${workspaceFolder}/Dragon-Headers/include/**",
+                "C:/VulkanSDK/1.2.154.1/Include",
+                "${workspaceFolder}/Dragon-Headers/boost/libs/tuple/include"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "windowsSdkVersion": "10.0.19041.0",
+            "compilerPath": "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.31.31103/bin/Hostx64/x64/cl.exe",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "windows-msvc-x64"
+        }
+    ],
+    "version": 4
+}

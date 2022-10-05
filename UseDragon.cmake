@@ -1,2 +1,1 @@
-find_package(Vulkan REQUIRED)
-
+include_directories(${DRAGON_INCLUDE_DIRECTORIES})

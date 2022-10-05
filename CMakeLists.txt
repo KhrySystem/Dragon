@@ -1,118 +1,48 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.24)
 
+project(Dragon)
+
+set(BUILD_SHARED_LIBS ON)
+
+set(DRAGON_DG_BACKEND_H Dragon-Headers/include/dragon/dg_backend.h)
+	if(EXISTS ${DRAGON_DG_BACKEND_H})
+		file(STRINGS ${DRAGON_DG_BACKEND_H} DragonHeaderVersionLine REGEX "^#define DG_HEADER_VERSION")
+		string(REGEX MATCHALL "[0-9]+" DragonHeaderVersion "${DragonHeaderVersionLine}")
+		file(STRINGS  ${DRAGON_DG_BACKEND_H} DragonHeaderVersionLine2 REGEX "^#define DG_HEADER_VERSION_COMPLETE ")
+    	string(REGEX MATCHALL "[0-9]+" DragonHeaderVersion2 "${DragonHeaderVersionLine2}")
+		list(LENGTH DragonHeaderVersion2 _len)
+		# versions follow the Vulkan standard, with an additional number in front of e.g. '0, 1, 2' instead of '1, 2'
+		if(_len EQUAL 3)
+			list(REMOVE_AT DragonHeaderVersion2 0)
+		endif()
+		list(APPEND DragonHeaderVersion2 ${DragonHeaderVersion})
+		list(JOIN DragonHeaderVersion2 "." Dragon_VERSION)
+endif()
+
+set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
-add_compile_definitions(DRAGON_CXX_STANDARD 20)
 
-project(Dragon VERSION 0.1.0)
+option(DG_BUILD_TESTS "Build Dragon-specific tests" ON)
+option(DG_BUILD_STATIC "Build Dragon and its submodules as static libraries" ON)
 
+find_package(Vulkan REQUIRED)
 
-message("Looking for a Vulkan installation...")
-find_package(Vulkan)
-if(Vulkan_FOUND)
-	message("Vulkan - FOUND [${Vulkan_LIBRARY}]")
-	add_compile_definitions(DRAGON_USE_VULKAN)
+include(Dragon-Tools/build/DragonMacros.cmake)
 
-	list(APPEND DRAGON_INCLUDE_DIRECTORIES ${Vulkan_INCLUDE_DIRS})
-	list(APPEND DRAGON_LINK_LIBRARIES ${Vulkan_LIBRARIES})
-	
+subdirlist(BOOST_SUBDIR_ROOTS ./Dragon-Headers/boost/libs)
+subdirlist(GLFW_SUBDIRS ./Dragon-Headers/glfw)
 
-	if(Vulkan_glslc_FOUND)
-		message("Vulkan GLSL Compiler Executable - FOUND [${Vulkan_GLSLC_EXECUTABLE}]")
-		add_compile_definitions(DRAGON_VK_GLSLC_FOUND)
-	else()
-		message("Vulkan GLSL Compiler Executable - NOT FOUND")
-	endif()
+set(BOOST_SUBDIRS "")
+foreach(subdir ${BOOST_SUBDIR_ROOTS})
+	set(subdir_include ${subdir}/include)
+	list(APPEND BOOST_SUBDIRS ${subdir_include})
+endforeach()
 
-	if(Vulkan_glslang_FOUND)
-		message("Vulkan GLSLang Library - FOUND [${Vulkan_glslang_LIBRARY}]")
-		add_compile_definitions(DRAGON_VK_GLSLANG_FOUND)
-	else()
-		message("Vulkan GLSLang Library - NOT FOUND")
-	endif()
+set(Dragon_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/Dragon-Headers/include ${CMAKE_CURRENT_SOURCE_DIR}/Dragon-Headers/glm ${BOOST_SUBDIRS} ${GLFW_SUBDIRS} ${Vulkan_INCLUDE_DIRS})
+set(Dragon_LINK_LIBRARIES glfw ${Vulkan_LIBRARIES})
+set(DRAGON_LINK_INTERFACES Boost glm)
 
-	if(Vulkan_glslangValidator_FOUND)
-		message("Vulkan GLSLang Validator Executable - FOUND [${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE}]")
-		add_compile_definitions(DRAGON_VK_GLSLANG_VALIDATOR_FOUND)
-	else()
-		message("Vulkan GLSLang Validator Executable - NOT FOUND")
-	endif()
-
-	if(Vulkan_shaderc_combined_FOUND)
-		message("Vulkan ShaderC Combined Library - FOUND [${Vulkan_shaderc_combined_LIBRARY}]")
-		add_compile_definitions(DRAGON_VK_SHADERC_COMBINED_FOUND)
-	else()
-		message("Vulkan ShaderC Combined Library - NOT FOUND")
-	endif()
-
-	if(Vulkan_SPIRV-Tools_FOUND)
-		message("Vulkan SPIRV Tools Library - FOUND [${Vulkan_SPIRV-Tools_LIBRARY}]")
-		add_compile_definitions(DRAGON_VK_SPIRV_TOOLS_FOUND)
-	else()
-		message("Vulkan SPIRV Tools Library - NOT FOUND")
-	endif()
-
-	if(Vulkan_MoltenVK_FOUND)
-		message("Vulkan MoltenVK Library - FOUND [${Vulkan_MoltenVK_LIBRARY}]")
-		add_compile_definitions(DRAGON_VK_MOLTENVK_FOUND)
-	endif()
-
-else()
-	message("Failed to find a Vulkan installation.")
-	message("Failed to find a Vulkan installation.")
-endif()
-
-find_package(OpenCL)
-if(OpenCL_FOUND)
-	message("OpenCL Library - FOUND")
-	add_compile_definitions(DRAGON_USE_OPENCL)
-	list(APPEND DRAGON_INCLUDE_DIRECTORIES ${OpenCL_INCLUDE_DIRS})
-	list(APPEND DRAGON_LINK_LIBRARIES ${OpenCL_LIBRARIES})
-else()
-	message("OpenCL Libraries - NOT FOUND")
-endif()
-
-add_subdirectory(lib)
-
-message("Looking for a Boost.hpp installation.")
-if(CMAKE_BUILD_TYPE MATCHES RELEASE)
-	message(" -- Looking for RELEASE Libraries")
-	set(Boost_USE_DEBUG_LIBS OFF)
-	set(Boost_USE_RELEASE_LIBS ON)
-	set(Boost_USE_DEBUG_RUNTIME OFF)
-	set(Boost_USE_DEBUG_PYTHON OFF)
-else()
-	message(" -- Defaulting to looking for DEBUG Libraries")
-	set(Boost_USE_DEBUG_LIBS ON)
-	set(Boost_USE_RELEASE_LIBS OFF)
-	set(Boost_USE_DEBUG_RUNTIME ON)
-	set(Boost_USE_DEBUG_PYTHON ON)
-endif()
-
-set(Boost_USE_MULTITHREADED ON)
-
-find_package(Boost)
-if(Boost_FOUND)
-	message("Boost.hpp Libraries - FOUND [${Boost_VERSION_STRING}]")
-	add_compile_definitions(DRAGON_BOOST_FOUND)
-	list(APPEND DRAGON_INCLUDE_DIRECTORIES ${Boost_INCLUDE_DIRS})
-	list(APPEND DRAGON_LINK_LIBRARIES ${Boost_LIBRARIES})
-else()
-	message("Boost.hpp Libraries - NOT FOUND")
-endif()
-
-list(APPEND DRAGON_INCLUDE_DIRECTORIES 
-	lib/glfw lib/glfw/include lib/glfw/src lib/glfw/deps lib/glm include
-)
-list(APPEND DRAGON_LINK_LIBRARIES
-	glfw OpenAL::OpenAL
-)
-
-include_directories(${DRAGON_INCLUDE_DIRECTORIES})
-
-add_library(Dragon SHARED src/Dragon.cpp src/dgEngine.cpp src/dgVersionInfo.cpp src/graphics/Window.cpp src/GPU.cpp)
-target_link_libraries(Dragon ${DRAGON_LINK_LIBRARIES})
-
-add_executable(dgVersionInfo tools/tests/dgVersion.cpp)
-target_link_libraries(dgVersionInfo Dragon)
-add_executable(OpenWindow tools/tests/OpenWindow.cpp)
-target_link_libraries(OpenWindow Dragon)
+add_subdirectory(Dragon-Headers)
+add_subdirectory(Dragon-Ironbreath)
+add_subdirectory(Dragon-Source)
+add_subdirectory(Dragon-Tools)
