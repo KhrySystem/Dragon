@@ -1,14 +1,30 @@
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/tools/build")
 
-message(WARNING ${CMAKE_MODULE_PATH})
-find_package(Dragon)
+macro(subdirlist RESULT CURDIR)
+    file(GLOB CHILDREN ${CURDIR}/*) # This was changed
+    set(DIRLIST "")
+    foreach(CHILD ${CHILDREN})
+        if(IS_DIRECTORY ${CHILD}) # This was changed
+            list(APPEND DIRLIST ${CHILD})
+        endif()
+    endforeach()
+    set(${RESULT} ${DIRLIST})
+ENDMACRO()
 
-set(BOOST_SUBDIRS "")
-foreach(subdir ${BOOST_SUBDIR_ROOTS})
-	set(subdir_include ${subdir}/include)
-	list(APPEND BOOST_SUBDIRS ${subdir_include})
-endforeach()
+subdirlist(GLFW_SUBDIRS ${CMAKE_CURRENT_SOURCE_DIR}/headers/glfw)
 
-set(Dragon_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/headers/include ${CMAKE_CURRENT_SOURCE_DIR}/headers/glm ${CMAKE_CURRENT_SOURCE_DIR}/headers/openal/include ${BOOST_SUBDIRS} ${GLFW_SUBDIRS} ${Vulkan_INCLUDE_DIRS})
+find_package(Vulkan)
+find_package(Boost)
+find_package(Python REQUIRED COMPONENTS Interpreter)
+find_package(Doxygen)
+
+set(Dragon_INCLUDE_DIRS 
+${CMAKE_CURRENT_SOURCE_DIR}/headers/include 
+${CMAKE_CURRENT_SOURCE_DIR}/headers/glm 
+${CMAKE_CURRENT_SOURCE_DIR}/headers/openal/include 
+${Boost_INCLUDE_DIR} ${GLFW_SUBDIRS} ${Vulkan_INCLUDE_DIRS} 
+${CMAKE_CURRENT_SOURCE_DIR}/extensions/ironbreath/include
+${CMAKE_CURRENT_SOURCE_DIR}/extensions/streambreath/include
+)
 set(Dragon_LINK_LIBRARIES glfw ${Vulkan_LIBRARIES})
 set(DRAGON_LINK_INTERFACES Boost glm)

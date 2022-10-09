@@ -5,17 +5,14 @@
             "includePath": [
                 "C:/VulkanSDK/1.2.154.1/Include/**",
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/headers/boost/libs/predef/include",
+                "C:/Boost/include/Boost-1_80/**",
                 "${workspaceFolder}/headers/glfw/include/**",
                 "${workspaceFolder}/headers/glfw/src/**",
                 "${workspaceFolder}/headers/glfw/deps/**",
                 "${workspaceFolder}/headers/glm/**",
                 "${workspaceFolder}/headers/include/**",
                 "${workspaceFolder}/extensions/ironbreath/include/**",
-                "${workspaceFolder}/extensions/streambreath/include/**",
-                "${workspaceFolder}/headers/boost/libs/config/include/**",
-                "${workspaceFolder}/headers/boost/libs/exception/include/**",
-                "${workspaceFolder}/headers/boost/libs/tuple/include/**"
+                "${workspaceFolder}/extensions/streambreath/include/**"
             ],
             "defines": [
                 "_DEBUG",
