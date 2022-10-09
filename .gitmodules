@@ -16,3 +16,6 @@
 [submodule "docs"]
 	path = docs
 	url = ../Dragon-Docs
+[submodule "extensions/lightbreath"]
+	path = extensions/lightbreath
+	url = ../Dragon-Lightbreath
