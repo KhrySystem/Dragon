@@ -19,12 +19,13 @@ find_package(Python REQUIRED COMPONENTS Interpreter)
 find_package(Doxygen)
 
 set(Dragon_INCLUDE_DIRS 
-${CMAKE_CURRENT_SOURCE_DIR}/headers/include 
-${CMAKE_CURRENT_SOURCE_DIR}/headers/glm 
-${CMAKE_CURRENT_SOURCE_DIR}/headers/openal/include 
-${Boost_INCLUDE_DIR} ${GLFW_SUBDIRS} ${Vulkan_INCLUDE_DIRS} 
-${CMAKE_CURRENT_SOURCE_DIR}/extensions/ironbreath/include
-${CMAKE_CURRENT_SOURCE_DIR}/extensions/streambreath/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/headers/include 
+    ${CMAKE_CURRENT_SOURCE_DIR}/headers/glm 
+    ${CMAKE_CURRENT_SOURCE_DIR}/headers/openal/include 
+    ${Boost_INCLUDE_DIR} ${GLFW_SUBDIRS} ${Vulkan_INCLUDE_DIRS} 
+    ${CMAKE_CURRENT_SOURCE_DIR}/extensions/ironbreath/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/extensions/lightbreath/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/extensions/streambreath/include
 )
 set(Dragon_LINK_LIBRARIES glfw ${Vulkan_LIBRARIES})
 set(DRAGON_LINK_INTERFACES Boost glm)

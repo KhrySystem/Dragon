@@ -31,6 +31,7 @@ def copy_headers_in_path(src: str, dest: str):
 		pass
 	for f in f_names:
 		if ".h" in f:
+			print(f)
 			shutil.copy(src + f, dest + f)
 	for d in dirs:
 		copy_headers_in_path(src + d + "\\", dest + d + "\\")
@@ -42,6 +43,7 @@ def copy_source_in_path(src: str, dest: str):
 		pass
 	for f in f_names:
 		if ".c" in f:
+			print(f)
 			shutil.copy(src + f, dest + f)
 	for d in dirs:
 		copy_headers_in_path(src + d + "\\", dest + d + "\\")
@@ -53,14 +55,19 @@ def copy_binaries_in_path(src: str, dest: str):
 		pass
 	for f in f_names:
 		if ".exe" in f:
+			print(f)
 			shutil.copy(src + f, dest + f)
 		elif ".dll" in f:
+			print(f)
 			shutil.copy(src + f, dest + f)
 		elif ".pdb" in f:
+			print(f)
 			shutil.copy(src + f, dest + f)
 		elif ".exp" in f:
+			print(f)
 			shutil.copy(src + f, dest + f)
 		elif ".lib" in f:
+			print(f)
 			shutil.copy(src + f, dest + f)
 
 	for d in dirs:
@@ -84,7 +91,8 @@ def copy_all(new_path : str, rel_type: str="Debug") -> bool:
 	copy_headers_in_path(os.getcwd() + "\\headers\\openal\\router\\", new_path + "\\include\\router\\")
 	copy_headers_in_path(os.getcwd() + "\\headers\\openal\\utils\\", new_path + "\\include\\utils\\")
 	copy_headers_in_path(os.getcwd() + "\\extensions\\ironbreath\\include\\", new_path + "\\include\\")
-	copy_headers_in_path(os.getcwd() + "\\extensions\\streambreath\\include\\", new_path + "\\include\\")	
+	copy_headers_in_path(os.getcwd() + "\\extensions\\streambreath\\include\\", new_path + "\\include\\")
+	copy_headers_in_path(os.getcwd() + "\\extensions\\lightbreath\\include\\", new_path + "\\include\\")
 	
 	copy_source_in_path(os.getcwd() + "\\headers\\glfw\\src\\", new_path + "\\src\\glfw\\")
 	copy_source_in_path(os.getcwd() + "\\headers\\glfw\\deps\\", new_path + "\\src\\glfw\\deps\\")
@@ -96,6 +104,7 @@ def copy_all(new_path : str, rel_type: str="Debug") -> bool:
 	copy_source_in_path(os.getcwd() + "\\headers\\openal\\utils\\", new_path + "\\src\\al\\utils\\")
 	copy_source_in_path(os.getcwd() + "\\extensions\\ironbreath\\src\\", new_path + "\\src\\extensions\\iron\\")
 	copy_source_in_path(os.getcwd() + "\\extensions\\streambreath\\src\\", new_path + "\\src\\extensions\\stream\\")
+	copy_source_in_path(os.getcwd() + "\\extensions\\lightbreath\\src\\", new_path + "\\src\\extensions\\light\\")
 	copy_source_in_path(os.getcwd() + "\\tools\\tests\\", new_path + "\\tests\\")
 
 	copy_binaries_in_path(os.getcwd() + "\\bin\\headers\\GLFW\\src\\" + rel_type + "\\", new_path + "\\bin\\glfw\\")
@@ -103,9 +112,10 @@ def copy_all(new_path : str, rel_type: str="Debug") -> bool:
 	copy_binaries_in_path(os.getcwd() + "\\bin\\src\\" + rel_type + "\\", new_path + "\\bin\\")
 	copy_binaries_in_path(os.getcwd() + "\\bin\\extensions\\ironbreath\\" + rel_type + "\\", new_path + "\\bin\\")
 	copy_binaries_in_path(os.getcwd() + "\\bin\\extensions\\streambreath\\" + rel_type + "\\", new_path + "\\bin\\")
+	copy_binaries_in_path(os.getcwd() + "\\bin\\extensions\\lightbreath\\" + rel_type + "\\", new_path + "\\bin\\")
 	copy_binaries_in_path(os.getcwd() + "\\bin\\" + rel_type + "\\", new_path + "\\bin\\tests\\")
 
 	return True
 
 if __name__ == "__main__":
-	copy_all(sys.argv[1])
+	copy_all(sys.argv[1], sys.argv[2])
