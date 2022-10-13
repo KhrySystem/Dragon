@@ -31,7 +31,6 @@ def copy_headers_in_path(src: str, dest: str):
 		pass
 	for f in f_names:
 		if ".h" in f:
-			print(f)
 			shutil.copy(src + f, dest + f)
 	for d in dirs:
 		copy_headers_in_path(src + d + "\\", dest + d + "\\")
@@ -43,7 +42,6 @@ def copy_source_in_path(src: str, dest: str):
 		pass
 	for f in f_names:
 		if ".c" in f:
-			print(f)
 			shutil.copy(src + f, dest + f)
 	for d in dirs:
 		copy_headers_in_path(src + d + "\\", dest + d + "\\")
@@ -55,19 +53,14 @@ def copy_binaries_in_path(src: str, dest: str):
 		pass
 	for f in f_names:
 		if ".exe" in f:
-			print(f)
 			shutil.copy(src + f, dest + f)
 		elif ".dll" in f:
-			print(f)
 			shutil.copy(src + f, dest + f)
 		elif ".pdb" in f:
-			print(f)
 			shutil.copy(src + f, dest + f)
 		elif ".exp" in f:
-			print(f)
 			shutil.copy(src + f, dest + f)
 		elif ".lib" in f:
-			print(f)
 			shutil.copy(src + f, dest + f)
 
 	for d in dirs:
@@ -76,7 +69,7 @@ def copy_binaries_in_path(src: str, dest: str):
 		except:
 			pass
 
-def copy_all(new_path : str, rel_type: str="Debug") -> bool:
+def copy_all(new_path : str, rel_type: str="RelWithDebInfo") -> bool:
 	shutil.rmtree(new_path)
 	copy_headers_in_path(os.getcwd() + "\\headers\\include\\dragon\\", new_path + "\\include\\dragon\\")
 	copy_headers_in_path(os.getcwd() + "\\headers\\glfw\\include\\glfw\\", new_path + "\\include\\glfw\\")

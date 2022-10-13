@@ -12,7 +12,9 @@
                 "${workspaceFolder}/headers/glm/**",
                 "${workspaceFolder}/headers/include/**",
                 "${workspaceFolder}/extensions/ironbreath/include/**",
-                "${workspaceFolder}/extensions/streambreath/include/**"
+                "${workspaceFolder}/extensions/lightbreath/include/**",
+                "${workspaceFolder}/extensions/streambreath/include/**",
+                "${workspaceFolder}/extensions/thunderbreath/include/**"
             ],
             "defines": [
                 "_DEBUG",
@@ -22,7 +24,7 @@
             "windowsSdkVersion": "10.0.19041.0",
             "compilerPath": "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.31.31103/bin/Hostx64/x64/cl.exe",
             "cStandard": "c17",
-            "cppStandard": "c++17",
+            "cppStandard": "c++20",
             "intelliSenseMode": "windows-msvc-x64"
         }
     ],
