@@ -83,9 +83,12 @@ def copy_all(new_path : str, rel_type: str="RelWithDebInfo") -> bool:
 	copy_headers_in_path(os.getcwd() + "\\headers\\openal\\core\\", new_path + "\\include\\core\\")
 	copy_headers_in_path(os.getcwd() + "\\headers\\openal\\router\\", new_path + "\\include\\router\\")
 	copy_headers_in_path(os.getcwd() + "\\headers\\openal\\utils\\", new_path + "\\include\\utils\\")
+	copy_headers_in_path(os.getcwd() + "\\extensions\\firebreath\\include\\", new_path + "\\include\\")
 	copy_headers_in_path(os.getcwd() + "\\extensions\\ironbreath\\include\\", new_path + "\\include\\")
-	copy_headers_in_path(os.getcwd() + "\\extensions\\streambreath\\include\\", new_path + "\\include\\")
 	copy_headers_in_path(os.getcwd() + "\\extensions\\lightbreath\\include\\", new_path + "\\include\\")
+	copy_headers_in_path(os.getcwd() + "\\extensions\\streambreath\\include\\", new_path + "\\include\\")
+	copy_headers_in_path(os.getcwd() + "\\extensions\\thunderbreath\\include\\", new_path + "\\include\\")
+	copy_headers_in_path(os.getcwd() + "\\headers\\openxr\\include\\openxr\\", new_path + "\\include\\openxr\\")
 	
 	copy_source_in_path(os.getcwd() + "\\headers\\glfw\\src\\", new_path + "\\src\\glfw\\")
 	copy_source_in_path(os.getcwd() + "\\headers\\glfw\\deps\\", new_path + "\\src\\glfw\\deps\\")

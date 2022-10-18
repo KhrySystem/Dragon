@@ -32,7 +32,6 @@ find_package(Boost REQUIRED COMPONENTS)
 find_package(Python REQUIRED COMPONENTS Interpreter)
 find_package(Doxygen REQUIRED)
 find_package(OpenCL)
-find_package(OpenXR)
 
 set(Dragon_INCLUDE_DIRS 
     ${CMAKE_CURRENT_SOURCE_DIR}/headers/include 
@@ -50,6 +49,7 @@ set(DRAGON_LINK_INTERFACES Boost glm)
 
 add_subdirectory(headers)
 add_subdirectory(src)
+add_subdirectory(extensions/firebreath)
 add_subdirectory(extensions/ironbreath)
 add_subdirectory(extensions/lightbreath)
 add_subdirectory(extensions/streambreath)
