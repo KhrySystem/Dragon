@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 3.24)
+cmake_minimum_required(VERSION 3.20)
 
-project(Dragon VERSION 0.0.1.0 LANGUAGES CXX CSharp)
+project(Dragon VERSION 0.0.1.0 LANGUAGES CXX)
 
 option(DG_BUILD_STATIC "Build Dragon and its submodules as static libraries" OFF)
 set(DRAGON_INSTALL_DIR "E:/DragonSDK")
@@ -15,10 +15,10 @@ option(DG_BUILD_DOCS "Build Dragon Documentation" ON)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/tools/build")
 
 macro(subdirlist RESULT CURDIR)
-    file(GLOB CHILDREN ${CURDIR}/*) # This was changed
+    file(GLOB CHILDREN ${CURDIR}/*) 
     set(DIRLIST "")
     foreach(CHILD ${CHILDREN})
-        if(IS_DIRECTORY ${CHILD}) # This was changed
+        if(IS_DIRECTORY ${CHILD}) 
             list(APPEND DIRLIST ${CHILD})
         endif()
     endforeach()
@@ -39,6 +39,7 @@ set(Dragon_INCLUDE_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/headers/glm 
     ${CMAKE_CURRENT_SOURCE_DIR}/headers/openal/include 
     ${Boost_INCLUDE_DIR} ${GLFW_SUBDIRS} ${Vulkan_INCLUDE_DIRS} ${OpenCL_INCLUDE_DIRS}
+    ${CMAKE_CURRENT_SOURCE_DIR}/extensions/firebreath/include
     ${CMAKE_CURRENT_SOURCE_DIR}/extensions/ironbreath/include
     ${CMAKE_CURRENT_SOURCE_DIR}/extensions/lightbreath/include
     ${CMAKE_CURRENT_SOURCE_DIR}/extensions/streambreath/include
