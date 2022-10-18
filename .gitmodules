@@ -22,3 +22,6 @@
 [submodule "extensions/thunderbreath"]
 	path = extensions/thunderbreath
 	url = ../Dragon-Thunderbreath
+[submodule "extensions/firebreath"]
+	path = extensions/firebreath
+	url = ../Dragon-Firebreath
