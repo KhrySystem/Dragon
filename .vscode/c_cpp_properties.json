@@ -3,9 +3,7 @@
         {
             "name": "Win32",
             "includePath": [
-                "C:/VulkanSDK/1.2.154.1/Include/**",
                 "${workspaceFolder}/**",
-                "C:/Boost/include/Boost-1_80/**",
                 "${workspaceFolder}/headers/glfw/include/**",
                 "${workspaceFolder}/headers/glfw/src/**",
                 "${workspaceFolder}/headers/glfw/deps/**",

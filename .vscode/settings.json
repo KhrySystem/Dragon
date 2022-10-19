@@ -109,5 +109,9 @@
 		"xtree": "cpp",
 		"xutility": "cpp"
 	}, 
-	"cmake.buildDirectory": "${workspaceFolder}/bin"
+	"cmake.buildDirectory": "${workspaceFolder}/bin",
+	"cmake.configureArgs": ["-DDRAGON_INSTALL_DIR:String=\"E:\\DragonSDK\\\""],
+	"cmake.saveBeforeBuild": true,
+	"cmake.configureOnEdit": false,
+	"cmake.configureOnOpen": true
 }

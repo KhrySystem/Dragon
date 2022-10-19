@@ -3,16 +3,38 @@ cmake_minimum_required(VERSION 3.20)
 project(Dragon VERSION 0.0.1.0 LANGUAGES CXX)
 
 option(DG_BUILD_STATIC "Build Dragon and its submodules as static libraries" OFF)
-set(DRAGON_INSTALL_DIR "E:/DragonSDK")
+option(DRAGON_INSTALL_DIR "C:/DragonSDK")
 set(BUILD_SHARED_LIBS ON)
 
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
 
-option(DG_BUILD_TESTS "Build Dragon-specific tests" ON)
-option(DG_BUILD_DOCS "Build Dragon Documentation" ON)
+option(Dragon_BUILD_TESTS "Build Dragon-specific tests" ON)
+option(Dragon_BUILD_DOCS "Build Dragon Documentation" ON)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/tools/build")
+
+find_package(Vulkan REQUIRED COMPONENTS glslangValidator)
+find_package(Boost REQUIRED COMPONENTS)
+find_package(Python REQUIRED COMPONENTS Interpreter)
+find_package(Doxygen REQUIRED)
+find_package(OpenCL)
+find_package(GoogleTest)
+
+macro(compile_shader OUTPUT INPUT)
+    get_filename_component(FNAME ${INPUT} NAME)
+
+    set(SPV_NAME ${CMAKE_BINARY_DIR}/shaders/${FNAME}.spv)
+
+    add_custom_command(
+        OUTPUT ${OUTPUT}
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${PROJECT_BINARY_DIR}/shaders/"
+        COMMAND ${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE} -V ${INPUT} -o ${SPV}
+        DEPENDS ${INPUT}
+    )
+
+    list(APPEND SPV_BINARY_FILES)
+endmacro()
 
 macro(subdirlist RESULT CURDIR)
     file(GLOB CHILDREN ${CURDIR}/*) 
@@ -26,12 +48,6 @@ macro(subdirlist RESULT CURDIR)
 ENDMACRO()
 
 subdirlist(GLFW_SUBDIRS ${CMAKE_CURRENT_SOURCE_DIR}/headers/glfw)
-
-find_package(Vulkan REQUIRED)
-find_package(Boost REQUIRED COMPONENTS)
-find_package(Python REQUIRED COMPONENTS Interpreter)
-find_package(Doxygen REQUIRED)
-find_package(OpenCL)
 
 set(Dragon_INCLUDE_DIRS 
     ${CMAKE_CURRENT_SOURCE_DIR}/headers/include 
@@ -48,6 +64,10 @@ set(Dragon_INCLUDE_DIRS
 set(Dragon_LINK_LIBRARIES glfw ${Vulkan_LIBRARIES} ${Boost_LIBS})
 set(DRAGON_LINK_INTERFACES Boost glm)
 
+if(Dragon_BUILD_DOCS AND Doxygen_FOUND)
+    add_subdirectory(docs)
+endif()
+
 add_subdirectory(headers)
 add_subdirectory(extensions/firebreath)
 add_subdirectory(extensions/ironbreath)
@@ -60,7 +80,7 @@ endif()
 
 add_subdirectory(src)
 
-if(DG_BUILD_TESTS)
+if(DG_BUILD_TESTS AND GoogleTest_FOUND)
 	add_executable(openWindow tools/tests/openWindow.cpp)
 	target_include_directories(openWindow PUBLIC ${Dragon_INCLUDE_DIRS})
 	target_link_libraries(openWindow PUBLIC Dragon::Dragon)
