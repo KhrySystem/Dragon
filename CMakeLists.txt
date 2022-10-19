@@ -37,6 +37,7 @@ set(Dragon_INCLUDE_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/headers/include 
     ${CMAKE_CURRENT_SOURCE_DIR}/headers/glm 
     ${CMAKE_CURRENT_SOURCE_DIR}/headers/openal/include 
+    ${CMAKE_CURRENT_SOURCE_DIR}/headers/openxr/include
     ${Boost_INCLUDE_DIR} ${GLFW_SUBDIRS} ${Vulkan_INCLUDE_DIRS} ${OpenCL_INCLUDE_DIRS}
     ${CMAKE_CURRENT_SOURCE_DIR}/extensions/firebreath/include
     ${CMAKE_CURRENT_SOURCE_DIR}/extensions/ironbreath/include
@@ -48,14 +49,16 @@ set(Dragon_LINK_LIBRARIES glfw ${Vulkan_LIBRARIES} ${Boost_LIBS})
 set(DRAGON_LINK_INTERFACES Boost glm)
 
 add_subdirectory(headers)
-add_subdirectory(src)
 add_subdirectory(extensions/firebreath)
 add_subdirectory(extensions/ironbreath)
 add_subdirectory(extensions/lightbreath)
 add_subdirectory(extensions/streambreath)
 if(OpenCL_FOUND)
+    add_compile_definitions(DRAGON_OPENCL_FOUND)
 	add_subdirectory(extensions/thunderbreath)
 endif()
+
+add_subdirectory(src)
 
 if(DG_BUILD_TESTS)
 	add_executable(openWindow tools/tests/openWindow.cpp)
