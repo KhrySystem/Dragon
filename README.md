@@ -20,4 +20,12 @@ Several libraries are required for DragonEngine to be built on your computer.
  - Doxygen: Doxygen is required whn building the documentation for Dragon.  
 
 ## Using Dragon
-Dragon uses CMake to build, and provides a FindDragon.cmake file to easily 
+Dragon uses CMake to build, and provides a FindDragon.cmake file to easily include Dragon into your project. 
+
+### Minimal CMake Example
+```CMake
+find_package(Dragon REQUIRED)
+add_executable(MyApp main.cpp)
+target_include_directories(MyApp PUBLIC ${Dragon_INCLUDE_DIR})
+target_link_libraries(MyApp PUBLIC ${Dragon_LINK_LIBRARIES})
+```
