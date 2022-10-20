@@ -11,7 +11,7 @@ env:
 
 jobs:
   get-linux-dependencies:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     
     steps:
     - name: Install GLFW Dependencies
@@ -21,8 +21,9 @@ jobs:
       id: install-boost
       uses: MarkusJx/install-boost@v2.4.0
       with:
-        boost_version: 1.80.0
+        boost_version: 1.79.0
         boost_install_dir: /usr/
+        platform-version: 20.04
 
     - name: Check Vulkan Package Caches
       id: cache-vulkan
