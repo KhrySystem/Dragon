@@ -19,7 +19,7 @@ find_package(Boost REQUIRED COMPONENTS)
 find_package(Python REQUIRED COMPONENTS Interpreter)
 find_package(Doxygen)
 find_package(OpenCL)
-find_package(GoogleTest)
+find_package(GTest)
 
 macro(compile_shader OUTPUT INPUT)
     get_filename_component(FNAME ${INPUT} NAME)
