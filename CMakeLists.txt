@@ -17,7 +17,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/tools/build")
 find_package(Vulkan REQUIRED COMPONENTS glslangValidator)
 find_package(Boost REQUIRED COMPONENTS)
 find_package(Python REQUIRED COMPONENTS Interpreter)
-find_package(Doxygen REQUIRED)
+find_package(Doxygen)
 find_package(OpenCL)
 find_package(GoogleTest)
 
