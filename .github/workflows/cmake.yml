@@ -36,7 +36,7 @@ jobs:
       with:
         path: |
             /usr/lib/x86_64-linux-gnu/libOpenCL.so
-        key: ${{ runner.os }}-cache-opencl-${{ hashFiles("**/package-lock.json") }}
+        key: ${{ runner.os }}-cache-opencl-${{ hashFiles('**/package-lock.json') }}
         restore-keys: |
             ${{ runner.os }}-cache-opencl-
             ${{ runner.os }}-cache-
@@ -62,7 +62,7 @@ jobs:
           sudo apt update
           sudo apt install vulkan-sdk
 
-    - if: ${{ steps.cache-opencl.outputs.cache-hit != "true" }}
+    - if: ${{ steps.cache-opencl.outputs.cache-hit != 'true' }}
       name: Install OpenCL
       continue-on-error: true
       run: |
