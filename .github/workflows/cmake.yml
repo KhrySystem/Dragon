@@ -58,6 +58,9 @@ jobs:
             
             sudo ./b2 install
 
+    - name: Get DragonEngine Submodules
+      run: git submodule update --init --recursive
+
     - name: Configure DragonEngine CMake Scripts
       run: cmake -S${{github.workspace}} -B${{github.workspace}}/bin -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DDRAGON_INSTALL_DIR:String="${{github.workspace}}/sdk_build" -DBOOST_ROOT:String=/usr/
 

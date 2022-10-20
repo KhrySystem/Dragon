@@ -80,11 +80,14 @@ endif()
 
 add_subdirectory(src)
 
-if(DG_BUILD_TESTS AND GoogleTest_FOUND)
+if(DG_BUILD_TESTS)
 	add_executable(openWindow tools/tests/openWindow.cpp)
 	target_include_directories(openWindow PUBLIC ${Dragon_INCLUDE_DIRS})
 	target_link_libraries(openWindow PUBLIC Dragon::Dragon)
 	target_link_libraries(openWindow INTERFACE ${Dragon_LINK_INTERFACES})
+    if(GTest_FOUND)
+        # GoogleTest targets
+    endif()
 endif()
 
 add_custom_command(TARGET openWindow POST_BUILD
