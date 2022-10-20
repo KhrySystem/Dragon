@@ -21,7 +21,7 @@ jobs:
       uses: actions/cache@v3
       with: 
         path: /usr/lib/i386-linux-gnu
-        key: ${{ runner.os }}-cache-vulkan-${{ hashFiles( **/package-lock.json) }}
+        key: ${{ runner.os }}-cache-vulkan-${{ hashFiles( '**/package-lock.json' ) }}
         restore-keys: |
             ${{ runner.os }}-cache-vulkan
             ${{ runner.os }}-cache
@@ -32,7 +32,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: /usr/bin/boost
-        key: ${{ runner.os }}-cache-boost-${{ hashFiles( **/package-lock.json) }}
+        key: ${{ runner.os }}-cache-boost-${{ hashFiles( '**/package-lock.json' ) }}
         restore-key: |
             ${{ runner.os }}-cache-boost
             ${{ runner.os }}-cache
