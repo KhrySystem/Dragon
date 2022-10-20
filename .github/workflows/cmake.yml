@@ -21,7 +21,7 @@ jobs:
             sudo add-apt-repository ppa:oibaf/graphics-drivers
             sudo apt update
             sudo apt upgrade
-            apt install libvulkan1 mesa-vulkan-drivers vulkan-utils
+            sudo apt install libvulkan1 mesa-vulkan-drivers vulkan-utils
             
             wget --referer http://support.amd.com https://drivers.amd.com/drivers/linux/amdgpu-pro-20.45-1188099-ubuntu-20.04.tar.xz
             
