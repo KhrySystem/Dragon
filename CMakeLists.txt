@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.20)
 
 project(Dragon VERSION 0.0.1.0 LANGUAGES CXX)
 
-option(DG_BUILD_STATIC "Build Dragon and its submodules as static libraries" OFF)
+option(DRAGON_BUILD_STATIC "Build Dragon and its submodules as static libraries" OFF)
 option(DRAGON_INSTALL_DIR "C:/DragonSDK")
 set(BUILD_SHARED_LIBS ON)
 
@@ -80,7 +80,7 @@ endif()
 
 add_subdirectory(src)
 
-if(DG_BUILD_TESTS)
+if(Dragon_BUILD_TESTS)
 	add_executable(openWindow tools/tests/openWindow.cpp)
 	target_include_directories(openWindow PUBLIC ${Dragon_INCLUDE_DIRS})
 	target_link_libraries(openWindow PUBLIC Dragon::Dragon)
