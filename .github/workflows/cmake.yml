@@ -33,7 +33,7 @@ jobs:
             sudo ./b2 install
 
     - name: Configure DragonEngine CMake Scripts
-      run: cmake -B ${{github.workspace}}/bin -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DDRAGON_INSTALL_DIR:String="${{github.workspace}}/sdk_build"
+      run: cmake -B ${{github.workspace}}/bin -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DDRAGON_INSTALL_DIR:String="${{github.workspace}}/sdk_build" -DBoost_ROOT:String=/usr/bin/boost/
 
     - name: Build DragonEngine
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
