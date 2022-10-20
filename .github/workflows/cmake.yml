@@ -15,28 +15,28 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - uses: actions/cache@v3
+
     
     - name: Check Vulkan Package Caches
       id: cache-vulkan
-      uses: actions/cache@v3
       with: 
-        path: /usr/lib/i386-linux-gnu
-        key: ${{ runner.os }}-cache-vulkan-${{ hashFiles( '**/package-lock.json' ) }}
+        path: /usr/lib
+        key: ${{ runner.os }}-cache-vulkan-${{ hashFiles('**/package-lock.json') }}
         restore-keys: |
-            ${{ runner.os }}-cache-vulkan
-            ${{ runner.os }}-cache
-            ${{ runner.os }}
+            ${{ runner.os }}-cache-vulkan-
+            ${{ runner.os }}-cache-
+            ${{ runner.os }}-
       
     - name: Check Boost Package Caches
       id: cache-boost
-      uses: actions/cache@v3
       with:
-        path: /usr/bin/boost
-        key: ${{ runner.os }}-cache-boost-${{ hashFiles( '**/package-lock.json' ) }}
-        restore-key: |
-            ${{ runner.os }}-cache-boost
-            ${{ runner.os }}-cache
-            ${{ runner.os }}
+        path: /usr/
+        key: ${{ runner.os }}-cache-boost-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+            ${{ runner.os }}-cache-boost-
+            ${{ runner.os }}-cache-
+            ${{ runner.os }}-
       
     - if: ${{ steps.cache-vulkan.outputs.cache-hit != 'true' }}
       name: Install Vulkan
@@ -59,12 +59,12 @@ jobs:
             sudo ./b2 install
 
     - name: Configure DragonEngine CMake Scripts
-      run: cmake -B ${{github.workspace}}/bin -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DDRAGON_INSTALL_DIR:String="${{github.workspace}}/sdk_build" -DBOOST_ROOT:String=/usr/
+      run: cmake -S${{github.workspace}} -B${{github.workspace}}/bin -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DDRAGON_INSTALL_DIR:String="${{github.workspace}}/sdk_build" -DBOOST_ROOT:String=/usr/
 
     - name: Build DragonEngine
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+      run: cmake --build ${{github.workspace}}/bin --config ${{env.BUILD_TYPE}}
 
     - name: Test DragonEngine
-      working-directory: ${{github.workspace}}/build
+      working-directory: ${{github.workspace}}/bin
       run: ctest -C ${{env.BUILD_TYPE}}
       
