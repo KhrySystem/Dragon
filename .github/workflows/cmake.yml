@@ -10,12 +10,10 @@ env:
   BUILD_TYPE: RelWithDebInfo
 
 jobs:
-  build-linux-unix-makefiles:
+  get-linux-dependencies:
     runs-on: ubuntu-latest
-
+    
     steps:
-    - uses: actions/checkout@v3
-
     - name: Install GLFW Dependencies
       run: sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev
 
@@ -41,7 +39,7 @@ jobs:
             ${{ runner.os }}-cache-opencl-
             ${{ runner.os }}-cache-
             ${{ runner.os }}-
-      
+
     - name: Check Boost Package Caches
       id: cache-boost
       uses: actions/cache@v3
@@ -52,7 +50,7 @@ jobs:
             ${{ runner.os }}-cache-boost-
             ${{ runner.os }}-cache-
             ${{ runner.os }}-
-      
+
     - if: ${{ steps.cache-vulkan.outputs.cache-hit != 'true' }}
       name: Install Vulkan
       continue-on-error: false
@@ -68,7 +66,7 @@ jobs:
       run: |
           sudo apt install ocl-icd-opencl-dev
 
-            
+
     - if: ${{ steps.cache-boost.outputs.cache-hit != 'true' }}
       name: Install Boost
       continue-on-error: false
@@ -77,8 +75,17 @@ jobs:
           tar --bzip2 -xf ./boost_1_80_0.tar.bz2
           cd boost_1_80_0
           ./bootstrap.sh --prefix=/usr/
-          
+
           sudo ./b2 install
+          
+  build-linux-unix-makefiles:
+    runs-on: ubuntu-latest
+    needs: get-linux-dependencies
+
+    steps:
+    - uses: actions/checkout@v3
+
+    
 
     - name: Get DragonEngine Submodules
       run: git submodule update --init --recursive
