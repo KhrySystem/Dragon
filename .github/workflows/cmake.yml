@@ -11,24 +11,32 @@ env:
 
 jobs:
   build-linux-unix-makefiles:
-    runs-on: debian-latest
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v3
     
     - name: Install Dependencies
       run: | 
-            sudo apt install libvulkan1 mesa-vulkan-drivers vulkan-utils
+            sudo add-apt-repository ppa:oibaf/graphics-drivers
+            sudo apt update
+            sudo apt upgrade
+            apt install libvulkan1 mesa-vulkan-drivers vulkan-utils
             
-            wget https://github.com/intel/intel-graphics-compiler/releases/download/igc-1.0.12260.1/intel-igc-core_1.0.12260.1_amd64.deb
-            wget https://github.com/intel/intel-graphics-compiler/releases/download/igc-1.0.12260.1/intel-igc-opencl_1.0.12260.1_amd64.deb
-            wget https://github.com/intel/compute-runtime/releases/download/22.41.24420/intel-level-zero-gpu-dbgsym_1.3.24420_amd64.ddeb
-            wget https://github.com/intel/compute-runtime/releases/download/22.41.24420/intel-level-zero-gpu_1.3.24420_amd64.deb
-            wget https://github.com/intel/compute-runtime/releases/download/22.41.24420/intel-opencl-icd-dbgsym_22.41.24420_amd64.ddeb
-            wget https://github.com/intel/compute-runtime/releases/download/22.41.24420/intel-opencl-icd_22.41.24420_amd64.deb
-            wget https://github.com/intel/compute-runtime/releases/download/22.41.24420/libigdgmm12_22.2.0_amd64.deb
+            wget --referer http://support.amd.com https://drivers.amd.com/drivers/linux/amdgpu-pro-20.45-1188099-ubuntu-20.04.tar.xz
             
-            sudo dpkg -i *.deb
+            tar -Jxvf amdgpu-pro-20.45-1188099-ubuntu-20.04.tar.xz
+            cd amdgpu-pro-20.45-1188099-ubuntu-20.04
+            ./amdgpu-pro-install --opencl=pal
+            cd ..
+            
+            wget https://boostorg.jfrog.io/artifactory/main/release/1.80.0/source/boost_1_80_0_rc1.tar.gz
+            
+            tar --bzip2 -xf boost_1_80_0_rc1.tar.gz
+            cd boost_1_80_0_rc1
+            ./booststrap.sh
+            
+            sudo ./b2 install
 
     - name: Configure CMake
       run: cmake -B ${{github.workspace}}/bin -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DDRAGON_INSTALL_DIR:String="${{github.workspace}}/sdk_build"
