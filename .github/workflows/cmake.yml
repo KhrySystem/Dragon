@@ -16,6 +16,9 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: Install GLFW Dependencies
+      run: sudo apt install libxrandr libxrandr-dev
+
     - name: Check Vulkan Package Caches
       id: cache-vulkan
       uses: actions/cache@v3
