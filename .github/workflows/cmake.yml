@@ -25,10 +25,9 @@ jobs:
             
     - name: Install Boost
       run: |
-            wget https://boostorg.jfrog.io/artifactory/main/release/1.80.0/source/boost_1_80_0_rc1.tar.gz
-            tar --bzip2 -xf boost_1_80_0_rc1.tar.gz
-            cd boost_1_80_0_rc1
-            ./booststrap.sh
+            wget https://boostorg.jfrog.io/artifactory/main/release/1.80.0/source/boost_1_80_0.tar.bz2
+            tar --bzip2 -xf ./boost_1_80_0.tar.bz2
+            cd boost_1_80_0
             
             sudo ./b2 install
 
