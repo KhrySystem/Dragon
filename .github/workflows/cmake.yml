@@ -11,7 +11,7 @@ env:
 
 jobs:
   build-linux-unix-makefiles:
-    runs-on: ubuntu-latest
+    runs-on: debian-latest
 
     steps:
     - uses: actions/checkout@v3
