@@ -18,20 +18,11 @@ jobs:
     
     - name: Install Dependencies
       run: | 
-            sudo add-apt-repository ppa:oibaf/graphics-drivers
-            sudo apt update
+            sudo add-apt-repository ppa:graphics-drivers/ppa
             sudo apt upgrade
-            sudo apt install libvulkan1 mesa-vulkan-drivers vulkan-utils
-            
-            wget --referer http://support.amd.com https://drivers.amd.com/drivers/linux/amdgpu-pro-20.45-1188099-ubuntu-20.04.tar.xz
-            
-            tar -Jxvf amdgpu-pro-20.45-1188099-ubuntu-20.04.tar.xz
-            cd amdgpu-pro-20.45-1188099-ubuntu-20.04
-            ./amdgpu-pro-install --opencl=pal
-            cd ..
+            sudo apt install nvidia-graphics-drivers-396 nvidia-settings vulkan vulkan-utils
             
             wget https://boostorg.jfrog.io/artifactory/main/release/1.80.0/source/boost_1_80_0_rc1.tar.gz
-            
             tar --bzip2 -xf boost_1_80_0_rc1.tar.gz
             cd boost_1_80_0_rc1
             ./booststrap.sh
