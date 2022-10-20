@@ -15,11 +15,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - uses: actions/cache@v3
 
-    
     - name: Check Vulkan Package Caches
       id: cache-vulkan
+      uses: actions/cache@v3
       with: 
         path: /usr/lib
         key: ${{ runner.os }}-cache-vulkan-${{ hashFiles('**/package-lock.json') }}
@@ -30,6 +29,7 @@ jobs:
       
     - name: Check Boost Package Caches
       id: cache-boost
+      uses: actions/cache@v3
       with:
         path: /usr/
         key: ${{ runner.os }}-cache-boost-${{ hashFiles('**/package-lock.json') }}
