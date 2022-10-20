@@ -19,7 +19,7 @@ jobs:
       
     - name: Install Boost
       id: install-boost
-      uses: MarkusJx/install-boost@2.4.0
+      uses: MarkusJx/install-boost@v2
       with:
         boost_version: 1.80.0
         boost_install_dir: /usr/
