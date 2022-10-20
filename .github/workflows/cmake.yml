@@ -16,24 +16,50 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
-    - name: Install Vulkan
+    - name: Check Vulkan Package Caches
+      id: cache-vulkan
+      uses: actions/cache@v3
+      with: 
+        path: /usr/lib/i386-linux-gnu
+        key: ${{ runner.os }}-cache-vulkan-${{ hashFiles( **/package-lock.json) }}
+        restore-keys: |
+            ${{ runner.os }}-cache-vulkan
+            ${{ runner.os }}-cache
+            ${{ runner.os }}
+      
+    - name: Check Boost Package Caches
+      id: cache-boost
+      uses: actions/cache@v3
+      with:
+        path: /usr/bin/boost
+        key: ${{ runner.os }}-cache-boost-${{ hashFiles( **/package-lock.json) }}
+        restore-key: |
+            ${{ runner.os }}-cache-boost
+            ${{ runner.os }}-cache
+            ${{ runner.os }}
+      
+    - if: ${{ steps.cache-vulkan.outputs.cache-hit != 'true' }}
+      name: Install Vulkan
+      continue-on-error: true
       run: |
             wget -qO - http://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo apt-key add -
             sudo wget -qO /etc/apt/sources.list.d/lunarg-vulkan-focal.list http://packages.lunarg.com/vulkan/lunarg-vulkan-focal.list
             sudo apt update
             sudo apt install vulkan-sdk
             
-    - name: Install Boost
+    - if: ${{ steps.cache-boost.outputs.cache-hit != 'true' }}
+      name: Install Boost
+      continue-on-error: true
       run: |
             wget https://boostorg.jfrog.io/artifactory/main/release/1.80.0/source/boost_1_80_0.tar.bz2
             tar --bzip2 -xf ./boost_1_80_0.tar.bz2
             cd boost_1_80_0
-            ./bootstrap.sh --prefix=/usr/bin/
+            ./bootstrap.sh --prefix=/usr/
             
             sudo ./b2 install
 
     - name: Configure DragonEngine CMake Scripts
-      run: cmake -B ${{github.workspace}}/bin -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DDRAGON_INSTALL_DIR:String="${{github.workspace}}/sdk_build" -DBoost_ROOT:String=/usr/bin/boost/
+      run: cmake -B ${{github.workspace}}/bin -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DDRAGON_INSTALL_DIR:String="${{github.workspace}}/sdk_build" -DBOOST_ROOT:String=/usr/
 
     - name: Build DragonEngine
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
