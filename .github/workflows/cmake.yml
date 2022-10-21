@@ -26,6 +26,7 @@ jobs:
         toolset: clang
     
     - name: Install Vulkan
+      id: install-vulkan
       uses: humbletim/setup-vulkan-sdk@v1.2.0
       with: 
         vulkan-query-version: ${{ env.VULKAN_INSTALL_VERSION }}
