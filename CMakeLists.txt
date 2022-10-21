@@ -80,7 +80,10 @@ if(OpenCL_FOUND)
 	add_subdirectory(extensions/thunderbreath)
 endif()
 
-list(APPEND Dragon_EXTENSION_TARGETS Dragon::Firebreath Dragon::Ironbreath Dragon::Lightbreath Dragon::Streambreath Dragon::Thunderbreath)
+list(APPEND Dragon_EXTENSION_TARGETS Dragon::Firebreath Dragon::Ironbreath Dragon::Lightbreath Dragon::Streambreath)
+if(TARGET Dragon::Thunderbreath)
+    list(APPEND Dragon_EXTENSION_TARGETS Dragon::Thunderbreath)
+endif()
 
 add_subdirectory(src)
 
