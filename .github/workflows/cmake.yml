@@ -10,7 +10,6 @@ env:
   BUILD_TYPE: RelWithDebInfo
   BOOST_INSTALL_VERSION: 1.79.0
   VULKAN_INSTALL_VERSION: 1.3.204.0
-  VULKAN_CMAKE_ARGS: -DVulkan_INCLUDE_DIR:Path=${{ env.VULKAN_SDK }}/include -DVulkan_LIBRARY:Path=${{ env.VULKAN_SDK }}/bin/vulkan-1.lib
 
 jobs:
 
@@ -77,6 +76,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: get-linux-dependencies
 
+    env: 
+      VULKAN_CMAKE_ARGS: -DVulkan_INCLUDE_DIR:Path=${{ env.VULKAN_SDK }}/include -DVulkan_LIBRARY:Path=${{ env.VULKAN_SDK }}/bin/vulkan-1.lib
+
     steps:
     - uses: actions/checkout@v3
 
@@ -96,6 +98,9 @@ jobs:
   build-macos-xcode-clang:
     runs-on: macos-12
     needs: get-macos-dependencies
+
+    env: 
+      VULKAN_CMAKE_ARGS: -DVulkan_INCLUDE_DIR:Path=${{ env.VULKAN_SDK }}/include -DVulkan_LIBRARY:Path=${{ env.VULKAN_SDK }}/bin/vulkan-1.lib
     
     steps:
     - name: Get DragonEngine Submodules

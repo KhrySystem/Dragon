@@ -36,6 +36,7 @@ macro(compile_shader OUTPUT INPUT)
 
     list(APPEND SPV_BINARY_FILES)
 endmacro()
+endif()
 
 macro(subdirlist RESULT CURDIR)
     file(GLOB CHILDREN ${CURDIR}/*) 
