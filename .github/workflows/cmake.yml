@@ -26,7 +26,7 @@ jobs:
       with:
         boost_version: 1.79.0
         boost_install_dir: /usr/
-        platform-version: 20.04
+        platform_version: 20.04
 
     - name: Check Vulkan Package Caches
       id: cache-vulkan
