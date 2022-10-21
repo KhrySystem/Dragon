@@ -61,7 +61,7 @@ set(Dragon_INCLUDE_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/extensions/streambreath/include
     ${CMAKE_CURRENT_SOURCE_DIR}/extensions/thunderbreath/include
 )
-set(Dragon_LINK_LIBRARIES glfw ${Vulkan_LIBRARIES} ${Boost_LIBS})
+set(Dragon_LINK_LIBRARIES glfw ${Vulkan_LIBRARIES} ${Boost_LIBS} OpenAL::OpenAL)
 set(DRAGON_LINK_INTERFACES Boost glm)
 
 if(Dragon_BUILD_DOCS AND Doxygen_FOUND)
@@ -77,6 +77,8 @@ if(OpenCL_FOUND)
     add_compile_definitions(DRAGON_OPENCL_FOUND)
 	add_subdirectory(extensions/thunderbreath)
 endif()
+
+list(APPEND Dragon_EXTENSION_TARGETS Dragon::Firebreath Dragon::Ironbreath Dragon::Lightbreath Dragon::Streambreath Dragon::Thunderbreath)
 
 add_subdirectory(src)
 
