@@ -17,15 +17,11 @@ jobs:
     - name: Install GLFW Dependencies
       run: sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev
       
-    - name: Prepare Boost Installation Directory
-      run: sudo mkdir /usr/boost
-      
-    - name: Install Boost Binaries
+    - name: Install Boost
       id: install-boost
       uses: MarkusJx/install-boost@v2.4.0
       with:
         boost_version: 1.79.0
-        boost_install_dir: /usr/
         platform_version: 20.04
 
     - name: Check Vulkan Package Caches
