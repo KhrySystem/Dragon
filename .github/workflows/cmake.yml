@@ -33,10 +33,6 @@ jobs:
         vulkan-components: Vulkan-Headers, Vulkan-Loader, Glslang, SPIRV-Cross, SPIRV-Tools, SPIRV-Reflect, SPIRV-Headers
         vulkan-use-cache: true
 
-    - name: Export Vulkan ENV
-      run: |
-          echo "VULKAN_SDK=${{ env.VULKAN_SDK }}" >> $GITHUB_ENV
-
   get-linux-dependencies:
     runs-on: ubuntu-20.04
     
@@ -82,7 +78,7 @@ jobs:
     needs: get-linux-dependencies
 
     env: 
-      VULKAN_CMAKE_ARGS: -DVulkan_INCLUDE_DIR:Path=${{ env.VULKAN_SDK }}/include -DVulkan_LIBRARY:Path=${{ env.VULKAN_SDK }}/bin/vulkan-1.lib
+      VULKAN_CMAKE_ARGS: -DVulkan_INCLUDE_DIR:Path=${VULKAN_SDK}/include -DVulkan_LIBRARY:Path=${VULKAN_SDK}/bin/vulkan-1.lib
 
     steps:
     - uses: actions/checkout@v3
@@ -105,7 +101,7 @@ jobs:
     needs: get-macos-dependencies
 
     env: 
-      VULKAN_CMAKE_ARGS: -DVulkan_INCLUDE_DIR:Path=${{ env.VULKAN_SDK }}/include -DVulkan_LIBRARY:Path=${{ env.VULKAN_SDK }}/bin/vulkan-1.lib
+      VULKAN_CMAKE_ARGS: -DVulkan_INCLUDE_DIR:Path=${VULKAN_SDK}/include -DVulkan_LIBRARY:Path=${VULKAN_SDK}/bin/vulkan-1.lib
     
     steps:
     - name: Get DragonEngine Submodules
