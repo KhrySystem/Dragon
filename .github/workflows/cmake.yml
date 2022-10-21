@@ -33,6 +33,10 @@ jobs:
         vulkan-components: Vulkan-Headers, Vulkan-Loader, Glslang, SPIRV-Cross, SPIRV-Tools, SPIRV-Reflect, SPIRV-Headers
         vulkan-use-cache: true
 
+    - name: Export Vulkan ENV
+      run: |
+          echo "VULKAN_SDK=${{ env.VULKAN_SDK }}" >> $GITHUB_ENV
+
   get-linux-dependencies:
     runs-on: ubuntu-20.04
     
