@@ -14,7 +14,7 @@ env:
 jobs:
 
   get-macos-dependencies:
-    runs-on: macos-12
+    runs-on: macos-11
     
     steps:
     - name: Install Boost
@@ -22,7 +22,7 @@ jobs:
       uses: MarkusJx/install-boost@v2.4.0
       with:
         boost_version: ${{ env.BOOST_INSTALL_VERSION }}
-        platform_version: 20.04
+        platform_version: 11
         toolset: clang
     
     - name: Install Vulkan
