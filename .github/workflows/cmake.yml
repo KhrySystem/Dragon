@@ -87,7 +87,7 @@ jobs:
       run: git submodule update --init --recursive
 
     - name: Configure DragonEngine CMake Scripts
-      run: cmake -S${{github.workspace}} --no-warn-unused-cli -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE -B${{github.workspace}}/bin -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DDRAGON_INSTALL_DIR:Path="${{github.workspace}}/sdk_build" -DBOOST_ROOT:Path=${{ steps.install-boost.outputs.BOOST_ROOT }} ${{ env.VULKAN_CMAKE_ARGS }}
+      run: cmake -S${{github.workspace}} --no-warn-unused-cli -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE -B${{github.workspace}}/bin -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DDRAGON_INSTALL_DIR:Path="${{github.workspace}}/sdk_build" -DBOOST_ROOT:Path=${{ steps.install-boost.outputs.BOOST_ROOT }} -DBoost_INCLUDE_DIR:Path=${{ steps.install-boost.outputs.BOOST_ROOT }}/include ${{ env.VULKAN_CMAKE_ARGS }}
 
     - name: Build DragonEngine
       run: cmake --build ${{github.workspace}}/bin --config ${{env.BUILD_TYPE}}
@@ -110,7 +110,7 @@ jobs:
       run: git submodule update --init --recursive
     
     - name: Configure DragonEngine CMake Scripts
-      run: cmake -S${{github.workspace}} --no-warn-unused-cli -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DDRAGON_INSTALL_DIR:String="${{github.workspace}}/sdk_build" -DBOOST_ROOT:Path=${{ steps.install-boost.outputs.BOOST_ROOT }} ${{ env.VULKAN_CMAKE_ARGS }}
+      run: cmake -S${{github.workspace}} --no-warn-unused-cli -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DDRAGON_INSTALL_DIR:String="${{github.workspace}}/sdk_build" -DBOOST_ROOT:Path=${{ steps.install-boost.outputs.BOOST_ROOT }} -DBoost_INCLUDE_DIR:Path=${{ steps.install-boost.outputs.BOOST_ROOT }}/include ${{ env.VULKAN_CMAKE_ARGS }}
       
     - name: Build DragonEngine
       run: cmake --build ${{github.workspace}}/bin --config ${{env.BUILD_TYPE}}
