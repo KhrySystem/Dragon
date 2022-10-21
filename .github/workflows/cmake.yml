@@ -17,7 +17,10 @@ jobs:
     - name: Install GLFW Dependencies
       run: sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev
       
-    - name: Install Boost
+    - name: Prepare Boost Installation Directory
+      run: sudo mkdir /usr/boost
+      
+    - name: Install Boost Binaries
       id: install-boost
       uses: MarkusJx/install-boost@v2.4.0
       with:
