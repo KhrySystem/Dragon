@@ -14,13 +14,14 @@ option(Dragon_BUILD_DOCS "Build Dragon Documentation" ON)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/tools/build")
 
-find_package(Vulkan REQUIRED COMPONENTS glslangValidator)
+find_package(Vulkan REQUIRED)
 find_package(Boost REQUIRED COMPONENTS)
 find_package(Python REQUIRED COMPONENTS Interpreter)
 find_package(Doxygen)
 find_package(OpenCL)
 find_package(GTest)
 
+if(Vulkan_glslangValidator_FOUND)
 macro(compile_shader OUTPUT INPUT)
     get_filename_component(FNAME ${INPUT} NAME)
 
