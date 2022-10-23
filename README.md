@@ -1,5 +1,5 @@
 # DragonEngine
-DragonEngine is a C++, code-first, thin and lightweight Vulkan 3D game engine designed with gaming, AR, and VR in mind. Designed to keep functions tucked away when you don't want to see them, and give access to the APIs beneath it when you want it. 
+DragonEngine is a C++, code-first, thin and lightweight Vulkan 3D game engine designed with gaming, AR, and VR in mind; designed to keep functions tucked away when you don't want to see them, and give access to the APIs beneath it when you want it. 
 
 ## Structure
 ```txt
