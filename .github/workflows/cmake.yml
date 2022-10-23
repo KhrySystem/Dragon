@@ -135,7 +135,7 @@ jobs:
       run: git submodule update --init --recursive
     
     - name: Configure DragonEngine CMake Scripts
-      run: cmake -S${{github.workspace}} -B${{github.workspace}}/bin -G"Visual Studio 16 2019" --no-warn-unused-cli -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DDRAGON_INSTALL_DIR:String="${{github.workspace}}/sdk_build" ${{ env.BOOST_CMAKE_ARGS }} -DVulkan_INCLUDE_DIR=${{VULKAN_SDK}}/include -DVulkan_LIBRARY:Path=${{VULKAN_SDK}}/bin/vulkan-1.lib
+      run: cmake -S${{github.workspace}} -B${{github.workspace}}/bin -G"Visual Studio 16 2019" --no-warn-unused-cli -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DDRAGON_INSTALL_DIR:String="${{github.workspace}}/sdk_build" ${{ env.BOOST_CMAKE_ARGS }} -DVulkan_INCLUDE_DIR=$VULKAN_SDK/include -DVulkan_LIBRARY:Path=$VULKAN_SDK/bin/vulkan-1.lib
       
     - name: Build DragonEngine
       run: cmake --build ${{github.workspace}}/bin --config ${{env.BUILD_TYPE}}
