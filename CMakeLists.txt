@@ -56,7 +56,7 @@ set(Dragon_INCLUDE_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/headers/glm 
     ${CMAKE_CURRENT_SOURCE_DIR}/headers/openal/include 
     ${CMAKE_CURRENT_SOURCE_DIR}/headers/openxr/include
-    ${Boost_INCLUDE_DIR} ${GLFW_SUBDIRS} ${Vulkan_INCLUDE_DIRS} ${OpenCL_INCLUDE_DIRS}
+    ${Boost_INCLUDE_DIR} ${GLFW_SUBDIRS} ${Vulkan_INCLUDE_DIRS}
     ${CMAKE_CURRENT_SOURCE_DIR}/extensions/firebreath/include
     ${CMAKE_CURRENT_SOURCE_DIR}/extensions/ironbreath/include
     ${CMAKE_CURRENT_SOURCE_DIR}/extensions/lightbreath/include
@@ -65,6 +65,9 @@ set(Dragon_INCLUDE_DIRS
 )
 set(Dragon_LINK_LIBRARIES glfw ${Vulkan_LIBRARIES} ${Boost_LIBS} OpenAL::OpenAL)
 set(DRAGON_LINK_INTERFACES Boost glm)
+
+if(OpenCL_FOUND)
+    list(APPEND Dragon_INCLUDE_DIRS ${OpenCL_INCLUDE_DIR}
 
 if(Dragon_BUILD_DOCS AND Doxygen_FOUND)
     add_subdirectory(docs)
