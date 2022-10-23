@@ -33,17 +33,13 @@ jobs:
         platform_version: 20.04
         toolset: gcc
 
-    - name: Check OpenCL Package Caches
-      id: cache-opencl
-      uses: actions/cache@v3
-      with:
-        path: |
-            /usr/lib/x86_64-linux-gnu/libOpenCL.so
-        key: ${{ runner.os }}-cache-opencl-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-            ${{ runner.os }}-cache-opencl-
-            ${{ runner.os }}-cache-
-            ${{ runner.os }}-
+    - name: Install OpenCL
+      uses: KhrySystem/install-opencl@v1
+      with: 
+        version: v2022.09.30
+        cache: true
+        cmake_args: '-G"Unix Makefiles'
+        path: opencl
 
     - name: Install Vulkan
       uses: humbletim/setup-vulkan-sdk@v1.2.0
@@ -51,12 +47,6 @@ jobs:
         vulkan-query-version: ${{ env.VULKAN_INSTALL_VERSION }}
         vulkan-components: Vulkan-Headers, Vulkan-Loader, Glslang, SPIRV-Cross, SPIRV-Tools, SPIRV-Reflect, SPIRV-Headers
         vulkan-use-cache: true
-
-    - if: ${{ steps.cache-opencl.outputs.cache-hit != 'true' }}
-      name: Install OpenCL
-      continue-on-error: true
-      run: |
-          sudo apt install ocl-icd-opencl-dev
           
     - name: Get DragonEngine Submodules
       run: git submodule update --init --recursive
