@@ -1,3 +1,5 @@
 *.json
 .vscode/*.json
 bin/
+
+Testing/
