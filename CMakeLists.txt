@@ -67,7 +67,8 @@ set(Dragon_LINK_LIBRARIES glfw ${Vulkan_LIBRARIES} ${Boost_LIBS} OpenAL::OpenAL)
 set(DRAGON_LINK_INTERFACES Boost glm)
 
 if(OpenCL_FOUND)
-    list(APPEND Dragon_INCLUDE_DIRS ${OpenCL_INCLUDE_DIR}
+    list(APPEND Dragon_INCLUDE_DIRS ${OpenCL_INCLUDE_DIR})
+endif()
 
 if(Dragon_BUILD_DOCS AND Doxygen_FOUND)
     add_subdirectory(docs)
