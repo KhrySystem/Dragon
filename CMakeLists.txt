@@ -96,12 +96,13 @@ if(Dragon_BUILD_TESTS)
 	target_include_directories(openWindow PUBLIC ${Dragon_INCLUDE_DIRS})
 	target_link_libraries(openWindow PUBLIC Dragon::Dragon)
 	target_link_libraries(openWindow INTERFACE ${Dragon_LINK_INTERFACES})
+
     if(GTest_FOUND)
         # GoogleTest targets
     endif()
 endif()
 
-add_custom_command(TARGET openWindow POST_BUILD
+add_custom_command(TARGET Dragon::Dragon POST_BUILD
 	COMMAND cd .. && ${Python_EXECUTABLE} "package_dragon.py" ${DRAGON_INSTALL_DIR} ${CMAKE_BUILD_TYPE}
 	DEPENDS package_dragon.py
 )
