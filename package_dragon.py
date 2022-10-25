@@ -2,6 +2,7 @@ import os
 #from pathlib import Path
 import shutil
 import sys
+from types import new_class
 
 for arg in sys.argv:
 	if arg == "--get-deps":
@@ -118,4 +119,4 @@ def copy_all(new_path : str, rel_type: str="RelWithDebInfo") -> bool:
 	return True
 
 if __name__ == "__main__":
-	copy_all(sys.argv[1], sys.argv[2])
+	copy_all(sys.argv[1])

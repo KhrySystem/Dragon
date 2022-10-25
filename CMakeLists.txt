@@ -2,9 +2,8 @@ cmake_minimum_required(VERSION 3.20)
 
 project(Dragon VERSION 0.0.1.0 LANGUAGES CXX)
 
-option(DRAGON_BUILD_STATIC "Build Dragon and its submodules as static libraries" OFF)
-option(DRAGON_INSTALL_DIR "C:/DragonSDK")
-set(BUILD_SHARED_LIBS ON)
+option(DRAGON_INSTALL_DIR "Path to the directory Dragon should be installed to" C:/DragonSDK)
+option(DRAGON_BUILD_SHARED "Set to OFF to build static, ON for shared." OFF)
 
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
@@ -49,22 +48,22 @@ macro(subdirlist RESULT CURDIR)
     set(${RESULT} ${DIRLIST})
 ENDMACRO()
 
-subdirlist(GLFW_SUBDIRS ${CMAKE_CURRENT_SOURCE_DIR}/headers/glfw)
+subdirlist(GLFW_SUBDIRS ${CMAKE_CURRENT_SOURCE_DIR}/src/glfw)
 
 set(Dragon_INCLUDE_DIRS 
-    ${CMAKE_CURRENT_SOURCE_DIR}/headers/include 
-    ${CMAKE_CURRENT_SOURCE_DIR}/headers/glm 
-    ${CMAKE_CURRENT_SOURCE_DIR}/headers/openal/include 
-    ${CMAKE_CURRENT_SOURCE_DIR}/headers/openxr/include
-    ${Boost_INCLUDE_DIR} ${GLFW_SUBDIRS} ${Vulkan_INCLUDE_DIRS}
     ${CMAKE_CURRENT_SOURCE_DIR}/extensions/firebreath/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/extensions/firebreath/openxr/include
     ${CMAKE_CURRENT_SOURCE_DIR}/extensions/ironbreath/include
     ${CMAKE_CURRENT_SOURCE_DIR}/extensions/lightbreath/include
     ${CMAKE_CURRENT_SOURCE_DIR}/extensions/streambreath/include
     ${CMAKE_CURRENT_SOURCE_DIR}/extensions/thunderbreath/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/headers/include 
+    ${CMAKE_CURRENT_SOURCE_DIR}/headers/glm 
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/openal/include 
+    ${Boost_INCLUDE_DIR} 
+    ${GLFW_SUBDIRS} 
+    ${Vulkan_INCLUDE_DIRS}
 )
-set(Dragon_LINK_LIBRARIES glfw ${Vulkan_LIBRARIES} ${Boost_LIBS} OpenAL::OpenAL)
-set(DRAGON_LINK_INTERFACES Boost glm)
 
 if(OpenCL_FOUND)
     list(APPEND Dragon_INCLUDE_DIRS ${OpenCL_INCLUDE_DIR})
@@ -74,7 +73,6 @@ if(Dragon_BUILD_DOCS AND Doxygen_FOUND)
     add_subdirectory(docs)
 endif()
 
-add_subdirectory(headers)
 add_subdirectory(extensions/firebreath)
 add_subdirectory(extensions/ironbreath)
 add_subdirectory(extensions/lightbreath)
@@ -94,7 +92,6 @@ add_subdirectory(src)
 add_executable(openWindow tools/tests/openWindow.cpp)
 target_include_directories(openWindow PUBLIC ${Dragon_INCLUDE_DIRS})
 target_link_libraries(openWindow PUBLIC Dragon::Dragon)
-target_link_libraries(openWindow INTERFACE ${Dragon_LINK_INTERFACES})
 
 if(Dragon_BUILD_TESTS)
     # Non GoogleTest targets
@@ -104,6 +101,6 @@ if(Dragon_BUILD_TESTS)
 endif()
 
 add_custom_command(TARGET openWindow POST_BUILD
-	COMMAND cd .. && ${Python_EXECUTABLE} "package_dragon.py" ${DRAGON_INSTALL_DIR} ${CMAKE_BUILD_TYPE}
+	COMMAND cd .. && ${Python_EXECUTABLE} package_dragon.py ${DRAGON_INSTALL_DIR}
 	DEPENDS package_dragon.py
 )
