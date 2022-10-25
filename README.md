@@ -3,27 +3,22 @@ DragonEngine is a C++, code-first, thin and lightweight Vulkan 3D game engine de
 
 ## Structure
 ```txt
- - docs/                             Doxygen build scripts for Dragon.
- - extensions/                       All the optional Dragon Extensions.
+ - docs/                             Doxygen build scripts for Dragon
+ - extensions/                       All the optional Dragon Extensions
       - firebreath/                  See https://github.com/KhrySystem/Dragon-Firebreath
       - ironbreath/                  See https://github.com/KhrySystem/Dragon-Ironbreath
       - lightbreath/                 See https://github.com/KhrySystem/Dragon-Lightbreath
       - streambreath/                See https://github.com/KhrySystem/Dragon-Streambreath
       - thunderbreath/               See https://github.com/KhrySystem/Dragon-Thunderbreath
  - headers/                          See https://github.com/KhrySystem/Dragon-Headers
-      - glfw/                        GLFW submodule.
       - glm/                         GLM submodule.
       - include/dragon/              Dragon Headers for the main library.
-      - openal/                      OpenAL-Soft submodule.
-      - openxr/                      OpenXR submodule
- - src/dg/                           See https://github.com/KhrySystem/Dragon-Source
-      - audio/                       
-      - *.cpp
- - tools/
-      - build/
-           - FindDragon.cmake
-      - installer/
-      - tests/
+ - src/                              See https://github.com/KhrySystem/Dragon-Source
+ - tools/                            See https://github.com/KhrySystem/Dragon-Tools
+      - build/                       Files and scripts for CMake to find Dragon
+           - FindDragon.cmake        CMake script that gets placed in your CMake modules directory
+      - installer/                   Installer source code
+      - tests/                       Assorted tests
 ```
 
 ## Build Dependencies
@@ -48,7 +43,7 @@ Several libraries are required for DragonEngine to be built on your computer.
 Dragon uses CMake to build, and provides a FindDragon.cmake file to easily include Dragon into your project. 
 
 ### Building From Source
-Dragon will reconfigure it's entire structure after finalizing all of the targets in Dragon. By default, this value is "C:\DragonSDK\" on Windows, "~\DragonSDK\" on Linux, and "\Applications\". Using CMake, add 
+Dragon will reconfigure it's entire structure after finalizing all of the targets in Dragon. By default, this value is "C:\DragonSDK\" on Windows, "~\DragonSDK\" on Linux, and "\Applications\" on MacOS. Using CMake, add 
 ```sh
 cmake -DDragon_INSTALL_DIR:String=${PREFERRED_INSTALL}
 ```
@@ -60,3 +55,6 @@ add_executable(MyApp main.cpp)
 target_include_directories(MyApp PUBLIC ${Dragon_INCLUDE_DIR})
 target_link_libraries(MyApp PUBLIC ${Dragon_LINK_LIBRARIES})
 ```
+
+### IMPORTANT NOTE
+Building Dragon from Source, or using the installer, will automatically add "FindDragon.cmake" to your CMake modules. Downloading a precompiled source package WILL NOT add this file. You will have to manually move it to your CMake modules path.
