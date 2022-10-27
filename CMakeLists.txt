@@ -51,6 +51,7 @@ ENDMACRO()
 subdirlist(GLFW_SUBDIRS ${CMAKE_CURRENT_SOURCE_DIR}/src/glfw)
 
 set(Dragon_INCLUDE_DIRS 
+    ${Boost_INCLUDE_DIR} ${GLFW_SUBDIRS} ${Vulkan_INCLUDE_DIRS}
     ${CMAKE_CURRENT_SOURCE_DIR}/extensions/firebreath/include
     ${CMAKE_CURRENT_SOURCE_DIR}/extensions/firebreath/openxr/include
     ${CMAKE_CURRENT_SOURCE_DIR}/extensions/ironbreath/include
@@ -60,9 +61,7 @@ set(Dragon_INCLUDE_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/headers/include 
     ${CMAKE_CURRENT_SOURCE_DIR}/headers/glm 
     ${CMAKE_CURRENT_SOURCE_DIR}/src/openal/include 
-    ${Boost_INCLUDE_DIR} 
-    ${GLFW_SUBDIRS} 
-    ${Vulkan_INCLUDE_DIRS}
+    ${Dragon_BINARY_DIR}/extensions/firebreath/openxr/include
 )
 
 if(OpenCL_FOUND)
@@ -89,15 +88,13 @@ endif()
 
 add_subdirectory(src)
 
+# The only test that is always build due to the directory reconfiguration requiring that a target is built in this script.
 add_executable(openWindow tools/tests/openWindow.cpp)
 target_include_directories(openWindow PUBLIC ${Dragon_INCLUDE_DIRS})
 target_link_libraries(openWindow PUBLIC Dragon::Dragon)
 
 if(Dragon_BUILD_TESTS)
-    # Non GoogleTest targets
-    if(GTest_FOUND)
-        # GoogleTest targets
-    endif()
+    add_subdirectory(tools/tests)
 endif()
 
 add_custom_command(TARGET openWindow POST_BUILD
