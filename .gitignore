@@ -1,5 +1,6 @@
-*.json
+# add build compatibility in VSCode
 .vscode/*.json
-bin/
 
-Testing/
+#remove both possible build directories
+bin/
+build/
