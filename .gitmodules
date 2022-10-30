@@ -4,9 +4,6 @@
 [submodule "src"]
 	path = src
 	url = ../Dragon-Source
-[submodule "extensions/ironbreath"]
-	path = extensions/ironbreath
-	url = ../Dragon-Ironbreath
 [submodule "tools"]
 	path = tools
 	url = ../Dragon-Tools
