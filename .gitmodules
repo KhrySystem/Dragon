@@ -7,9 +7,6 @@
 [submodule "tools"]
 	path = tools
 	url = ../Dragon-Tools
-[submodule "extensions/streambreath"]
-	path = extensions/streambreath
-	url = ../Dragon-Streambreath
 [submodule "docs"]
 	path = docs
 	url = ../Dragon-Docs
