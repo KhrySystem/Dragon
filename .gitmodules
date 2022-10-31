@@ -10,6 +10,15 @@
 [submodule "docs"]
 	path = docs
 	url = ../Dragon-Docs
-[submodule "extensions/thunderbreath"]
-	path = extensions/thunderbreath
-	url = ../Dragon-Thunderbreath
+[submodule "external/openxr"]
+	path = external/openxr
+	url = https://github.com/KhronosGroup/OpenXR-SDK-Source
+[submodule "external/glfw"]
+	path = external/glfw
+	url = https://github.com/glfw/glfw
+[submodule "external/glm"]
+	path = external/glm
+	url = https://github.com/g-truc/glm
+[submodule "external/openal"]
+	path = external/openal
+	url = https://github.com/kcat/OpenAL-Soft

@@ -1,8 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
 
-project(Dragon VERSION 0.0.1.0 LANGUAGES CXX)
+project(Dragon VERSION 1.0.0.0 LANGUAGES CXX)
 
-option(DRAGON_INSTALL_DIR "Path to the directory Dragon should be installed to" C:/DragonSDK)
 option(DRAGON_BUILD_SHARED "Set to OFF to build static, ON for shared." OFF)
 
 set(CMAKE_C_STANDARD 17)
@@ -11,14 +10,27 @@ set(CMAKE_CXX_STANDARD 20)
 option(Dragon_BUILD_TESTS "Build Dragon-specific tests" ON)
 option(Dragon_BUILD_DOCS "Build Dragon Documentation" ON)
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/tools/build")
-
 find_package(Vulkan REQUIRED)
 find_package(Boost REQUIRED COMPONENTS)
 find_package(Python REQUIRED COMPONENTS Interpreter)
 find_package(Doxygen)
 find_package(OpenCL)
 find_package(GTest)
+
+if(Dragon_BUILD_SHARED) 
+    set(BUILD_SHARED_LIBS ON)
+    add_subdirectory(external/glfw)
+    add_subdirectory(external/glm)
+    add_subdirectory(external/openal)
+    set(DYNAMIC_LOADER ON)
+    add_subdirectory(external/openxr)
+else()
+    add_subdirectory(external/glfw)
+    set(BUILD_STATIC_LIBS ON)
+    add_subdirectory(external/glm)
+    add_subdirectory(external/openal)
+    add_subdirectory(external/openxr)
+endif()
 
 if(Vulkan_glslangValidator_FOUND)
 macro(compile_shader OUTPUT INPUT)
@@ -37,31 +49,18 @@ macro(compile_shader OUTPUT INPUT)
 endmacro()
 endif()
 
-macro(subdirlist RESULT CURDIR)
-    file(GLOB CHILDREN ${CURDIR}/*) 
-    set(DIRLIST "")
-    foreach(CHILD ${CHILDREN})
-        if(IS_DIRECTORY ${CHILD}) 
-            list(APPEND DIRLIST ${CHILD})
-        endif()
-    endforeach()
-    set(${RESULT} ${DIRLIST})
-ENDMACRO()
-
-subdirlist(GLFW_SUBDIRS ${CMAKE_CURRENT_SOURCE_DIR}/src/glfw)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/headers/include/dragon/predef/core.hpp.in ${CMAKE_CURRENT_SOURCE_DIR}/headers/include/dragon/predef/core.hpp)
 
 set(Dragon_INCLUDE_DIRS 
-    ${Boost_INCLUDE_DIR} ${GLFW_SUBDIRS} ${Vulkan_INCLUDE_DIRS}
-    ${CMAKE_CURRENT_SOURCE_DIR}/extensions/firebreath/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/extensions/firebreath/openxr/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/extensions/ironbreath/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/extensions/lightbreath/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/extensions/streambreath/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/extensions/thunderbreath/include
+    ${Boost_INCLUDE_DIR} 
+    ${Vulkan_INCLUDE_DIRS}
+    ${CMAKE_CURRENT_SOURCE_DIR}/external/glfw/deps
+    ${CMAKE_CURRENT_SOURCE_DIR}/external/glfw/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/external/glfw/src 
+    ${CMAKE_CURRENT_SOURCE_DIR}/external/glm
+    ${CMAKE_CURRENT_SOURCE_DIR}/external/openal/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/external/openxr/include
     ${CMAKE_CURRENT_SOURCE_DIR}/headers/include 
-    ${CMAKE_CURRENT_SOURCE_DIR}/headers/glm 
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/openal/include 
-    ${Dragon_BINARY_DIR}/extensions/firebreath/openxr/include
 )
 
 if(OpenCL_FOUND)
@@ -72,32 +71,24 @@ if(Dragon_BUILD_DOCS AND Doxygen_FOUND)
     add_subdirectory(docs)
 endif()
 
-add_subdirectory(extensions/firebreath)
-add_subdirectory(extensions/ironbreath)
-add_subdirectory(extensions/lightbreath)
-add_subdirectory(extensions/streambreath)
-if(OpenCL_FOUND)
-    add_compile_definitions(DRAGON_OPENCL_FOUND)
-	add_subdirectory(extensions/thunderbreath)
-endif()
-
-list(APPEND Dragon_EXTENSION_TARGETS Dragon::Firebreath Dragon::Ironbreath Dragon::Lightbreath Dragon::Streambreath)
-if(TARGET Dragon::Thunderbreath)
-    list(APPEND Dragon_EXTENSION_TARGETS Dragon::Thunderbreath)
-endif()
+file(GLOB_RECURSE HPP_FILES ${Dragon_SOURCE_DIR}/headers/include/dragon/*.hpp)
 
 add_subdirectory(src)
+
+if(NOT Dragon_INSTALL_DIR)
+    set(Dragon_INSTALL_DIR "C:/DragonSDK")
+endif()
 
 # The only test that is always build due to the directory reconfiguration requiring that a target is built in this script.
 add_executable(openWindow tools/tests/openWindow.cpp)
 target_include_directories(openWindow PUBLIC ${Dragon_INCLUDE_DIRS})
-target_link_libraries(openWindow PUBLIC Dragon::Dragon)
+target_link_libraries(openWindow Dragon::Dragon)
 
 if(Dragon_BUILD_TESTS)
     add_subdirectory(tools/tests)
 endif()
 
 add_custom_command(TARGET openWindow POST_BUILD
-	COMMAND cd .. && ${Python_EXECUTABLE} package_dragon.py ${DRAGON_INSTALL_DIR}
+	COMMAND cd .. && ${Python_EXECUTABLE} package_dragon.py ${Dragon_INSTALL_DIR}
 	DEPENDS package_dragon.py
 )
