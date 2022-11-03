@@ -55,7 +55,7 @@ macro(compile_shader OUTPUT INPUT)
 endmacro()
 endif()
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/headers/include/dragon/predef/core.hpp.in ${CMAKE_CURRENT_SOURCE_DIR}/headers/include/dragon/predef/core.hpp)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/dragon/predef/core.hpp.in ${CMAKE_CURRENT_SOURCE_DIR}/include/dragon/predef/core.hpp)
 
 set(Dragon_INCLUDE_DIRS 
     ${Boost_INCLUDE_DIR} 
