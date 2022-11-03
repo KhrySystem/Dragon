@@ -1,0 +1,51 @@
+{
+    "Cereal": {
+        "dependencies": [],
+        "location": "https://github.com/USCILab/Cereal"
+    },
+
+    "glslang": {
+        "dependencies": [],
+        "location": "https://github.com/KhronosGroup/glslang"
+    },
+
+    "MoltenVK": {
+        "dependencies": [
+            "Cereal",
+            "glslang",
+            "SPIRV-Cross",
+            "Vulkan-Headers",
+            "Vulkan-Tools"
+        ],
+        "location": "https://github.com/KhronosGroup/MoltenVK"
+    },
+
+    "Vulkan": {
+        "dependencies": [
+            "MoltenVK",
+            "Vulkan-Docs",
+            "Vulkan-ExtensionLayer",
+            "Vulkan-Headers",
+            "Vulkan-Loader",
+            "Vulkan-MemoryModel",
+            "Vulkan-Profiles",
+            "Vulkan-Samples",
+            "Vulkan-Source",
+            "Vulkan-Tools",
+            "Vulkan-ValidationLayers"
+        ]
+    },
+
+    "Vulkan-Loader": {
+        "dependencies" : [
+            "Vulkan-Headers",
+            "GoogleTest"
+        ],
+        "location": "https://github.com/KhronosGroup/Vulkan-Loader"
+    },
+
+    "GoogleTest": {
+        "dependencies": [],
+        "location": "https://github.com/google/GoogleTest"
+    }
+}

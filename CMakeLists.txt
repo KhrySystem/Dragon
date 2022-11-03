@@ -66,7 +66,7 @@ set(Dragon_INCLUDE_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/external/glm
     ${CMAKE_CURRENT_SOURCE_DIR}/external/openal/include
     ${CMAKE_CURRENT_SOURCE_DIR}/external/openxr/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/headers/include 
+    ${CMAKE_CURRENT_SOURCE_DIR}/include 
 )
 
 if(OpenCL_FOUND)

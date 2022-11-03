@@ -1,0 +1,16 @@
+cmake_minimum_required(VERSION 3.20)
+
+file(GLOB_RECURSE CXX_FILES ./dg/*.cpp)
+
+if(DRAGON_BUILD_SHARED)
+	add_library(${Dragon_LIB_NAME} SHARED ${CXX_FILES} ${HPP_FILES})
+	set(BUILD_SHARED_LIBS ${OLD_BUILD_SHARED})
+else() 
+	add_library(${Dragon_LIB_NAME} STATIC ${CXX_FILES} ${HPP_FILES})
+endif()
+target_include_directories(${Dragon_LIB_NAME} PUBLIC ${Dragon_INCLUDE_DIRS})
+target_link_libraries(${Dragon_LIB_NAME} PUBLIC glfw glm::glm openxr_loader OpenAL ${Vulkan_LIBRARIES})
+if(OpenCL_FOUND)
+	target_link_libraries(${Dragon_LIB_NAME} PUBLIC ${OpenCL_LINK_LIBRARIES})
+endif()
+add_library(Dragon::Dragon ALIAS ${Dragon_LIB_NAME})
