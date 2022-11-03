@@ -4,4 +4,7 @@
 #remove both possible build directories
 bin/
 build/
-dg_1/
+!tools/build/
+*.pyc
+
+include/dragon/predef/core.hpp

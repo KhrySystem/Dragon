@@ -4,17 +4,15 @@ project(Dragon VERSION 1.0.0.0 LANGUAGES CXX)
 
 option(Dragon_BUILD_SHARED "Set to OFF to build static, ON for shared." OFF)
 
-if(Dragon_BUILD_SHARED)
-    set(Dragon_LIB_NAME dragon_sh${Dragon_VERSION_MAJOR})
-else()
-    set(Dragon_LIB_NAME dragon_st${Dragon_VERSION_MAJOR})
-endif()
+set(Dragon_LIB_NAME dragon-${Dragon_VERSION_MAJOR}_${Dragon_VERSION_MINOR})
 
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
 
 option(Dragon_BUILD_TESTS "Build Dragon-specific tests" ON)
+set(GLFW_BUILD_TESTS ${Dragon_BUILD_TESTS})
 option(Dragon_BUILD_DOCS "Build Dragon Documentation" ON)
+set(GLFW_BUILD_DOCS ${Dragon_BUILD_DOCS})
 
 find_package(Boost REQUIRED)
 find_package(Doxygen)
@@ -77,24 +75,27 @@ if(Dragon_BUILD_DOCS AND Doxygen_FOUND)
     add_subdirectory(docs)
 endif()
 
-file(GLOB_RECURSE HPP_FILES ${Dragon_SOURCE_DIR}/headers/include/dragon/*.hpp)
+file(GLOB_RECURSE HPP_FILES ${Dragon_SOURCE_DIR}/include/dragon/*.hpp)
 
 add_subdirectory(src)
 
 if(NOT Dragon_INSTALL_DIR)
-    set(Dragon_INSTALL_DIR "C:/DragonSDK")
+    set(Dragon_INSTALL_DIR "C:/DragonSDK/${Dragon_VERSION}")
 endif()
-
-# The only test that is always build due to the directory reconfiguration requiring that a target is built in this script.
-add_executable(openWindow tools/tests/openWindow.cpp)
-target_include_directories(openWindow PUBLIC ${Dragon_INCLUDE_DIRS})
-target_link_libraries(openWindow Dragon::Dragon)
 
 if(Dragon_BUILD_TESTS)
     add_subdirectory(tools/tests)
 endif()
 
-add_custom_target(Dragon_Reconfig ALL
-    COMMAND ${Python_EXECUTABLE} ${Dragon_SOURCE_DIR}/tools/installer/post_build.py ${Dragon_SOURCE_DIR} ${Dragon_BINARY_DIR} ${Dragon_INSTALL_DIR}
+add_custom_target(post_build ALL # Installer file                              Dragon root directory  Binary location      Path to install to  Path to install FindDragon.cmake
+    COMMAND ${Python_EXECUTABLE} ${Dragon_SOURCE_DIR}/tools/installer/post_build.py ${Dragon_SOURCE_DIR} ${Dragon_BINARY_DIR} ${Dragon_INSTALL_DIR} ${CMAKE_COMMAND} ${CMAKE_VERSION}
+    DEPENDS tools/installer/post_build.py
 )
-add_dependencies(Dragon_Reconfig Dragon::Dragon)
+add_dependencies(post_build Dragon::Dragon)
+if(Dragon_BUILD_TESTS)
+    add_dependencies(post_build openWindow)
+    add_dependencies(post_build audioTest)
+endif()
+if(Dragon_BUILD_DOCS)
+    add_dependencies(post_build Dragon_Docs)
+endif()

@@ -41,13 +41,14 @@ def copy_source_in_path(src: str, dest: str):
 	except:
 		pass
 	for f in f_names:
-		if ".c" in f:
+		if ".c" in f and not ".cmake" in f:
 			shutil.copy(src + f, dest + f)
 	for d in dirs:
 		try:
 			copy_source_in_path(src + d + "\\", dest + d + "\\")
 		except:
 			pass
+
 def copy_binaries_in_path(src: str, dest: str):
 	dirs, f_names = get_items(src)
 	try:
@@ -57,17 +58,26 @@ def copy_binaries_in_path(src: str, dest: str):
 	for f in f_names:
 		if ".exe" in f:
 			shutil.copy(src + f, dest + f)
-		elif ".dll" in f:
-			shutil.copy(src + f, dest + f)
-		elif ".pdb" in f:
-			shutil.copy(src + f, dest + f)
-		elif ".exp" in f:
+	for d in dirs:
+		try:
+			copy_binaries_in_path(src + d + "\\", dest + d + "\\")
+		except:
+			pass
+
+def copy_libraries_in_path(src: str, dest: str):
+	dirs, f_names = get_items(src)
+	try:
+		os.makedirs(dest)
+	except:
+		pass
+	for f in f_names:
+		if ".dll" in f:
 			shutil.copy(src + f, dest + f)
 		elif ".lib" in f:
 			shutil.copy(src + f, dest + f)
 
 	for d in dirs:
 		try:
-			copy_binaries_in_path(src + d + "\\", dest + d + "\\")
+			copy_libraries_in_path(src + d + "\\", dest + d + "\\")
 		except:
 			pass

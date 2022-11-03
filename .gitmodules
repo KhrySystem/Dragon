@@ -10,6 +10,3 @@
 [submodule "external/openxr"]
 	path = external/openxr
 	url = https://github.com/KhronosGroup/OpenXR-SDK-Source
-[submodule "Dragon-Source"]
-	path = Dragon-Source
-	url = https://github.com/KhrySystem/Dragon-Source
