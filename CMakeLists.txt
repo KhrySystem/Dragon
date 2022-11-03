@@ -2,7 +2,13 @@ cmake_minimum_required(VERSION 3.20)
 
 project(Dragon VERSION 1.0.0.0 LANGUAGES CXX)
 
-option(DRAGON_BUILD_SHARED "Set to OFF to build static, ON for shared." OFF)
+option(Dragon_BUILD_SHARED "Set to OFF to build static, ON for shared." OFF)
+
+if(Dragon_BUILD_SHARED)
+    set(Dragon_LIB_NAME dragon_sh${Dragon_VERSION_MAJOR})
+else()
+    set(Dragon_LIB_NAME dragon_st${Dragon_VERSION_MAJOR})
+endif()
 
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
@@ -14,7 +20,7 @@ find_package(Boost REQUIRED)
 find_package(Doxygen)
 find_package(GTest)
 find_package(OpenCL)
-find_package(Python REQUIRED)
+find_package(Python REQUIRED COMPONENTS Interpreter)
 find_package(Vulkan REQUIRED)
 
 if(Dragon_BUILD_SHARED) 
@@ -88,7 +94,7 @@ if(Dragon_BUILD_TESTS)
     add_subdirectory(tools/tests)
 endif()
 
-add_custom_command(TARGET openWindow POST_BUILD
-	COMMAND cd .. && ${Python_EXECUTABLE} package_dragon.py ${Dragon_INSTALL_DIR}
-	DEPENDS package_dragon.py
+add_custom_target(Dragon_Reconfig ALL
+    COMMAND ${Python_EXECUTABLE} ${Dragon_SOURCE_DIR}/tools/installer/post_build.py ${Dragon_SOURCE_DIR} ${Dragon_BINARY_DIR} ${Dragon_INSTALL_DIR}
 )
+add_dependencies(Dragon_Reconfig Dragon::Dragon)
