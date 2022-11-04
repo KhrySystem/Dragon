@@ -54,7 +54,10 @@ def main():
 	copy_source_in_path(DRAGON_BINARY_DIR + "/external/openxr/src/", DRAGON_SOURCE_INSTALL_DIR + "openxr/src")
 
 	copy_libraries_in_path(DRAGON_BINARY_DIR + "/external/glfw/src/Release/", DRAGON_LIBRARY_INSTALL_DIR)
-	copy_binaries_in_path(DRAGON_BINARY_DIR + "/external/glfw/examples/Release/", DRAGON_BINARY_INSTALL_DIR)
+	try:
+		copy_binaries_in_path(DRAGON_BINARY_DIR + "/external/glfw/examples/Release/", DRAGON_BINARY_INSTALL_DIR)
+	except:
+		pass
 	copy_libraries_in_path(DRAGON_BINARY_DIR + "/external/glm/glm/Release/", DRAGON_LIBRARY_INSTALL_DIR)
 	copy_libraries_in_path(DRAGON_BINARY_DIR + "/external/openal/Release/", DRAGON_LIBRARY_INSTALL_DIR)
 	copy_binaries_in_path(DRAGON_BINARY_DIR + "/external/openal/Release/", DRAGON_BINARY_INSTALL_DIR)

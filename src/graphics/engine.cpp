@@ -8,7 +8,15 @@ DGAPI DgBool32 Dragon::Graphics::createWindow(Dragon::Engine* pEngine, uint8_t w
         window = glfwCreateWindow(width, height, title.c_str(), NULL, NULL);
     }
     if(window != NULL) {
-        pEngine->graphics.windows.emplace_back(window);
+        try {
+            pEngine->graphics.windows.emplace_back(window);
+        } catch(std::exception e) {
+            Message::Message message;
+            message.code = 0xFF120000FFFFFFFF;
+            message.message = "GLFWwindow* creation failed with ";
+            message.message += e.what();
+            Message::sendMessage(pEngine, &message);
+        }
         return DG_TRUE;
     } 
     

@@ -93,9 +93,12 @@ add_custom_target(post_build ALL # Installer file                              D
 )
 add_dependencies(post_build Dragon::Dragon)
 if(Dragon_BUILD_TESTS)
-    add_dependencies(post_build openWindow)
-    add_dependencies(post_build audioTest)
+    add_dependencies(post_build 
+        openWindow audioTest
+        boing gears heightmap offscreen particles sharing simple splitview wave
+        alrecord altonegen ex-common openal-info
+    )
 endif()
 if(Dragon_BUILD_DOCS)
-    add_dependencies(post_build Dragon_Docs)
+    add_dependencies(post_build Dragon_Docs docs)
 endif()

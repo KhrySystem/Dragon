@@ -1,24 +1,46 @@
 # DragonEngine
 DragonEngine is a C++, code-first, thin and lightweight Vulkan 3D game engine designed with gaming, AR, and VR in mind; designed to keep functions tucked away when you don't want to see them, and give access to the APIs beneath it when you want it. 
 
-## Structure
+## SDK Structure
+### Pre-Build
 ```txt
  - docs/                             Doxygen build scripts for Dragon
- - extensions/                       All the optional Dragon Extensions
-      - firebreath/                  See https://github.com/KhrySystem/Dragon-Firebreath
-      - ironbreath/                  See https://github.com/KhrySystem/Dragon-Ironbreath
-      - lightbreath/                 See https://github.com/KhrySystem/Dragon-Lightbreath
-      - streambreath/                See https://github.com/KhrySystem/Dragon-Streambreath
-      - thunderbreath/               See https://github.com/KhrySystem/Dragon-Thunderbreath
- - headers/                          See https://github.com/KhrySystem/Dragon-Headers
-      - glm/                         GLM submodule.
-      - include/dragon/              Dragon Headers for the main library.
- - src/                              See https://github.com/KhrySystem/Dragon-Source
- - tools/                            See https://github.com/KhrySystem/Dragon-Tools
+ - external/
+      - glfw/                        GLFW submodule for the window
+      - glm/                         GLM submodule for shader interface
+      - openal/                      OpenAL-Soft for audio
+      - openxr/                      OpenXR for XR
+ - include/dragon/                   Dragon Headers for the main library.
+ - src/                              C++ Source for Dragon
+ - tools/                            Useful scripts not built into the library binary
       - build/                       Files and scripts for CMake to find Dragon
-           - FindDragon.cmake        CMake script that gets placed in your CMake modules directory
+           - FindDragon.cmake     !! CMake script that gets placed in your CMake modules directory !!
       - installer/                   Installer source code
-      - tests/                       Assorted tests
+      - tests/                       Assorted tests from Dragon
+```
+
+### Post-Build
+```txt
+ - bin/                              Test, Debug, and info executables
+ - docs/                             Documentation for Dragon and all submodules
+ - include/                          Single include directory for Dragon
+      - boost/                       Only if Boost was not pre-installed
+      - dragon/                      Dragon Headers
+      - glfw/                        GLFW Headers
+      - glm/                         GLM Headers
+      - openal/                      OpenAL Headers
+      - opencl/                      Only if OpenCL was not pre-installed
+      - openxr/                      OpenXR Headers
+      - vulkan/                      Only if Vulkan was not pre-installed
+ - src/
+      - boost/                       Only if Boost was not pre-installed
+      - dragon/                      Dragon Source
+      - glfw/                        GLFW Source
+      - glm/                         GLM Source
+      - openal/                      OpenAL Source
+      - opencl/                      Only if OpenCL was not pre-installed
+      - openxr/                      OpenXR Source
+      - vulkan/                      Only if Vulkan was not pre-installed
 ```
 
 ## Build Dependencies
