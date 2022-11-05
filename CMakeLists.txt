@@ -96,7 +96,7 @@ if(Dragon_BUILD_TESTS)
         alrecord altonegen ex-common openal-info
     )
 endif()
-if(Dragon_BUILD_DOCS)
+if(Dragon_BUILD_DOCS AND Doxygen_FOUND)
     add_dependencies(post_build Dragon_Docs docs)
 endif()
 set_target_properties(post_build PROPERTIES FOLDER ${TOOLS_FOLDER})
