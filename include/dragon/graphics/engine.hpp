@@ -1,6 +1,8 @@
 #pragma once
 
-struct Engine {
-	VkInstance vkInstance;
-	std::vector<GLFWwindow*> windows;
-};
+namespace Graphics {
+	struct Engine {
+		VkInstance vkInstance;
+		std::vector<GLFWwindow*> windows;
+	};
+}

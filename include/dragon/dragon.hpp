@@ -1,6 +1,8 @@
 #pragma once
 
 #include <exception>
+#include <iostream>
+#include <iterator>
 #include <functional>
 #include <vector>
 
@@ -117,40 +119,18 @@ typedef int32_t DgInt32;
 #endif
 
 namespace Dragon {
-	namespace Audio {
-		#include "audio/outputDevice.hpp"
-		#include "audio/engine.hpp"
-	}
-	namespace CL {
-		namespace Physics {
-			#include "cl/physics/engine.hpp"
-		}
-		#include "cl/engine.hpp"
-	}
-	namespace Graphics {
-		namespace Particle {
-			#include "graphics/particle/engine.hpp"
-		}
-		namespace XR {
-			#include "graphics/xr/engine.hpp"
-		}
-		#include "graphics/engine.hpp"
-	}
-
+	#include "audio/outputDevice.hpp"
+	#include "audio/engine.hpp"
+	#include "cl/physics/engine.hpp"
+	#include "cl/engine.hpp"
+	#include "graphics/particle/engine.hpp"
+	#include "graphics/xr/engine.hpp"
+	#include "graphics/engine.hpp"
 	#include "internal/createInfo.hpp"
-
-	namespace Message {
-		#include "message/engine.hpp"
-	}
-
+	#include "message/engine.hpp"
 	#include "internal/engine.hpp"
 	#include "internal/init.hpp"
-
-	namespace Graphics {
-		#include "graphics/init.hpp"
-	}
-
-	namespace Message {
-		#include "message/callbacks.hpp"
-	}
+	#include "internal/gpu.hpp"
+	#include "graphics/init.hpp"
+	#include "message/callbacks.hpp"
 }

@@ -1,5 +1,6 @@
 #pragma once
+namespace Audio {
+	struct OutputDevice {
 
-struct OutputDevice {
-
-};
+	};
+}

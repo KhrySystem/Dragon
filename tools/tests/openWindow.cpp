@@ -6,9 +6,10 @@
 using namespace Dragon;
 
 int main(void) {
-	printf("OpenWindow.cpp");
 	CreateInfo createInfo{};
 	createInfo.name = "openWindow.cpp";
+	createInfo.refreshRate = 60;
+	createInfo.verbosity = 2;
 
 	Engine engine;
 

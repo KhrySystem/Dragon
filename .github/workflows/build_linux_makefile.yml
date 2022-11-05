@@ -1,0 +1,60 @@
+name: Linux Makefile Dragon Build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  BUILD_TYPE: RelWithDebInfo
+  BOOST_INSTALL_VERSION: 1.79.0
+  VULKAN_INSTALL_VERSION: 1.3.204.0
+  BOOST_CMAKE_ARGS: -DBOOST_ROOT:Path=${{ github.workspace}}/boost -DBoost_INCLUDE_DIR:Path=${{github.workspace}}/boost/include
+
+
+jobs:
+  build-linux-unix-makefiles:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install GLFW Dependencies
+      run: sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev
+      
+    - name: Install Boost
+      id: install-boost
+      uses: MarkusJx/install-boost@v2.4.0
+      with:
+        boost_version: ${{ env.BOOST_INSTALL_VERSION }}
+        platform_version: 20.04
+        toolset: gcc
+
+    - name: Install OpenCL
+      uses: KhrySystem/install-opencl@v1.2
+      with: 
+        version: v2022.09.30
+        cache: true
+        cmake_args: '-G"Unix Makefiles"'
+        path: opencl
+
+    - name: Install Vulkan
+      uses: humbletim/setup-vulkan-sdk@v1.2.0
+      with: 
+        vulkan-query-version: ${{ env.VULKAN_INSTALL_VERSION }}
+        vulkan-components: Vulkan-Headers, Vulkan-Loader, Glslang, SPIRV-Cross, SPIRV-Tools, SPIRV-Reflect, SPIRV-Headers
+        vulkan-use-cache: true
+          
+    - name: Get DragonEngine Submodules
+      run: git submodule update --init --recursive
+
+    - name: Configure DragonEngine CMake Scripts
+      run: cmake -S${{github.workspace}} -B${{github.workspace}}/bin -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE -B${{github.workspace}}/bin -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DDragon_INSTALL_DIR:Path="${{github.workspace}}/sdk_build" ${{ env.BOOST_CMAKE_ARGS }} -DVulkan_INCLUDE_DIR=$VULKAN_SDK/include -DVulkan_LIBRARY=$VULKAN_SDK/bin/vulkan-1.lib
+
+    - name: Build DragonEngine
+      run: cmake --build ${{github.workspace}}/bin --config ${{env.BUILD_TYPE}}
+
+    - name: Test DragonEngine
+      working-directory: ${{github.workspace}}/bin
+      run: ctest -C ${{env.BUILD_TYPE}}

@@ -1,5 +1,7 @@
 #pragma once
 
-struct Engine {
+namespace Audio {
+	struct Engine {
 
-};
+	};
+}

@@ -7,9 +7,18 @@ DGAPI DgBool32 Dragon::createEngine(Engine* engine, CreateInfo* createInfo) {
 }
 
 DGAPI DgBool32 Dragon::createEngine(Engine* pEngine, CreateInfo* pCreateInfo, std::function<void(Message::Message*)> pCallback) {
+	
 	// Message Init
 	if(DRAGON_MESSAGE_ENABLED) {
 		pEngine->message.pCallback = pCallback;
+	}
+
+	if(!glfwInit()) {
+		Message::Message message;
+		message.code = 0xFF12000000000000;
+		message.message = "GLFW failed to be initialized";
+		Message::sendMessage(pEngine, &message);
+		return DG_FALSE;
 	}
 
 	pEngine->name = pCreateInfo->name;
@@ -22,15 +31,21 @@ DGAPI DgBool32 Dragon::createEngine(Engine* pEngine, CreateInfo* pCreateInfo, st
 	appInfo.engineVersion = DRAGON_VERSION;
 
 	uint32_t glfwExtensionCount = 0;
+	char** extensionNames = const_cast<char**>(glfwGetRequiredInstanceExtensions(&glfwExtensionCount));
+	std::vector<const char*> extensions(extensionNames, *(&extensionNames + 1));
 
-	std::vector<const char*> extensions;
-
-	const char** glfwExtensionNames;
-	glfwExtensionNames = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-	for(int i = 0; i <= sizeof(glfwExtensionNames)/sizeof(glfwExtensionNames[0]); i++)
-		extensions.emplace_back(glfwExtensionNames[i]);
 	#ifdef DG_PLAT_MACOS
 
+	#endif
+
+	#ifndef VK_VERSION_1_3
+	    extensions.emplace_back("VK_EXT_tooling_info");
+		if(pCreateInfo->verbosity >= 1) {
+			Message::Message message;
+			message.code = 0x1111000000000000;
+			message.message = "Vulkan Version is below 1.3, adding VK_EXT_tooling_info";
+			Message::sendMessage(pEngine, &message);
+		}
 	#endif
 	
 	VkInstanceCreateInfo instanceCreateInfo{};
