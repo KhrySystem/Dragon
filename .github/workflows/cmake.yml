@@ -57,49 +57,6 @@ jobs:
     - name: Test DragonEngine
       working-directory: ${{github.workspace}}/bin
       run: ctest -C ${{env.BUILD_TYPE}}
-      
-  build-macos-xcode-clang:
-    runs-on: macos-12
-
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Install Boost
-      id: install-boost
-      uses: MarkusJx/install-boost@v2.4.0
-      with:
-        boost_version: ${{ env.BOOST_INSTALL_VERSION }}
-        platform_version: 11
-        toolset: clang
-        
-    - name: Install OpenCL
-      uses: KhrySystem/install-opencl@v1.2
-      with: 
-        version: v2022.09.30
-        cache: true
-        cmake_args: ''
-        path: opencl
-    
-    - name: Install Vulkan
-      id: install-vulkan
-      uses: humbletim/setup-vulkan-sdk@v1.2.0
-      with: 
-        vulkan-query-version: ${{ env.VULKAN_INSTALL_VERSION }}
-        vulkan-components: Vulkan-Headers, Vulkan-Loader, Glslang, SPIRV-Cross, SPIRV-Tools, SPIRV-Reflect, SPIRV-Headers
-        vulkan-use-cache: true
-
-    - name: Get DragonEngine Submodules
-      run: git submodule update --init --recursive
-    
-    - name: Configure DragonEngine CMake Scripts
-      run: cmake -S${{github.workspace}} -B${{github.workspace}}/bin -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DDragon_INSTALL_DIR:String="${{github.workspace}}/sdk_build" ${{ env.BOOST_CMAKE_ARGS }} -DVulkan_INCLUDE_DIR=$VULKAN_SDK/include -DVulkan_LIBRARY=$VULKAN_SDK/bin/vulkan-1.lib
-      
-    - name: Build DragonEngine
-      run: cmake --build ${{github.workspace}}/bin --config ${{env.BUILD_TYPE}}
-
-    - name: Test DragonEngine
-      working-directory: ${{github.workspace}}/bin
-      run: ctest -C ${{env.BUILD_TYPE}}
 
   build-windows-vs-2019:
     runs-on: windows-2019
