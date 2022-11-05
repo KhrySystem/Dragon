@@ -1,6 +1,16 @@
 cmake_minimum_required(VERSION 3.20)
 
-project(Dragon VERSION 1.0.0.0 LANGUAGES CXX)
+project(Dragon VERSION 1.0.0.1 LANGUAGES CXX)
+
+find_package(Python REQUIRED COMPONENTS Interpreter)
+find_package(Boost REQUIRED)
+find_package(Vulkan REQUIRED)
+find_package(OpenCL)
+find_package(Doxygen)
+find_package(GTest)
+
+set(TOOLS_FOLDER tools)
+
 
 option(Dragon_BUILD_SHARED "Set to OFF to build static, ON for shared." OFF)
 
@@ -13,13 +23,6 @@ option(Dragon_BUILD_TESTS "Build Dragon-specific tests" ON)
 set(GLFW_BUILD_TESTS ${Dragon_BUILD_TESTS})
 option(Dragon_BUILD_DOCS "Build Dragon Documentation" ON)
 set(GLFW_BUILD_DOCS ${Dragon_BUILD_DOCS})
-
-find_package(Boost REQUIRED)
-find_package(Doxygen)
-find_package(GTest)
-find_package(OpenCL)
-find_package(Python REQUIRED COMPONENTS Interpreter)
-find_package(Vulkan REQUIRED)
 
 if(Dragon_BUILD_SHARED) 
     set(BUILD_SHARED_LIBS ON)
@@ -66,23 +69,17 @@ set(Dragon_INCLUDE_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/external/openxr/include
     ${CMAKE_CURRENT_SOURCE_DIR}/include 
 )
-
 if(OpenCL_FOUND)
     list(APPEND Dragon_INCLUDE_DIRS ${OpenCL_INCLUDE_DIR})
 endif()
-
 if(Dragon_BUILD_DOCS AND Doxygen_FOUND)
     add_subdirectory(docs)
 endif()
-
 file(GLOB_RECURSE HPP_FILES ${Dragon_SOURCE_DIR}/include/dragon/*.hpp)
-
 add_subdirectory(src)
-
 if(NOT Dragon_INSTALL_DIR)
     set(Dragon_INSTALL_DIR "C:/DragonSDK/${Dragon_VERSION}")
 endif()
-
 if(Dragon_BUILD_TESTS)
     add_subdirectory(tools/tests)
 endif()
@@ -102,3 +99,4 @@ endif()
 if(Dragon_BUILD_DOCS)
     add_dependencies(post_build Dragon_Docs docs)
 endif()
+set_target_properties(post_build PROPERTIES FOLDER ${TOOLS_FOLDER})
