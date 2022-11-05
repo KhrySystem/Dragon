@@ -13,7 +13,7 @@ env:
   BOOST_CMAKE_ARGS: -DBOOST_ROOT:Path=${{ github.workspace}}/boost -DBoost_INCLUDE_DIR:Path=${{github.workspace}}/boost/include
 
 jobs:
-  get_deps:
+  get-deps:
     runs-on: windows-2019
     steps:
     - uses: actions/checkout@v3
@@ -47,7 +47,7 @@ jobs:
 
   build-windows-vs-2022:
     runs-on: windows-latest
-    needs: get_deps
+    needs: get-deps
 
     steps:
     - uses: actions/checkout@v3
@@ -91,7 +91,7 @@ jobs:
 
   build-windows-vs-2019:
     runs-on: windows-2019
-    needs: get_deps
+    needs: get-deps
 
     steps:
     - uses: actions/checkout@v3

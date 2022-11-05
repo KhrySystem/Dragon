@@ -54,6 +54,7 @@ jobs:
 
   build-linux-unix-makefiles:
     runs-on: ubuntu-latest
+    needs: get-deps
 
     steps:
     - name: Configure DragonEngine CMake Scripts
