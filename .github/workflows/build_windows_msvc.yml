@@ -13,9 +13,8 @@ env:
   BOOST_CMAKE_ARGS: -DBOOST_ROOT:Path=${{ github.workspace}}/boost -DBoost_INCLUDE_DIR:Path=${{github.workspace}}/boost/include
 
 jobs:
-  runs-on: windows-latest
-
   get_deps:
+    runs-on: windows-latest
     steps:
     - uses: actions/checkout@v3
 
@@ -47,6 +46,7 @@ jobs:
       run: git submodule update --init --recursive
 
   build-windows-vs-2022:
+    runs-on: windows-latest
     needs: get_deps
 
     steps:
@@ -90,6 +90,7 @@ jobs:
       run: ctest -C ${{env.BUILD_TYPE}}
 
   build-windows-vs-2019:
+    runs-on: windows-latest
     needs: get_deps
 
     steps:
@@ -133,7 +134,9 @@ jobs:
       run: ctest -C ${{env.BUILD_TYPE}}
 
   build-windows-vs-2017:
+    runs-on: windows-latest
     needs: get_deps
+
 
     steps:
     - uses: actions/checkout@v3
@@ -176,6 +179,7 @@ jobs:
       run: ctest -C ${{env.BUILD_TYPE}}
 
   build-windows-vs-2015:
+    runs-on: windows-latest
     needs: get_deps
 
     steps:
@@ -219,6 +223,7 @@ jobs:
       run: ctest -C ${{env.BUILD_TYPE}}
 
   build-windows-vs-2013:
+    runs-on: windows-latest
     needs: get_deps
 
     steps:
