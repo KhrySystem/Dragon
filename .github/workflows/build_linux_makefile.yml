@@ -14,11 +14,14 @@ env:
 
 
 jobs:
-  build-linux-unix-makefiles:
+  get-deps:
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v3
+
+    - name: Install OpenXR Dependencies
+      run: sudo apt install build-essential cmake libgl1-mesa-dev libx11-xcb-dev libxcb-dri2-0-dev libxcb-glx0-dev libxcb-icccm4-dev libxcb-keysyms1-dev libxcb-randr0-dev libxxf86vm-dev mesa-common-dev
 
     - name: Install GLFW Dependencies
       run: sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev
@@ -49,6 +52,10 @@ jobs:
     - name: Get DragonEngine Submodules
       run: git submodule update --init --recursive
 
+  build-linux-unix-makefiles:
+    runs-on: ubuntu-latest
+
+    steps:
     - name: Configure DragonEngine CMake Scripts
       run: cmake -S${{github.workspace}} -B${{github.workspace}}/bin -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE -B${{github.workspace}}/bin -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DDragon_INSTALL_DIR:Path="${{github.workspace}}/sdk_build" ${{ env.BOOST_CMAKE_ARGS }} -DVulkan_INCLUDE_DIR=$VULKAN_SDK/include -DVulkan_LIBRARY=$VULKAN_SDK/bin/vulkan-1.lib
 
