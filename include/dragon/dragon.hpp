@@ -14,7 +14,7 @@
 #include <AL/efx.h>
 
 #ifdef DRAGON_OPENCL_FOUND
-	#include <CL/cl.hpp>
+	#include <CL/opencl.h>
 #endif
 
 #include <glfw/glfw3.h>
