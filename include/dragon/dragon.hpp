@@ -13,7 +13,9 @@
 #include <AL/efx-presets.h>
 #include <AL/efx.h>
 
-#include <CL/cl.hpp>
+#ifdef DRAGON_OPENCL_FOUND
+	#include <CL/cl.hpp>
+#endif
 
 #include <glfw/glfw3.h>
 

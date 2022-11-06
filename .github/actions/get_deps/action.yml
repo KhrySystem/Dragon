@@ -30,7 +30,7 @@ runs:
         toolset: ${{inputs.boost-toolset}}
 
     - name: Install OpenCL
-      uses: KhrySystem/install-opencl@v1.2.1
+      uses: KhrySystem/install-opencl@main
       with: 
         version: v2022.09.30
         cache: true
