@@ -56,21 +56,17 @@ typedef int32_t DgInt32;
     #error "Environment bus size unknown."
 #endif
 
-#if defined(MSVC) 
-    #if defined(DRAGON_BUILD_DLL)
-	    // Building Dragon as a Win32 DLL
-        #define DGAPI __declspec(dllexport)
-	#elif defined(DRAGON_CALL_DLL)
-	    // Calling Dragon as a Win32 DLL
-	    #define DGAPI __declspec(dllimport)
-	#endif
-#elif defined(__GNUC__)
-    #if defined(DRAGON_BUILD_DLL)
-	    // Building Dragon as a Unix Shared Library
-        #define DGAPI __attribute__((visibility("default")))
-	#endif
+#if defined(_WIN32) && defined(_GLFW_BUILD_DLL)
+    # pragma message("Building Dragon as a Win32 DLL")
+    #define DGAPI __declspec(dllexport)
+#elif defined(_WIN32) && defined(GLFW_DLL)
+    #pragma message("Calling a Dragon Win32 DLL")
+    #define DGAPI __declspec(dllimport)
+#elif defined(__GNUC__) && defined(_GLFW_BUILD_DLL)
+    #pragma message("Building Dragon as a Unix shared library")
+    #define DGAPI __attribute__((visibility("default")))
 #else
-    // Building Dragon as a static library
+    #pragma message("Building Dragon as a static library")
     #define DGAPI
 #endif
 
