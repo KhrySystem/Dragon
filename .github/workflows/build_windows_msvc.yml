@@ -38,7 +38,6 @@ jobs:
 
   build-windows-vs-2019:
     runs-on: windows-2019
-    needs: get-deps
 
     steps:
     - name: Checkout Repository

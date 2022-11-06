@@ -16,7 +16,6 @@ env:
 jobs:
   unix-makefiles:
     runs-on: ubuntu-latest
-    needs: get-deps
 
     steps:
     - name: Checkout Repository
