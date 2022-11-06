@@ -8,10 +8,7 @@ on:
 
 env:
   BUILD_TYPE: RelWithDebInfo
-  BOOST_INSTALL_VERSION: 1.79.0
-  VULKAN_INSTALL_VERSION: 1.3.204.0
   BOOST_CMAKE_ARGS: -DBOOST_ROOT:Path=${{ github.workspace}}/boost -DBoost_INCLUDE_DIR:Path=${{github.workspace}}/boost/include
-
 
 jobs:
   unix-makefiles:
@@ -23,6 +20,10 @@ jobs:
 
     - name: Get Dependencies
       uses: ./.github/actions/get_deps
+      with:
+        cmake-generator: Unix Makefiles
+        boost-toolset: gcc
+        platform-version: 20.04
 
     - name: Get DragonEngine Submodules
       run: git submodule update --init --recursive
