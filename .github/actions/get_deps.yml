@@ -1,0 +1,40 @@
+name: Get Dragon Dependencies
+author: KhrySystem
+description: Gets and installs dependencies to build Dragon
+
+runs: 
+  using: 'composite'
+
+  steps:
+    - run: |
+        if [[ $RUNNER_OS == 'Linux' ]]; then
+          sudo apt install build-essential cmake libgl1-mesa-dev libx11-xcb-dev libxcb-dri2-0-dev libxcb-glx0-dev libxcb-icccm4-dev libxcb-keysyms1-dev libxcb-randr0-dev libxxf86vm-dev mesa-common-dev
+          sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev
+        fi
+
+    - name: Install Boost
+      id: install-boost
+      uses: MarkusJx/install-boost@v2.4.0
+      with:
+        boost_version: ${{ env.BOOST_INSTALL_VERSION }}
+        platform_version: 20.04
+        toolset: gcc
+
+    - name: Install OpenCL
+      uses: KhrySystem/install-opencl@v1.2
+      with: 
+        version: v2022.09.30
+        cache: true
+        if: runner.os == "Linux"
+          cmake_args: '-G"Unix Makefiles"'
+        else:
+          cmake_args: '-G"Visual Studio 16 2019'
+        path: opencl
+
+    - name: Install Vulkan
+      id: install-vulkan
+      uses: humbletim/setup-vulkan-sdk@v1.2.0
+      with: 
+        vulkan-query-version: ${{ env.VULKAN_INSTALL_VERSION }}
+        vulkan-components: Vulkan-Headers, Vulkan-Loader, Glslang, SPIRV-Cross, SPIRV-Tools, SPIRV-Reflect, SPIRV-Headers
+        vulkan-use-cache: true

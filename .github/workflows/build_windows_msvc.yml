@@ -13,69 +13,16 @@ env:
   BOOST_CMAKE_ARGS: -DBOOST_ROOT:Path=${{ github.workspace}}/boost -DBoost_INCLUDE_DIR:Path=${{github.workspace}}/boost/include
 
 jobs:
-  get-deps:
-    runs-on: windows-2019
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Install Boost
-      id: install-boost
-      uses: MarkusJx/install-boost@v2.4.0
-      with:
-        boost_version: ${{ env.BOOST_INSTALL_VERSION }}
-        platform_version: 2019
-        toolset: msvc 
-        
-    - name: Install OpenCL
-      uses: KhrySystem/install-opencl@v1.2
-      with: 
-        version: v2022.09.30
-        cache: true
-        cmake_args: '-G"Visual Studio 16 2019"'
-        path: opencl
-    
-    - name: Install Vulkan
-      id: install-vulkan
-      uses: humbletim/setup-vulkan-sdk@v1.2.0
-      with: 
-        vulkan-query-version: ${{ env.VULKAN_INSTALL_VERSION }}
-        vulkan-components: Vulkan-Headers, Vulkan-Loader, Glslang, SPIRV-Cross, SPIRV-Tools, SPIRV-Reflect, SPIRV-Headers
-        vulkan-use-cache: true
-
-    - name: Get DragonEngine Submodules
-      run: git submodule update --init --recursive
-
-  build-windows-vs-2022:
+  msvc-2022:
     runs-on: windows-latest
-    needs: get-deps
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout Repository
+      uses: actions/checkout@v3
 
-    - name: Install Boost
-      id: install-boost
-      uses: MarkusJx/install-boost@v2.4.0
-      with:
-        boost_version: ${{ env.BOOST_INSTALL_VERSION }}
-        platform_version: 2019
-        toolset: msvc 
-        
-    - name: Install OpenCL
-      uses: KhrySystem/install-opencl@v1.2
-      with: 
-        version: v2022.09.30
-        cache: true
-        cmake_args: '-G"Visual Studio 17 2022"'
-        path: opencl
+    - name: Get Dependencies
+      uses: ./.github/actions/get_deps@main
     
-    - name: Install Vulkan
-      id: install-vulkan
-      uses: humbletim/setup-vulkan-sdk@v1.2.0
-      with: 
-        vulkan-query-version: ${{ env.VULKAN_INSTALL_VERSION }}
-        vulkan-components: Vulkan-Headers, Vulkan-Loader, Glslang, SPIRV-Cross, SPIRV-Tools, SPIRV-Reflect, SPIRV-Headers
-        vulkan-use-cache: true
-
     - name: Get DragonEngine Submodules
       run: git submodule update --init --recursive
     
@@ -94,31 +41,11 @@ jobs:
     needs: get-deps
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout Repository
+      uses: actions/checkout@v3
 
-    - name: Install Boost
-      id: install-boost
-      uses: MarkusJx/install-boost@v2.4.0
-      with:
-        boost_version: ${{ env.BOOST_INSTALL_VERSION }}
-        platform_version: 2019
-        toolset: msvc 
-        
-    - name: Install OpenCL
-      uses: KhrySystem/install-opencl@v1.2
-      with: 
-        version: v2022.09.30
-        cache: true
-        cmake_args: '-G"Visual Studio 16 2019"'
-        path: opencl
-    
-    - name: Install Vulkan
-      id: install-vulkan
-      uses: humbletim/setup-vulkan-sdk@v1.2.0
-      with: 
-        vulkan-query-version: ${{ env.VULKAN_INSTALL_VERSION }}
-        vulkan-components: Vulkan-Headers, Vulkan-Loader, Glslang, SPIRV-Cross, SPIRV-Tools, SPIRV-Reflect, SPIRV-Headers
-        vulkan-use-cache: true
+    - name: Get Dependencies
+      uses: ./.github/actions/get_deps@main
 
     - name: Get DragonEngine Submodules
       run: git submodule update --init --recursive
