@@ -14,7 +14,6 @@ find_package(GTest)
 
 set(TOOLS_FOLDER tools)
 
-
 option(Dragon_BUILD_SHARED "Set to OFF to build static, ON for shared." OFF)
 
 set(Dragon_LIB_NAME dragon-${Dragon_VERSION_MAJOR}_${Dragon_VERSION_MINOR})
