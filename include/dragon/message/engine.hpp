@@ -2,6 +2,7 @@
 
 namespace Message {
     struct Message {
+        std::string engineName;
         DgUInt64 code;
         std::string message;
     };

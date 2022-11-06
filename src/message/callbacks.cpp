@@ -57,6 +57,7 @@ DGAPI std::string Dragon::Message::VkResultAsString(VkResult result) {
 
 DGAPI void Dragon::Message::sendMessage(Dragon::Engine* pEngine, Dragon::Message::Message* pMessage) {
 	if(pEngine->message.pCallback != nullptr) {
+		pMessage->engineName = pEngine->name;
 		pEngine->message.pCallback(pMessage);
 	}
 }

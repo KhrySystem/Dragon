@@ -11,6 +11,33 @@ env:
   BOOST_CMAKE_ARGS: -DBOOST_ROOT:Path=${{ github.workspace}}/boost -DBoost_INCLUDE_DIR:Path=${{github.workspace}}/boost/include
 
 jobs:
+  unix-makefiles:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Get Dependencies
+      uses: ./.github/actions/get_deps
+      with:
+        cmake-generator: Unix Makefiles
+        boost-toolset: gcc
+        platform-version: 20.04
+
+    - name: Get DragonEngine Submodules
+      run: git submodule update --init --recursive
+
+    - name: Configure DragonEngine CMake Scripts
+      run: cmake -S${{github.workspace}} -B${{github.workspace}}/bin -G"Unix Makefiles" -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DDragon_INSTALL_DIR:String="${{github.workspace}}/sdk_build" ${{ env.BOOST_CMAKE_ARGS }} -DVulkan_INCLUDE_DIR=$VULKAN_SDK/include -DVulkan_LIBRARY:Path=$VULKAN_SDK/bin/vulkan-1.lib -DOpenCL_INCLUDE_DIR=${{github.workspace}}/opencl.cache/install/include -DOpenCL_LIBRARY=${{github.workspace}}/opencl.cache/install/lib/OpenCL.lib
+
+    - name: Build DragonEngine
+      run: cmake --build ${{github.workspace}}/bin --config ${{env.BUILD_TYPE}}
+
+    - name: Test DragonEngine
+      working-directory: ${{github.workspace}}/bin
+      run: ctest -C ${{env.BUILD_TYPE}}
+
   msvc-2022:
     runs-on: windows-2022
 

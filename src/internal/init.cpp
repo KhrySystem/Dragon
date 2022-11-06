@@ -7,10 +7,18 @@ DGAPI DgBool32 Dragon::createEngine(Engine* engine, CreateInfo* createInfo) {
 }
 
 DGAPI DgBool32 Dragon::createEngine(Engine* pEngine, CreateInfo* pCreateInfo, std::function<void(Message::Message*)> pCallback) {
-	
+	pEngine->name = pCreateInfo->name;
+
 	// Message Init
 	if(DRAGON_MESSAGE_ENABLED) {
 		pEngine->message.pCallback = pCallback;
+	}
+
+	if(pCreateInfo->verbosity >= 1) {
+		Message::Message message;
+		message.code = 0x11100000FFFFFFFF;
+		message.message = "Dragon::createEngine called";
+		Message::sendMessage(pEngine, &message);
 	}
 
 	if(!glfwInit()) {
@@ -21,7 +29,6 @@ DGAPI DgBool32 Dragon::createEngine(Engine* pEngine, CreateInfo* pCreateInfo, st
 		return DG_FALSE;
 	}
 
-	pEngine->name = pCreateInfo->name;
 	// Graphics Init
 	VkApplicationInfo appInfo{};
 	appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -30,16 +37,15 @@ DGAPI DgBool32 Dragon::createEngine(Engine* pEngine, CreateInfo* pCreateInfo, st
 	appInfo.pEngineName = "DragonEngine";
 	appInfo.engineVersion = DRAGON_VERSION;
 
-	uint32_t glfwExtensionCount = 0;
-	char** extensionNames = const_cast<char**>(glfwGetRequiredInstanceExtensions(&glfwExtensionCount));
-	std::vector<const char*> extensions(extensionNames, *(&extensionNames + 1));
+	std::vector<const char*> extensions;
+	extensions.push_back("VK_KHR_surface");
 
 	#ifdef DG_PLAT_MACOS
-
+	extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
 	#endif
 
 	#ifndef VK_VERSION_1_3
-	    extensions.emplace_back("VK_EXT_tooling_info");
+	    extensions.push_back("VK_EXT_tooling_info");
 		if(pCreateInfo->verbosity >= 1) {
 			Message::Message message;
 			message.code = 0x1111000000000000;
