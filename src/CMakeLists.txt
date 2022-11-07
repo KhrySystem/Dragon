@@ -2,9 +2,8 @@ cmake_minimum_required(VERSION 3.20)
 
 file(GLOB_RECURSE CXX_FILES ./*.cpp)
 
-if(DRAGON_BUILD_SHARED)
+if(Dragon_BUILD_SHARED)
 	add_library(${Dragon_LIB_NAME} SHARED ${CXX_FILES} ${HPP_FILES})
-	set(BUILD_SHARED_LIBS ${OLD_BUILD_SHARED})
 	target_link_libraries(${Dragon_LIB_NAME} PUBLIC glm_shared)
 else() 
 	add_library(${Dragon_LIB_NAME} STATIC ${CXX_FILES} ${HPP_FILES})
