@@ -1,6 +1,6 @@
 #pragma once
 
-struct GPU {
+typedef struct DgGPU {
 	VkPhysicalDevice handle;
 	VkPhysicalDeviceProperties properties;
 	VkPhysicalDeviceLimits limits;
@@ -10,7 +10,7 @@ struct GPU {
 	#else
 	    VkPhysicalDeviceToolPropertiesEXT toolProperties;
 	#endif
-};
+} DgGPU;
 
-DGAPI int getGPUComputeScore(GPU* gpu);
-DGAPI int getGPUGraphicsScore(GPU* gpu);
+DGAPI int dgGetGPUComputeScore(DgGPU* gpu);
+DGAPI int dgGetGPUGraphicsScore(DgGPU* gpu);

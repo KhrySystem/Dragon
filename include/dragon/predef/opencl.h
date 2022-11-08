@@ -1,0 +1,22 @@
+#pragma once
+
+#ifdef DRAGON_OPENCL_FOUND
+	#ifndef CL_TARGET_OPENCL_VERSION
+		#if defined(DRAGON_OPENCL_VERSION_30)
+			#define CL_TARGET_OPENCL_VERSION 300
+		#elif defined(DRAGON_OPENCL_VERSION_22)
+			#define CL_TARGET_OPENCL_VERSION 220
+		#elif defined(DRAGON_OPENCL_VERSION_21)
+			#define CL_TARGET_OPENCL_VERSION 210
+		#elif defined(DRAGON_OPENCL_VERSION_20)
+			#define CL_TARGET_OPENCL_VERSION 200
+		#elif defined(DRAGON_OPENCL_VERSION_12)
+			#define CL_TARGET_OPENCL_VERSION 220
+		#elif defined(DRAGON_OPENCL_VERSION_11)
+			#define CL_TARGET_OPENCL_VERSION 210
+		#else
+			#define CL_TARGET_OPENCL_VERSION 200
+		#endif
+	#endif
+	#include <CL/opencl.h>
+#endif

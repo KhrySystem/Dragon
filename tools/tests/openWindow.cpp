@@ -1,30 +1,27 @@
-#include <dragon/dragon.hpp>
+#include <dragon/dragon.h>
 #include <iostream>
 
 #include "general.hpp"
 
-using namespace Dragon;
-
 int main(void) {
-	CreateInfo createInfo{};
+	DgCreateInfo createInfo;
 	createInfo.name = "openWindow.cpp";
 	createInfo.refreshRate = 60;
-	createInfo.verbosity = 2;
 
-	Engine engine;
+	DgEngine engine;
 
-	if(createEngine(&engine, &createInfo, &mCallback) != DG_TRUE) {
+	if(!dgCreateEngine(&engine, &createInfo, &mCallback, 2)) {
 		printf("createEngine failed.");
 		// ensure engine doesn't have a stroke
-		terminateEngine(&engine);
+		dgTerminateEngine(&engine);
 		return 1;
 	} 
 	printf("Engine created");
 
-	while(!canEngineBeTerminated(&engine)) {
-		updateEngine(&engine);
+	while(!dgCanEngineBeTerminated(&engine)) {
+		dgUpdateEngine(&engine);
 	}
-	terminateEngine(&engine);
+	dgTerminateEngine(&engine);
 	printf("Engine terminated");
 	return 0;
 }

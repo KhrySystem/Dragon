@@ -1,8 +1,6 @@
-#include <dragon/dragon.hpp>
+#include <dragon/dragon.h>
 
-using namespace Dragon;
-
-DGAPI std::string Dragon::Message::VkResultAsString(VkResult result) {
+DGAPI const char* dgVkResultAsString(VkResult result) {
 	switch(result) {
 		case VK_SUCCESS: 												return "VK_SUCCESS";
 		case VK_NOT_READY: 												return "VK_NOT_READY";
@@ -55,9 +53,9 @@ DGAPI std::string Dragon::Message::VkResultAsString(VkResult result) {
 	};
 }
 
-DGAPI void Dragon::Message::sendMessage(Dragon::Engine* pEngine, Dragon::Message::Message* pMessage) {
-	if(pEngine->message.pCallback != nullptr) {
+DGAPI void dgSendMessage(DgEngine* pEngine, DgMessage* pMessage) {
+	if(pEngine->message->pCallback != NULL) {
 		pMessage->engineName = pEngine->name;
-		pEngine->message.pCallback(pMessage);
+		pEngine->message->pCallback(pMessage);
 	}
 }

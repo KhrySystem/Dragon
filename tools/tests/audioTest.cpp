@@ -1,8 +1,6 @@
 #include "general.hpp"
 
-#include <dragon/dragon.hpp>
-
-using namespace Dragon;
+#include <dragon/dragon.h>
 
 int main(void) {
 

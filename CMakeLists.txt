@@ -1,6 +1,19 @@
 cmake_minimum_required(VERSION 3.20)
 
-project(Dragon VERSION 1.0.0.1 LANGUAGES CXX)
+set(TOOLS_FOLDER tools)
+set(TESTS_FOLDER tests)
+
+set(CMAKE_C_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
+
+project(Dragon VERSION 1.0.0.1)
+set(Dragon_LIB_NAME dragon-${Dragon_VERSION_MAJOR}_${Dragon_VERSION_MINOR})
+option(Dragon_BUILD_SHARED "Set to OFF to build static, ON for shared." OFF)
+option(Dragon_BUILD_TESTS "Build Dragon-specific tests" ON)
+set(GLFW_BUILD_TESTS ${Dragon_BUILD_TESTS})
+set(GLFW_BUILD_EXAMPLES ${Dragon_BUILD_TESTS})
+option(Dragon_BUILD_DOCS "Build Dragon Documentation" ON)
+set(GLFW_BUILD_DOCS ${Dragon_BUILD_DOCS})
 
 find_package(Python REQUIRED COMPONENTS Interpreter)
 find_package(Boost REQUIRED)
@@ -12,32 +25,15 @@ endif()
 find_package(Doxygen)
 find_package(GTest)
 
-set(TOOLS_FOLDER tools)
-
-option(Dragon_BUILD_SHARED "Set to OFF to build static, ON for shared." OFF)
-
-set(Dragon_LIB_NAME dragon-${Dragon_VERSION_MAJOR}_${Dragon_VERSION_MINOR})
-
-set(CMAKE_C_STANDARD 17)
-set(CMAKE_CXX_STANDARD 20)
-
-option(Dragon_BUILD_TESTS "Build Dragon-specific tests" ON)
-set(GLFW_BUILD_TESTS ${Dragon_BUILD_TESTS})
-set(GLFW_BUILD_EXAMPLES ${Dragon_BUILD_TESTS})
-option(Dragon_BUILD_DOCS "Build Dragon Documentation" ON)
-set(GLFW_BUILD_DOCS ${Dragon_BUILD_DOCS})
-
+set(BUILD_STATIC_LIBS ON)
 if(Dragon_BUILD_SHARED) 
-    set(BUILD_SHARED_LIBS ON)
     set(DYNAMIC_LOADER ON)
-    add_subdirectory(external/glfw)
     add_subdirectory(external/glm)
+    set(BUILD_SHARED_LIBS ON)
+    add_subdirectory(external/glfw)
     add_subdirectory(external/openal)
     add_subdirectory(external/openxr)
-    add_compile_definitions(DRAGON_BUILD_DLL)
 else()
-    set(BUILD_STATIC_LIBS ON)
-    set(GLFW_VULKAN_STATIC ON)
     set(USE_MSVC_RUNTIME_LIBRARY_DLL OFF)
     add_subdirectory(external/glfw)
     add_subdirectory(external/glm)
@@ -56,13 +52,14 @@ macro(compile_shader OUTPUT INPUT)
         COMMAND ${CMAKE_COMMAND} -E make_directory "${PROJECT_BINARY_DIR}/shaders/"
         COMMAND ${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE} -V ${INPUT} -o ${SPV}
         DEPENDS ${INPUT}
+        COMMENT "Building SPIR-V shader ${OUTPUT} from ${INPUT}"
     )
 
     list(APPEND SPV_BINARY_FILES)
 endmacro()
 endif()
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/dragon/predef/core.hpp.in ${CMAKE_CURRENT_SOURCE_DIR}/include/dragon/predef/core.hpp)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/dragon/predef/core.h.in ${CMAKE_CURRENT_SOURCE_DIR}/include/dragon/predef/core.h)
 
 set(Dragon_INCLUDE_DIRS 
     ${Boost_INCLUDE_DIR} 
@@ -81,7 +78,8 @@ endif()
 if(Dragon_BUILD_DOCS AND Doxygen_FOUND)
     add_subdirectory(docs)
 endif()
-file(GLOB_RECURSE HPP_FILES ${Dragon_SOURCE_DIR}/include/dragon/*.hpp)
+file(GLOB_RECURSE HPP_FILES ${Dragon_SOURCE_DIR}/include*.hpp)
+file(GLOB_RECURSE H_FILES ${Dragon_SOURCE_DIR}/include/*.h)
 add_subdirectory(src)
 if(NOT Dragon_INSTALL_DIR)
     set(Dragon_INSTALL_DIR "C:/DragonSDK/${Dragon_VERSION}")
