@@ -7,4 +7,4 @@ build/
 !tools/build/
 *.pyc
 
-include/dragon/predef/core.hpp
+include/dragon/dragon_core.hpp
