@@ -1,6 +1,6 @@
 #pragma once
 
-typedef struct DgGPU {
+typedef struct DgGPU_T {
 	VkPhysicalDevice handle;
 	VkPhysicalDeviceProperties properties;
 	VkPhysicalDeviceLimits limits;

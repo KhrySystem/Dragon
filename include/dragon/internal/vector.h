@@ -13,7 +13,7 @@
 #define VECTOR_EMPTY(vec) VECTOR_TOTAL(vec) == 0
 #define VECTOR_FREE(vec) dgVectorFree(&vec)
 
-typedef struct DgVector {
+typedef struct DgVector_T {
     void **items;
     int capacity;
     int total;

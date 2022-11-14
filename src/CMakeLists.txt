@@ -1,19 +1,23 @@
 cmake_minimum_required(VERSION 3.20)
 
-file(GLOB_RECURSE CXX_FILES ./*.cpp)
-file(GLOB_RECURSE C_FILES ./*.c)
-
-if(Dragon_BUILD_SHARED)
-	add_library(${Dragon_LIB_NAME} SHARED ${CXX_FILES} ${C_FILES} ${HPP_FILES} ${H_FILES})
-	if(Dragon_IS_TOP_LEVEL)
-		add_definitions(-DDRAGON_BUILD_DLL)
-		message("Building Dragon as a shared library")
-	else()
-		add_definitions(-DDRAGON_CALL_DLL)
-		message("Calling Dragon as a shared library")
-	endif()
+if("${Dragon_BUILD_SHARED}" STREQUAL "ON")
+	add_library(${Dragon_LIB_NAME} SHARED 
+		graphics/engine.c
+		internal/gpu.c
+		internal/init.c
+		internal/vector.c
+		message/callbacks.c
+	)
+	target_compile_definitions(${Dragon_LIB_NAME} PRIVATE DRAGON_BUILD_DLL)
+	message("Building Dragon as a shared library")
 else() 
-	add_library(${Dragon_LIB_NAME} STATIC  ${CXX_FILES} ${C_FILES} ${HPP_FILES} ${H_FILES})
+	add_library(${Dragon_LIB_NAME} STATIC 
+		graphics/engine.c
+		internal/gpu.c
+		internal/init.c
+		internal/vector.c
+		message/callbacks.c
+	)
 	message("Building Dragon as a static library")
 endif()
 target_include_directories(${Dragon_LIB_NAME} PUBLIC ${Dragon_INCLUDE_DIRS})

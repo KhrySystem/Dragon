@@ -14,10 +14,6 @@ int dgSizeOfVector(DgVector *v)
 
 static void dgVectorResize(DgVector *v, int capacity)
 {
-    #ifdef DEBUG_ON
-    printf("vector_resize: %d to %d\n", v->capacity, capacity);
-    #endif
-
     void **items = realloc(v->items, sizeof(void *) * capacity);
     if (items) {
         v->items = items;
@@ -28,7 +24,7 @@ static void dgVectorResize(DgVector *v, int capacity)
 void dgVectorAppend(DgVector *v, void *item)
 {
     if (v->capacity == v->total)
-        vector_resize(v, v->capacity * 2);
+        dgVectorResize(v, v->capacity * 2);
     v->items[v->total++] = item;
 }
 
@@ -60,10 +56,10 @@ void dgVectorRemove(DgVector *v, int index)
     v->total--;
 
     if (v->total > 0 && v->total == v->capacity / 4)
-        vector_resize(v, v->capacity / 2);
+        dgVectorResize(v, v->capacity / 2);
 }
 
-void vector_free(DgVector *v)
+void dgVectorFree(DgVector *v)
 {
     free(v->items);
 }

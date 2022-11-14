@@ -59,7 +59,7 @@ DGAPI DgBool32 dgCreateEngine(DgEngine* pEngine, DgCreateInfo* pCreateInfo, void
 	instanceCreateInfo.enabledExtensionCount = VECTOR_TOTAL(extensions);
 	instanceCreateInfo.enabledLayerCount = 0;
 	instanceCreateInfo.ppEnabledLayerNames = NULL;
-	VkResult result = vkCreateInstance(&instanceCreateInfo, NULL, &pEngine->graphics->vkInstance);
+	VkResult result = vkCreateInstance(&instanceCreateInfo, NULL, &pEngine->vkInstance);
 	if(result != VK_SUCCESS) {
 		DgMessage message;
 		message.code = 0xFF11000000000000 + result;
@@ -70,6 +70,10 @@ DGAPI DgBool32 dgCreateEngine(DgEngine* pEngine, DgCreateInfo* pCreateInfo, void
 	}
 
 	return DG_TRUE;
+}
+
+DGAPI void dgWaitForInputs() {
+	glfwWaitEvents();
 }
 
 DGAPI void dgUpdateEngine(DgEngine* pEngine) {
@@ -84,6 +88,6 @@ DGAPI DgBool32 dgCanEngineBeTerminated(DgEngine* pEngine) {
 }
 
 DGAPI void dgTerminateEngine(DgEngine* pEngine) {
-	vkDestroyInstance(pEngine->graphics->vkInstance, NULL);
+	vkDestroyInstance(pEngine->vkInstance, NULL);
 	glfwTerminate();
 }

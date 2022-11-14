@@ -12,16 +12,8 @@ int main(void) {
 
 	if(!dgCreateEngine(&engine, &createInfo, &mCallback, 2)) {
 		printf("createEngine failed.");
-		// ensure engine doesn't have a stroke
-		dgTerminateEngine(&engine);
 		return 1;
 	} 
 	printf("Engine created");
-
-	while(!dgCanEngineBeTerminated(&engine)) {
-		dgUpdateEngine(&engine);
-	}
 	dgTerminateEngine(&engine);
-	printf("Engine terminated");
-	return 0;
 }

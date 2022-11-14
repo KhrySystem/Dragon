@@ -4,9 +4,10 @@
 #include "../graphics/engine.h"
 #include "../message/engine.h"
 
-typedef struct DgEngine {
+typedef struct DgEngine_T {
 	const char* name;
-	DgVector windows;
+
+	VkInstance vkInstance;
 
 	DgAudioEngine* audio;
 	DgGraphicsEngine* graphics;

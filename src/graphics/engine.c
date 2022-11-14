@@ -2,13 +2,13 @@
 
 DGAPI DgBool32 dgCreateWindow(DgEngine* pEngine, uint8_t width, uint8_t height, const char* title) {
     GLFWwindow* window;
-    if(VECTOR_TOTAL(pEngine->windows) != 0) {
-        window = glfwCreateWindow(width, height, title, NULL, (GLFWwindow*)dgVectorGet(&pEngine->windows, 0));
+    if(VECTOR_TOTAL(pEngine->graphics->windows) != 0) {
+        window = glfwCreateWindow(width, height, title, NULL, VECTOR_GET(pEngine->graphics->windows, GLFWwindow*, 0));
     } else {
         window = glfwCreateWindow(width, height, title, NULL, NULL);
     }
     if(window != NULL) {
-        VECTOR_ADD(pEngine->windows, window);
+        VECTOR_ADD(pEngine->graphics->windows, window);
         return DG_TRUE;
     } 
     

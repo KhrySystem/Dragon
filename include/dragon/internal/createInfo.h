@@ -1,6 +1,6 @@
 #pragma once
 
-typedef struct DgCreateInfo {
+typedef struct DgCreateInfo_T {
     int8_t verbosity;
     uint8_t refreshRate;
     const char* name;

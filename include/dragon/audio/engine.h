@@ -1,6 +1,8 @@
 #pragma once
 
-#include "../predef/predef.h"
+#include "../dragon_core.h"
+#include "../internal/vector.h"
+
 #include "outputDevice.h"
 
 typedef struct DgAudioEngine {
