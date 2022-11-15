@@ -1,9 +1,6 @@
 [submodule "external/glfw"]
 	path = external/glfw
 	url = https://github.com/glfw/glfw
-[submodule "external/glm"]
-	path = external/glm
-	url = https://github.com/g-truc/glm
 [submodule "external/openal"]
 	path = external/openal
 	url = https://github.com/kcat/OpenAL-Soft
@@ -13,3 +10,6 @@
 [submodule "external/pysimplegui"]
 	path = external/pysimplegui
 	url = https://github.com/PySimpleGUI/PySimpleGUI
+[submodule "external/vulkan/headers"]
+	path = external/vulkan/headers
+	url = https://github.com/KhronosGroup/Vulkan-Headers
