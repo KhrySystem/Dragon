@@ -10,89 +10,54 @@ set(TESTS_FOLDER tests)
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
 
-project(Dragon VERSION 1.0.1.0)
+project(Dragon VERSION 1.0.1.1 LANGUAGES CXX C)
 
-option(Dragon_BUILD_SHARED "Set to OFF to build static, ON for shared." ON)
-option(Dragon_BUILD_TESTS "Build Dragon-specific tests" ON)
-option(Dragon_BUILD_DOCS "Build Dragon Documentation" ON)
-
-set(Dragon_LIB_NAME dragon-${Dragon_VERSION_MAJOR}_${Dragon_VERSION_MINOR})
-set(GLFW_BUILD_TESTS ${Dragon_BUILD_TESTS})
-set(GLFW_BUILD_EXAMPLES ${Dragon_BUILD_TESTS})
-set(GLFW_BUILD_DOCS ${Dragon_BUILD_DOCS})
+include(tools/cmake/build_vars.cmake)
 
 find_package(Python REQUIRED COMPONENTS Interpreter)
-find_package(Boost REQUIRED)
 find_package(Vulkan REQUIRED)
 find_package(Doxygen)
 find_package(GTest)
 
-set(BUILD_STATIC_LIBS ON)
-if(Dragon_BUILD_SHARED) 
-    message("Building submodules as shared libraries")
-    set(DYNAMIC_LOADER ON)
-    add_subdirectory(external/glm)
-    set(BUILD_SHARED_LIBS ON)
-    add_subdirectory(external/glfw)
-    add_subdirectory(external/openal)
-    add_subdirectory(external/openxr)
-    add_compile_definitions(DRAGON_DLL)
+if(NOT BUILD_SHARED_LIBS)
+	option(Dragon_BUILD_SHARED "Set to OFF to build static, ON for shared." ON)
 else()
-    message("Building submodules as static libraries")
-    set(USE_MSVC_RUNTIME_LIBRARY_DLL OFF)
-    add_subdirectory(external/glfw)
-    add_subdirectory(external/glm)
-    add_subdirectory(external/openal)
-    add_subdirectory(external/openxr)
+	set(Dragon_BUILD_SHARED "Set to OFF to build static, ON for shared." ON)
+endif()
+set(BUILD_SHARED_LIBS ${Dragon_BUILD_SHARED})
+set(DYNAMIC_LOADER ${Dragon_BUILD_SHARED})
+set(USE_MSVC_RUNTIME_LIBRARY_DLL ${Dragon_BUILD_SHARED})
+
+option(Dragon_BUILD_TESTS "Build Dragon-specific tests" ON)
+set(GLFW_BUILD_TESTS ${Dragon_BUILD_TESTS})
+set(GLFW_BUILD_EXAMPLES ${Dragon_BUILD_TESTS})
+
+option(Dragon_BUILD_DOCS "Build Dragon Documentation" ON)
+set(GLFW_BUILD_DOCS ${Dragon_BUILD_DOCS})
+
+set(Dragon_LIB_NAME dragon-${Dragon_VERSION})
+
+if(BUILD_SHARED_LIBS)
+	add_compile_definitions(DRAGON_DLL)
+	if(WIN32)
+		set(GLFW_VULKAN_STATIC OFF)
+	endif()
+else()
+	if(WIN32)
+		set(GLFW_VULKAN_STATIC ON)
+	endif()
 endif()
 
-if(Vulkan_glslangValidator_FOUND)
-macro(compile_shader OUTPUT INPUT)
-    get_filename_component(FNAME ${INPUT} NAME)
-
-    set(SPV_NAME ${CMAKE_BINARY_DIR}/shaders/${FNAME}.spv)
-
-    add_custom_command(
-        OUTPUT ${OUTPUT}
-        COMMAND ${CMAKE_COMMAND} -E make_directory "${PROJECT_BINARY_DIR}/shaders/"
-        COMMAND ${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE} -V ${INPUT} -o ${SPV}
-        DEPENDS ${INPUT}
-        COMMENT "Building SPIR-V shader ${OUTPUT} from ${INPUT}"
-    )
-
-    list(APPEND SPV_BINARY_FILES)
-endmacro()
-endif()
+add_subdirectory(external/glfw)
+add_subdirectory(external/openal)
+add_subdirectory(external/openxr)
+add_subdirectory(external/vulkan/headers)
 
 add_subdirectory(include/dragon)
-
-set(Dragon_INCLUDE_DIRS 
-    ${Boost_INCLUDE_DIR} 
-    ${Vulkan_INCLUDE_DIRS}
-    ${CMAKE_CURRENT_SOURCE_DIR}/external/glfw/deps
-    ${CMAKE_CURRENT_SOURCE_DIR}/external/glfw/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/external/glfw/src 
-    ${CMAKE_CURRENT_SOURCE_DIR}/external/glm
-    ${CMAKE_CURRENT_SOURCE_DIR}/external/openal/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/external/openxr/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/include 
-    ${CMAKE_CURRENT_BINARY_DIR}/include/dragon
-)
-if(Dragon_BUILD_DOCS AND Doxygen_FOUND)
-    add_subdirectory(docs)
-endif()
 add_subdirectory(src)
-if(NOT Dragon_INSTALL_DIR)
-    set(Dragon_INSTALL_DIR "C:/DragonSDK/${Dragon_VERSION}")
-endif()
+
 if(Dragon_BUILD_TESTS)
-    add_subdirectory(tools/tests)
+	add_subdirectory(tools/tests)
 endif()
 
-install(TARGETS Dragon-Headers
-    DESTINATION "include"
-)
-
-install(TARGETS ${Dragon_LIB_NAME} audioTest
-        DESTINATION "bin/tests"
-)
+include(tools/cmake/install.cmake)

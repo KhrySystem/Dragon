@@ -159,6 +159,22 @@ typedef int32_t DgInt32;
 	#endif
 #endif
 
+#ifndef DGLOAD
+	#ifdef DRAGON_PLAT_WINDOWS
+		#define DGLOAD BOOL WINAPI DllMain(HINSTANCE hinstDLL, moduleDWORD fdwReason, LPVOID lpvReserved)
+	#else
+		#define DGLOAD __attribute__((constructor)) void
+	#endif
+#endif
+
+#ifndef DGUNLOAD
+	#ifdef DRAGON_PLAT_WINDOWS
+
+	#else
+		#define DGUNLOAD __attribute__((desstructor)) void
+	#endif
+#endif
+
 #define DRAGON_AUDIO_BUFFER_COUNT 16
 
 #define DRAGON_AUDIO_ENABLED    0x00000000
