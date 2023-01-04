@@ -10,6 +10,12 @@ extern "C" {
 #include <AL/efx-presets.h>
 #include <AL/efx.h>
 
+#ifdef _cplusplus
+	#include <vulkan/vulkan.hpp>
+#else
+	#include <vulkan/vulkan.h>
+#endif
+
 #ifndef DRAGON_BUS_SIZE
     #if INTPTR_MAX == INT32_MAX
         #define DRAGON_BUS_SIZE 32
@@ -26,22 +32,25 @@ extern "C" {
 	#define DRAGON_VERSION VK_MAKE_VERSION(@Dragon_VERSION_MAJOR@, @Dragon_VERSION_MINOR@, @Dragon_VERSION_PATCH@)
 #endif
 
-
-#ifdef _cplusplus
-	#include <vulkan/vulkan.hpp>
-#else
-	#include <vulkan/vulkan.h>
+#ifndef APP_VERSION
+	#ifdef VK_MAKE_API_VERSION
+		#define APP_VERSION VK_MAKE_API_VERSION(1, 0, 0, 0)
+	#else
+		#define APP_VERSION VK_MAKE_VERSION(1, 0, 0)
+	#endif
 #endif
 
-#define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
-#include <openxr/openxr.h>
+
+
+
+//#include <openxr/openxr.h>
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
 	//define something for Windows (32-bit and 64-bit, this part is common)
 	#ifndef APIENTRY
 		#include <Windows.h>
 	#endif
+	#include <vulkan/vulkan_win32.h>
 	#define DRAGON_PLAT_WINDOWS
 	#ifdef _WIN64
 		//define something for Windows (64-bit only)
@@ -85,6 +94,14 @@ extern "C" {
 #else
 	#error "Unknown compiler"
 #endif
+
+#ifdef DRAGON_PLAT_WINDOWS
+	#define VK_USE_PLATFORM_WIN32_KHR
+	#define GLFW_EXPOSE_NATIVE_WIN32
+#endif
+#define GLFW_INCLUDE_VULKAN
+#include <GLFW/glfw3.h>
+#include <GLFW/glfw3native.h>
 
 #include <assert.h>
 #include <ctype.h>

@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.20)
 
+set(LIBRARY_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
+set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
+
 if(POLICY CMP0077)
     cmake_policy(SET CMP0077 NEW)
 endif()
@@ -20,7 +23,7 @@ find_package(Doxygen)
 find_package(GTest)
 
 if(NOT BUILD_SHARED_LIBS)
-	option(Dragon_BUILD_SHARED "Set to OFF to build static, ON for shared." ON)
+	option(Dragon_BUILD_SHARED "Set to OFF to build static, ON for shared." OFF)
 else()
 	set(Dragon_BUILD_SHARED "Set to OFF to build static, ON for shared." ON)
 endif()
@@ -51,7 +54,6 @@ endif()
 add_subdirectory(external/glfw)
 add_subdirectory(external/openal)
 add_subdirectory(external/openxr)
-add_subdirectory(external/vulkan/headers)
 
 add_subdirectory(include/dragon)
 add_subdirectory(src)

@@ -7,5 +7,5 @@ macro(dragon_create_test TARGET SOURCES)
 	set_target_properties(${TARGET} PROPERTIES FOLDER ${TESTS_FOLDER})
 endmacro()
 
-dragon_create_test(test_dragon_open_window dragon_open_window.cpp)
-dragon_create_test(test_dragon_audio_test dragon_audio_test.cpp)
+dragon_create_test(test_dg_open_window open_window.cpp)
+dragon_create_test(test_dg_compute compute_test.cpp)
