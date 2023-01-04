@@ -1,6 +1,10 @@
 # add build compatibility in VSCode
 .vscode/*.json
 
+# Add Visual Studio Compatibility
+.vs/*
+cpp.hint
+
 #remove both possible build directories
 bin/
 build/
