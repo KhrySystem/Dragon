@@ -18,16 +18,10 @@ extern "C" {
     #include <vulkan/vulkan.h>
 #endif
 
-// define GLFW Macros based on OS
-#if BOOST_OS_WINDOWS
-    #define VK_USE_PLATFORM_WIN32_KHR
-    #define GLFW_EXPOSE_NATIVE_WIN32
-#endif
 #define GLFW_INCLUDE_VULKAN
 
 // Include GLFW Headers
 #include <glfw/glfw3.h>
-#include <glfw/glfw3native.h>
 
 // Properly define DGAPI
 #ifdef DG_C
