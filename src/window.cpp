@@ -7,12 +7,7 @@ DGAPI DgBool32 dgCreateWindow(DgEngine* pEngine, std::string title, unsigned int
 	DgWindow window;
 	window.window = glfw;
 
-	VkWin32SurfaceCreateInfoKHR createInfo{};
-	createInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
-	createInfo.hwnd = glfwGetWin32Window(glfw);
-	createInfo.hinstance = GetModuleHandle(nullptr);
-
-	if (vkCreateWin32SurfaceKHR(pEngine->vulkan, &createInfo, nullptr, &window.surface) != VK_SUCCESS) {
+	if (glfwCreateWindowSurface(pEngine->vulkan, window.window, nullptr, &window.surface) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create window surface!");
 	}
 

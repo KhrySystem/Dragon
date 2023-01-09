@@ -1,3 +1,6 @@
+#include <iterator>
+#include <vector>
+
 #include <dragon/dragon.hpp>
 
 DGAPI DgBool32 dgAddLayerToEngine(DgEngine* pEngine, std::string layerName) {
@@ -18,11 +21,15 @@ DGAPI DgBool32 dgAddLayerToEngine(DgEngine* pEngine, std::string layerName) {
 	return DG_FALSE;
 }
 
+DGAPI DgBool32 dgAddVkExtensionToEngine(DgEngine* pEngine, std::string extName) {
+	return DG_FALSE;
+}
+
 DGAPI DgBool32 dgCreateEngine(DgEngine* pEngine) {
 	// Must initialize GLFW first
 	if (!glfwInit())
 		return DG_FALSE;
-
+	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 	// Vulkan Initialization
 	#pragma region
 	VkApplicationInfo appInfo{};
@@ -45,7 +52,7 @@ DGAPI DgBool32 dgCreateEngine(DgEngine* pEngine) {
 	VkInstanceCreateInfo createInfo{};
 	uint32_t glfwExtensionCount = 0;
 	const char** glfwExtensions;
-	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+
 
 	createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 	createInfo.pApplicationInfo = &appInfo;
@@ -152,6 +159,7 @@ DGAPI void dgUpdate(DgEngine* pEngine) {
 		window = pEngine->windows.at(i).window;
 		if (glfwWindowShouldClose(window)) {
 			glfwDestroyWindow(window);
+			vkDestroySurfaceKHR(pEngine->vulkan, pEngine->windows.at(i).surface, nullptr);
 			pEngine->windows.erase(pEngine->windows.begin() + i);
 		}
 	}
