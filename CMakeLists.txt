@@ -52,7 +52,6 @@ else()
 endif()
 
 add_subdirectory(external/glfw)
-add_subdirectory(external/openal)
 add_subdirectory(external/openxr)
 
 add_subdirectory(include/dragon)
