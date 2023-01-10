@@ -34,14 +34,14 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL dgVulkanDebugCallback(
     return VK_FALSE;
 }
 
-void dgDestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator) {
+DGAPI void dgDestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator) {
     auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)glfwGetInstanceProcAddress(instance, "vkDestroyDebugUtilsMessengerEXT");
     if (func != nullptr) {
         func(instance, debugMessenger, pAllocator);
     }
 }
 
-void dgGLFWErrorCallback(int code, const char* description) {
+DGAPI void dgGLFWErrorCallback(int code, const char* description) {
     std::cerr << "GLFW Error:" << std::endl;
     std::cerr << "\tCode:" << code << std::endl;
     std::cerr << "\tMessage:" << description << std::endl;

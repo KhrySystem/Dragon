@@ -7,10 +7,11 @@
 #include "gpu.hpp"
 #include "window.hpp"
 
-typedef struct {
+typedef struct DgEngine {
 	VkInstance vulkan;
-	std::vector<std::string> validationLayers;
+	std::vector<const char*> vkExtensions;
 	#ifndef NDEBUG
+	std::vector<std::string> validationLayers;
 	VkDebugUtilsMessengerEXT debugMessenger;
 	#endif
 	DgGPU* primaryGPU;

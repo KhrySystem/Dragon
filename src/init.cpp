@@ -31,6 +31,29 @@ DGAPI DgBool32 dgCreateEngine(DgEngine* pEngine) {
 		return DG_FALSE;
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 	// Vulkan Initialization
+	glfwSetErrorCallback(dgGLFWErrorCallback);
+	if (!glfwVulkanSupported())
+		return DG_FALSE;
+
+	uint32_t count;
+	const char** extensions = glfwGetRequiredInstanceExtensions(&count);
+	int i;
+	for (i = 0; i <= (sizeof(extensions) / sizeof(extensions[0])) + 1; i++) {
+		bool found = false;
+		for (const char* ext : pEngine->vkExtensions) {
+			if (strcmp(extensions[i], ext)) {
+				found = true;
+			}
+
+		}
+
+		if (!found)
+			pEngine->vkExtensions.push_back(extensions[i]);
+	}
+
+	for (const char* ext : pEngine->vkExtensions) {
+		std::cout << ext << std::endl;
+	}
 	#pragma region
 	VkApplicationInfo appInfo{};
 	// Use the highest Vulkan version available, up to 1.3
@@ -50,13 +73,10 @@ DGAPI DgBool32 dgCreateEngine(DgEngine* pEngine) {
 	appInfo.engineVersion = DRAGON_VERSION;
 
 	VkInstanceCreateInfo createInfo{};
-	uint32_t glfwExtensionCount = 0;
-	const char** glfwExtensions;
-
 	createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 	createInfo.pApplicationInfo = &appInfo;
-	createInfo.enabledExtensionCount = glfwExtensionCount;
-	createInfo.ppEnabledExtensionNames = glfwExtensions;
+	createInfo.enabledExtensionCount = pEngine->vkExtensions.size();
+	createInfo.ppEnabledExtensionNames = pEngine->vkExtensions.data();
 
 	#ifndef NDEBUG
 	std::vector<const char*> layers(pEngine->validationLayers.size());

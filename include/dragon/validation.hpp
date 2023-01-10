@@ -15,4 +15,5 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL dgDebugCallback(
     return VK_FALSE;
 }
 DGAPI VkResult dgCreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger);
+DGAPI void dgGLFWErrorCallback(int code, const char* description);
 DGAPI void dgDestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator);

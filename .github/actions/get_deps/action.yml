@@ -2,13 +2,6 @@ name: Get Dragon Dependencies
 author: KhrySystem
 description: Gets and installs dependencies to build Dragon
 
-inputs:
-  cmake-generator:
-    required: true
-  boost-toolset:
-    required: true
-  platform-version:
-    required: true
 
 runs: 
   using: 'composite'
