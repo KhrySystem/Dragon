@@ -1,14 +1,12 @@
 # add build compatibility in VSCode
-.vscode/*.json
+.vscode/*
 
-# Add Visual Studio Compatibility
+# Remove Visual Studio directories and files
 .vs/*
 cpp.hint
 
-#remove both possible build directories
-bin/
-build/
-!tools/build/
-*.pyc
+# Remove all build directories
+out/*
+build/*
 
 include/dragon/dragon_core.h
