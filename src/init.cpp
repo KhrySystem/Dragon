@@ -13,16 +13,29 @@ DGAPI DgBool32 dgAddLayerToEngine(DgEngine* pEngine, std::string layerName) {
 
 	for (const auto& layerProperties : availableLayers) {
 		if (strcmp(layerName.c_str(), layerProperties.layerName) == 0) {
+			for (const char* ext : pEngine->vkExtensions) {
+				if (strcmp(ext, layerName.c_str()) == 0) {
+					std::cout << "VkValidationLayer " << layerName << " already added to DgEngine instance located at " << pEngine << std::endl;
+					return DG_TRUE;
+				}
+			}
+
 			pEngine->validationLayers.push_back(layerName);
 			return DG_TRUE;
-			break;
 		}
 	}
+	std::cout << "VkValidationLayer " << layerName << " not found in available extensions for DgEngine instance located at " << pEngine << std::endl;
 	return DG_FALSE;
 }
 
 DGAPI DgBool32 dgAddVkExtensionToEngine(DgEngine* pEngine, std::string extName) {
-	return DG_FALSE;
+	std::cout << extName << std::endl;
+	pEngine->vkExtensions.push_back(extName.c_str());
+	return DG_TRUE;
+}
+
+DGAPI void dgSetCallback(DgEngine* pEngine, std::function<void(DgMessage*)> optfCallback) {
+	pEngine->optfCallback = optfCallback;
 }
 
 DGAPI DgBool32 dgCreateEngine(DgEngine* pEngine) {
@@ -38,22 +51,13 @@ DGAPI DgBool32 dgCreateEngine(DgEngine* pEngine) {
 	uint32_t count;
 	const char** extensions = glfwGetRequiredInstanceExtensions(&count);
 	int i;
-	for (i = 0; i <= (sizeof(extensions) / sizeof(extensions[0])) + 1; i++) {
-		bool found = false;
-		for (const char* ext : pEngine->vkExtensions) {
-			if (strcmp(extensions[i], ext)) {
-				found = true;
-			}
-
+	for (i = 0; i < 2; i++) {
+		if (!dgAddVkExtensionToEngine(pEngine, std::string(extensions[i]))) {
+			std::cerr << "VkExtension " << extensions[i] << "was not found" << std::endl;
+			return DG_FALSE;
 		}
-
-		if (!found)
-			pEngine->vkExtensions.push_back(extensions[i]);
 	}
-
-	for (const char* ext : pEngine->vkExtensions) {
-		std::cout << ext << std::endl;
-	}
+	
 	#pragma region
 	VkApplicationInfo appInfo{};
 	// Use the highest Vulkan version available, up to 1.3
@@ -94,6 +98,7 @@ DGAPI DgBool32 dgCreateEngine(DgEngine* pEngine) {
 	VkResult result = vkCreateInstance(&createInfo, nullptr, &(pEngine->vulkan));
 
 	if (result != VK_SUCCESS)
+		std::cerr << "vkCreateInstance failed with result " << dgConvertVkResultToString(result) << std::endl;
 		return DG_FALSE;
 	#pragma endregion
 
@@ -103,7 +108,7 @@ DGAPI DgBool32 dgCreateEngine(DgEngine* pEngine) {
 	messengerCreateInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
 	messengerCreateInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
 	messengerCreateInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-	messengerCreateInfo.pfnUserCallback = dgDebugCallback;
+	messengerCreateInfo.pfnUserCallback = dgVulkanDebugCallback;
 	messengerCreateInfo.pUserData = nullptr; 
 	
 	result = dgCreateDebugUtilsMessengerEXT(pEngine->vulkan, &messengerCreateInfo, nullptr, &(pEngine->debugMessenger));
