@@ -10,11 +10,12 @@ endif()
 set(TOOLS_FOLDER tools)
 set(TESTS_FOLDER tests)
 
-set(CMAKE_C_STANDARD 17)
+set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 20)
 
 project(Dragon VERSION 1.0.1.1 LANGUAGES CXX C)
 
+include(CTest)
 include(tools/cmake/build_vars.cmake)
 
 find_package(Python REQUIRED COMPONENTS Interpreter)

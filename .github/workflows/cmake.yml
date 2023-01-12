@@ -1,0 +1,26 @@
+name: Dragon Build
+description: Build and Test DragonEngine
+on: [push, pull_request]
+
+jobs:
+  build-linux-debug:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Dragon
+        uses: actions/checkout@v3
+
+      - name: Install APT depencencies
+        run: | 
+          sudo apt update
+          sudo apt install build-essential cmake libgl1-mesa-dev libvulkan-dev libxrandr-dev libxinerama-dev \
+                           libxcursor-dev libxi-dev libxext-dev libx11-xcb-dev libxcb-dri2-0-dev libxcb-glx0-dev \
+                           libxcb-icccm4-dev libxcb-keysyms1-dev libxcb-randr0-dev libxrandr-dev libxxf86vm-dev \
+                           mesa-common-dev
+
+      - name: Build and Test Dragon as a debug shared library
+        run: |
+          cd {{ github.workspace }}
+          cmake -S ${{ github.workspace }} -B {{ github.workspace }}/build -DBUILD_SHARED_LIBS=ON \
+                -DCMAKE_BUILD_TYPE=Debug -DDYNAMIC_LOADER=ON
+          cmake cmake --build ${{github.workspace}}/bin --config Debug
+          ctest -C Debug
