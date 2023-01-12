@@ -18,8 +18,8 @@ jobs:
 
       - name: Build and Test Dragon as a debug shared library
         run: |
-          cd {{ github.workspace }}
-          cmake -S ${{ github.workspace }} -B {{ github.workspace }}/build -DBUILD_SHARED_LIBS=ON \
+          cd ${{ github.workspace }}
+          cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -DBUILD_SHARED_LIBS=ON \
                 -DCMAKE_BUILD_TYPE=Debug -DDYNAMIC_LOADER=ON
           cmake cmake --build ${{github.workspace}}/bin --config Debug
           ctest -C Debug
