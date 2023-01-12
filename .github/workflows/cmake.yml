@@ -16,6 +16,10 @@ jobs:
                            libxcb-icccm4-dev libxcb-keysyms1-dev libxcb-randr0-dev libxrandr-dev libxxf86vm-dev \
                            mesa-common-dev
 
+      - name: Update Git Subdirectories
+        run: |
+          git submodule init --update
+
       - name: Build and Test Dragon as a debug shared library
         run: |
           cd ${{ github.workspace }}
