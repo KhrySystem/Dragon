@@ -18,7 +18,7 @@ jobs:
 
       - name: Update Git Subdirectories
         run: |
-          git submodule init --update
+          git submodule update --init
 
       - name: Build and Test Dragon as a debug shared library
         run: |
