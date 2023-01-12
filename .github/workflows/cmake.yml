@@ -1,5 +1,4 @@
 name: Dragon Build
-description: Build and Test DragonEngine
 on: [push, pull_request]
 
 jobs:
