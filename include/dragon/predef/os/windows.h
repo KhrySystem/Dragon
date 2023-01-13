@@ -41,4 +41,4 @@ http://en.wikipedia.org/wiki/Category:Microsoft_Windows[Microsoft Windows] opera
 #if BOOST_OS_WINDOWS
 #   define BOOST_OS_WINDOWS_AVAILABLE
     #include "../detail/os_detected.h"
-#endif]
+#endif
