@@ -24,5 +24,5 @@ jobs:
         run: |
           cd ${{ github.workspace }}
           cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -DBUILD_SHARED_LIBS=ON -DDYNAMIC_LOADER=ON -DCMAKE_BUILD_TYPE=Debug
-          cmake cmake --build ${{github.workspace}}/build 
-          ctest -C Debug
+          cmake --build ${{github.workspace}}/build 
+          ctest -C Debug -S ${{ github.workspace }}/build
