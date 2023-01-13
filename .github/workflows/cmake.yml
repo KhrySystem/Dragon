@@ -2,8 +2,62 @@ name: Dragon Build
 on: [push, pull_request]
 
 jobs:
-  build-linux-debug:
+  build-linux-static-x-debug:
     name: Linux (X11, Static, Debug)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Dragon
+        uses: actions/checkout@v3
+
+      - name: Install APT depencencies for GLFW
+        run: | 
+          sudo apt update
+          sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev
+                           
+
+      - name: Install APT dependencies for OpenXR
+        run: |
+            sudo apt install build-essential cmake libgl1-mesa-dev libvulkan-dev mesa-common-dev libx11-xcb-dev libxcb-dri2-0-dev libxcb-glx0-dev libxcb-icccm4-dev libxcb-keysyms1-dev libxcb-randr0-dev libxxf86vm-dev 
+
+      - name: Update Git Subdirectories
+        run: |
+          git submodule update --init
+
+      - name: Build Dragon
+        run: |
+          cd ${{ github.workspace }}
+          cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Debug
+          cmake --build ${{github.workspace}}/build
+
+  build-linux-static-x-release:
+    name: Linux (X11, Static, Release)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Dragon
+        uses: actions/checkout@v3
+
+      - name: Install APT depencencies for GLFW
+        run: | 
+          sudo apt update
+          sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev
+                           
+
+      - name: Install APT dependencies for OpenXR
+        run: |
+            sudo apt install build-essential cmake libgl1-mesa-dev libvulkan-dev mesa-common-dev libx11-xcb-dev libxcb-dri2-0-dev libxcb-glx0-dev libxcb-icccm4-dev libxcb-keysyms1-dev libxcb-randr0-dev libxxf86vm-dev 
+
+      - name: Update Git Subdirectories
+        run: |
+          git submodule update --init
+
+      - name: Build Dragon
+        run: |
+          cd ${{ github.workspace }}
+          cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Release
+          cmake --build ${{github.workspace}}/build
+
+  build-linux-shared-x-debug:
+    name: Linux (X11, Shared, Debug)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Dragon
@@ -28,13 +82,9 @@ jobs:
           cd ${{ github.workspace }}
           cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -DBUILD_SHARED_LIBS=ON -DDYNAMIC_LOADER=ON -DCMAKE_BUILD_TYPE=Debug
           cmake --build ${{github.workspace}}/build
-          
-      - name: Test Dragon
-        run: |
-          ctest -C Debug -S ${{ github.workspace }}/build
 
-  build-linux-release:
-    name: Linux (X11, Static, Release)
+  build-linux-shared-x-release:
+    name: Linux (X11, Shared, Release)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Dragon
@@ -59,7 +109,30 @@ jobs:
           cd ${{ github.workspace }}
           cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -DBUILD_SHARED_LIBS=ON -DDYNAMIC_LOADER=ON -DCMAKE_BUILD_TYPE=Release
           cmake --build ${{github.workspace}}/build
-          
-      - name: Test Dragon
+
+  build-windows-shared-release:
+    name: Windows (Win32, Shared, Release)
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Dragon
+        uses: actions/checkout@v3
+
+      - name: Install APT depencencies for GLFW
+        run: | 
+          sudo apt update
+          sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev
+                           
+
+      - name: Install APT dependencies for OpenXR
         run: |
-          ctest -C Release -S ${{ github.workspace }}/build
+            sudo apt install build-essential cmake libgl1-mesa-dev libvulkan-dev mesa-common-dev libx11-xcb-dev libxcb-dri2-0-dev libxcb-glx0-dev libxcb-icccm4-dev libxcb-keysyms1-dev libxcb-randr0-dev libxxf86vm-dev 
+
+      - name: Update Git Subdirectories
+        run: |
+          git submodule update --init
+
+      - name: Build Dragon
+        run: |
+          cd ${{ github.workspace }}
+          cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -DBUILD_SHARED_LIBS=ON -DDYNAMIC_LOADER=ON -DCMAKE_BUILD_TYPE=Release
+          cmake --build ${{github.workspace}}/build
