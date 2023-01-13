@@ -121,6 +121,9 @@ jobs:
         run: |
           git submodule update --init
 
+      - name: Get Vulkan
+        uses: humbletim/install-vulkan-sdk@v1.1.1
+
       - name: Build Dragon
         run: |
           cd ${{ github.workspace }}
