@@ -13,18 +13,7 @@ VkResult dgCreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsM
 VKAPI_ATTR VkBool32 VKAPI_CALL dgVulkanDebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData) {
     std::cerr << "Vulkan Debug:" << std::endl;
     std::cerr << "\tSeverity: " << messageSeverity << std::endl;
-    std::cerr << "\tMessage Type" << messageType << std::endl;
-    std::cerr << "\tCallback Data:" << std::endl;
-    std::cerr << "\t\tcmdBufLabelCount" << pCallbackData->cmdBufLabelCount << std::endl;
-    std::cerr << "\t\tflags" << pCallbackData->flags << std::endl;
-    std::cerr << "\t\tmessageIdNumber" << pCallbackData->messageIdNumber << std::endl;
-    std::cerr << "\t\tobjectCount" << pCallbackData->objectCount << std::endl;
-    std::cerr << "\t\tcmdBufLabels" << pCallbackData->pCmdBufLabels << std::endl;
-    std::cerr << "\t\t\tcolor" << pCallbackData->pCmdBufLabels->color << std::endl;
-    std::cerr << "\t\t\tpLabelName" << pCallbackData->pCmdBufLabels->pLabelName << std::endl;
-    std::cerr << "\t\tpMessage" << pCallbackData->pMessage << std::endl;
-    std::cerr << "\t\tpMessageIdName" << pCallbackData->pMessageIdName << std::endl;
-    std::cerr << "\t\tqueueLabelCount" << pCallbackData->queueLabelCount << std::endl;
+    std::cerr << "\tMessage" << pCallbackData->pMessage << std::endl;
 
     return VK_FALSE;
 }
@@ -42,8 +31,10 @@ DGAPI void dgGLFWErrorCallback(int code, const char* description) {
     std::cerr << "\tMessage:" << description << std::endl;
 }
 
-DGAPI void dgSendMessage(DgMessage* pMessage) {
-    return;
+DGAPI void dgSendMessage(DgEngine* pEngine, DgMessage* pMessage) {
+	if (pEngine->fCallback != nullptr) {
+		pEngine->fCallback(pMessage);
+	}
 }
 
 DGAPI std::string dgConvertVkResultToString(VkResult result) {

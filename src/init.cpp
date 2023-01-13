@@ -15,116 +15,90 @@ DGAPI DgBool32 dgAddLayerToEngine(DgEngine* pEngine, std::string layerName) {
 		if (strcmp(layerName.c_str(), layerProperties.layerName) == 0) {
 			for (const char* ext : pEngine->vkExtensions) {
 				if (strcmp(ext, layerName.c_str()) == 0) {
+					#ifndef NDEBUG
 					std::cout << "VkValidationLayer " << layerName << " already added to DgEngine instance located at " << pEngine << std::endl;
+					#endif
 					return DG_TRUE;
 				}
 			}
 
-			pEngine->validationLayers.push_back(layerName);
+			pEngine->validationLayers.push_back(layerName.c_str());
 			return DG_TRUE;
 		}
 	}
+	#ifndef NDEBUG
 	std::cout << "VkValidationLayer " << layerName << " not found in available extensions for DgEngine instance located at " << pEngine << std::endl;
+	#endif
 	return DG_FALSE;
 }
 
-DGAPI DgBool32 dgAddVkExtensionToEngine(DgEngine* pEngine, std::string extName) {
-	std::cout << extName << std::endl;
-	pEngine->vkExtensions.push_back(extName.c_str());
+DGAPI DgBool32 dgAddVkExtensionToEngine(DgEngine* pEngine, const char* extName) {
+	pEngine->vkExtensions.push_back(extName);
 	return DG_TRUE;
 }
 
 DGAPI void dgSetCallback(DgEngine* pEngine, std::function<void(DgMessage*)> optfCallback) {
-	pEngine->optfCallback = optfCallback;
+	pEngine->fCallback = optfCallback;
 }
 
-DGAPI DgBool32 dgCreateEngine(DgEngine* pEngine) {
-	// Must initialize GLFW first
-	if (!glfwInit())
-		return DG_FALSE;
-	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-	// Vulkan Initialization
-	glfwSetErrorCallback(dgGLFWErrorCallback);
-	if (!glfwVulkanSupported())
-		return DG_FALSE;
-
-	uint32_t count;
-	const char** extensions = glfwGetRequiredInstanceExtensions(&count);
-	int i;
-	for (i = 0; i < 2; i++) {
-		if (!dgAddVkExtensionToEngine(pEngine, std::string(extensions[i]))) {
-			std::cerr << "VkExtension " << extensions[i] << "was not found" << std::endl;
-			return DG_FALSE;
-		}
-	}
-	
-	#pragma region
+void _dgSetupVulkan(DgEngine* pEngine) {
+	// App info. Contains info about the Engine, the user app, etc.
 	VkApplicationInfo appInfo{};
 	// Use the highest Vulkan version available, up to 1.3
 	#if defined(VK_API_VERSION_1_3)
-	appInfo.apiVersion = VK_API_VERSION_1_3;
+		appInfo.apiVersion = VK_API_VERSION_1_3;
 	#elif defined(VK_API_VERSION_1_2)
-	appInfo.apiVersion = VK_API_VERSION_1_2;
+		appInfo.apiVersion = VK_API_VERSION_1_2;
 	#elif defined(VK_API_VERSION_1_1)
-	appInfo.apiVersion = VK_API_VERSION_1_1;
+		appInfo.apiVersion = VK_API_VERSION_1_1;
 	#elif defined(VK_API_VERSION_1_0)
-	appInfo.apiVersion = VK_API_VERSION_1_0;
+		appInfo.apiVersion = VK_API_VERSION_1_0;
 	#endif
 	appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-	appInfo.pApplicationName = "dgEngine";
+	appInfo.pApplicationName = APP_NAME;
 	appInfo.applicationVersion = APP_VERSION;
 	appInfo.pEngineName = "Dragon Engine";
 	appInfo.engineVersion = DRAGON_VERSION;
 
+	// Instance Create Info. Used in the vkCreateInstance function
 	VkInstanceCreateInfo createInfo{};
 	createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 	createInfo.pApplicationInfo = &appInfo;
 	createInfo.enabledExtensionCount = pEngine->vkExtensions.size();
 	createInfo.ppEnabledExtensionNames = pEngine->vkExtensions.data();
 
+	// If we're not in debug mode, no validation layers should be added to the engine
 	#ifndef NDEBUG
-	std::vector<const char*> layers(pEngine->validationLayers.size());
-	for (int i = 0; i < pEngine->validationLayers.size(); i++) {
-		layers.at(i) = pEngine->validationLayers.at(i).c_str();
-	}
-
-	createInfo.enabledLayerCount = pEngine->validationLayers.size();
-	createInfo.ppEnabledLayerNames = layers.data();
+		createInfo.enabledLayerCount = pEngine->validationLayers.size();
+		createInfo.ppEnabledLayerNames = pEngine->validationLayers.data();
 	#else
-	createInfo.enabledLayerCount = 0;
-	createInfo.ppEnabledLayerNames = nullptr;
+		createInfo.enabledLayerCount = 0;
+		createInfo.ppEnabledLayerNames = nullptr;
 	#endif
-
+	// Officially create the VkInstance
 	VkResult result = vkCreateInstance(&createInfo, nullptr, &(pEngine->vulkan));
 
-	if (result != VK_SUCCESS)
-		std::cerr << "vkCreateInstance failed with result " << dgConvertVkResultToString(result) << std::endl;
-		return DG_FALSE;
-	#pragma endregion
-
-	// VkDebugMessenger Initialization
-	#ifndef NDEBUG
+	// Ensure result is ok
+	assert(result == VK_SUCCESS);
+}
+#ifndef NDEBUG
+void _dgSetupVulkanDebug(DgEngine* pEngine) {
 	VkDebugUtilsMessengerCreateInfoEXT messengerCreateInfo{};
 	messengerCreateInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-	messengerCreateInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+	messengerCreateInfo.messageSeverity =  VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
 	messengerCreateInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
 	messengerCreateInfo.pfnUserCallback = dgVulkanDebugCallback;
-	messengerCreateInfo.pUserData = nullptr; 
-	
-	result = dgCreateDebugUtilsMessengerEXT(pEngine->vulkan, &messengerCreateInfo, nullptr, &(pEngine->debugMessenger));
+	messengerCreateInfo.pUserData = nullptr;
 
-	if (result != VK_SUCCESS)
-		return DG_FALSE;
-	#endif
-
-	// Get GPUs and start compute API
-	#pragma region
+	VkResult result = dgCreateDebugUtilsMessengerEXT(pEngine->vulkan, &messengerCreateInfo, nullptr, &(pEngine->debugMessenger));
+	assert(result == VK_SUCCESS);
+}
+#endif
+void _dgSetupGPUs(DgEngine* pEngine) {
 	uint32_t deviceCount = 0;
 	vkEnumeratePhysicalDevices(pEngine->vulkan, &deviceCount, nullptr);
 
-	if (deviceCount == 0) {
-		return DG_FALSE;
-	}
+	assert(deviceCount != 0);
 
 	std::vector<VkPhysicalDevice> devices(deviceCount);
 	vkEnumeratePhysicalDevices(pEngine->vulkan, &deviceCount, devices.data());
@@ -137,11 +111,11 @@ DGAPI DgBool32 dgCreateEngine(DgEngine* pEngine) {
 		dgFindQueueFamilies(&gpu);
 		pEngine->gpus.push_back(gpu);
 	}
-	assert(pEngine->gpus.at(0).queueFamilies.graphicsQueueFamily.has_value() && "No GraphicsQueue found on GPU 0.");
+	assert(pEngine->gpus.at(0).queueFamilies.graphicsQueueFamily.has_value());
 	pEngine->primaryGPU = &pEngine->gpus.at(0);
-	#pragma endregion
-	// Start Graphics Queue Buffers
-	#pragma region
+}
+
+void _dgStartQueueBuffers(DgEngine* pEngine) {
 	VkDeviceQueueCreateInfo queueCreateInfo{};
 	queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 	queueCreateInfo.queueFamilyIndex = pEngine->primaryGPU->queueFamilies.graphicsQueueFamily.value();
@@ -157,22 +131,50 @@ DGAPI DgBool32 dgCreateEngine(DgEngine* pEngine) {
 
 	deviceCreateInfo.pEnabledFeatures = &pEngine->primaryGPU->features;
 
-	deviceCreateInfo.enabledExtensionCount = 0;
+	deviceCreateInfo.enabledExtensionCount = pEngine->vkDeviceExtensions.size();
+	deviceCreateInfo.ppEnabledExtensionNames = pEngine->vkDeviceExtensions.data();
 
 	#ifndef NDEBUG
-	deviceCreateInfo.enabledLayerCount = static_cast<uint32_t>(layers.size());
-	deviceCreateInfo.ppEnabledLayerNames = layers.data();
+		deviceCreateInfo.enabledLayerCount = static_cast<uint32_t>(pEngine->validationLayers.size());
+		deviceCreateInfo.ppEnabledLayerNames = pEngine->validationLayers.data();
 	#else
-	deviceCreateInfo.enabledLayerCount = 0;
+		deviceCreateInfo.enabledLayerCount = 0;
 	#endif
-	result = vkCreateDevice((pEngine->primaryGPU->handle), &deviceCreateInfo, nullptr, &(pEngine->primaryGPU->device));
+	VkResult result = vkCreateDevice((pEngine->primaryGPU->handle), &deviceCreateInfo, nullptr, &(pEngine->primaryGPU->device));
 
-	if (result != VK_SUCCESS) {
-		return DG_FALSE;
-	}
+	assert(result == VK_SUCCESS);
 
 	vkGetDeviceQueue(pEngine->primaryGPU->device, pEngine->primaryGPU->queueFamilies.graphicsQueueFamily.value(), 0, &pEngine->primaryGPU->graphicsQueue);
-	#pragma endregion
+}
+
+
+DGAPI DgBool32 dgCreateEngine(DgEngine* pEngine) {
+	// Must initialize GLFW first
+	#if BOOST_OS_WINDOWS
+	pEngine->vkExtensions.push_back("VK_KHR_win32_surface");
+	#endif
+
+	assert(glfwInit());
+	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+
+	// Vulkan Initialization
+	glfwSetErrorCallback(dgGLFWErrorCallback);
+
+	assert(glfwVulkanSupported());
+
+	_dgSetupVulkan(pEngine);
+
+	// VkDebugMessenger Initialization
+	#ifndef NDEBUG
+	_dgSetupVulkanDebug(pEngine);
+	#endif
+
+	// Get GPUs and start compute API
+	_dgSetupGPUs(pEngine);
+
+	// Start Graphics Queue Buffers
+	_dgStartQueueBuffers(pEngine);
+
 	return DG_TRUE;
 }
 

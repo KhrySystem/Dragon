@@ -9,5 +9,5 @@ VKAPI_ATTR VkBool32 VKAPI_CALL dgVulkanDebugCallback(VkDebugUtilsMessageSeverity
 DGAPI VkResult dgCreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger);
 DGAPI void dgGLFWErrorCallback(int code, const char* description);
 DGAPI void dgDestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator);
-DGAPI void dgSendMessage(DgMessage* message);
+DGAPI void dgSendMessage(DgEngine* pEngine, DgMessage* message);
 DGAPI std::string dgConvertVkResultToString(VkResult result);

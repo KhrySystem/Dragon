@@ -23,3 +23,7 @@ DGAPI void dgFindQueueFamilies(DgGPU* pGPU) {
 DGAPI void dgGeneratePresentationQueue(DgGPU* pGPU, DgWindow* pWindow) {
 
 }
+
+DGAPI void dgGetSwapChainSupport(DgGPU* gpu) {
+
+}

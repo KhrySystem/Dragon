@@ -10,6 +10,13 @@ typedef struct {
 	std::optional<uint32_t> presentationQueueFamily;
 } dgQueueFamilies;
 
+
+typedef struct {
+	VkSurfaceCapabilitiesKHR capabilities;
+	std::vector<VkSurfaceFormatKHR> formats;
+	std::vector<VkPresentModeKHR> presentModes;
+} dgSwapChainSupportDetails;
+
 typedef struct {
 	VkPhysicalDevice handle;
 	VkPhysicalDeviceProperties properties;
@@ -18,7 +25,11 @@ typedef struct {
 	VkDevice device;
 	VkQueue graphicsQueue;
 	VkQueue presentationQueue;
+	dgSwapChainSupportDetails swapChainSupportDetails;
+
+	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
 } DgGPU;
 
-
+// Helper creation/destruction methods
 DGAPI void dgFindQueueFamilies(DgGPU* gpu);
+DGAPI void dgGetSwapChainSupport(DgGPU* gpu);
