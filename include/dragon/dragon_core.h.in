@@ -3,6 +3,8 @@
 extern "C" {
 #endif
 
+#include <cstring>
+
 #include "predef/architecture.h"
 #include "predef/compiler.h"
 #include "predef/language.h"
