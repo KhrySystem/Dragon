@@ -117,16 +117,6 @@ jobs:
       - name: Checkout Dragon
         uses: actions/checkout@v3
 
-      - name: Install APT depencencies for GLFW
-        run: | 
-          sudo apt update
-          sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev
-                           
-
-      - name: Install APT dependencies for OpenXR
-        run: |
-            sudo apt install build-essential cmake libgl1-mesa-dev libvulkan-dev mesa-common-dev libx11-xcb-dev libxcb-dri2-0-dev libxcb-glx0-dev libxcb-icccm4-dev libxcb-keysyms1-dev libxcb-randr0-dev libxxf86vm-dev 
-
       - name: Update Git Subdirectories
         run: |
           git submodule update --init
