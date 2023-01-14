@@ -3,6 +3,7 @@
 
 #include <dragon/dragon.hpp>
 
+#ifndef NDEBUG
 DGAPI DgBool32 dgAddLayerToEngine(DgEngine* pEngine, std::string layerName) {
 	// Check Vulkan Layers
 	uint32_t layerCount;
@@ -31,6 +32,7 @@ DGAPI DgBool32 dgAddLayerToEngine(DgEngine* pEngine, std::string layerName) {
 	#endif
 	return DG_FALSE;
 }
+#endif
 
 DGAPI DgBool32 dgAddVkExtensionToEngine(DgEngine* pEngine, const char* extName) {
 	pEngine->vkExtensions.push_back(extName);
