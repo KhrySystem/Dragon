@@ -9,7 +9,7 @@ jobs:
       matrix:
         os: [ ubuntu-18.04, ubuntu-20.04 ]
         config: [ Debug, Release ]
-        shared: [ "ON", "OFF" ]
+        type: [ BUILD_SHARED_LIBS=ON, BUILD_SHARED_LIBS=OFF ]
     
     steps:
       - name: Checkout Repository
@@ -18,7 +18,7 @@ jobs:
       - name: Install APT dependencies for GLFW
         run: |
           sudo apt update
-          sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libext-dev
+          sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev
 
       - name: Update Git Subdirectories
         run: |
@@ -26,7 +26,7 @@ jobs:
 
       - name: Build Dragon
         run: |
-          cmake . -B build -DBUILD_SHARED_LIBS=${{ matrix.shared }} -DCMAKE_BUILD_TYPE=${{ matrix.config }}
+          cmake . -B build -D${{ matrix.type }} -DCMAKE_BUILD_TYPE=${{ matrix.config }}
           cmake --build ${{github.workspace}}/build
 
 
@@ -42,11 +42,6 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Install APT dependencies for GLFW
-        run: |
-          sudo apt update
-          sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libext-dev
-
       - name: Update Git Subdirectories
         run: |
           git submodule update --init
@@ -56,5 +51,5 @@ jobs:
 
       - name: Build Dragon
         run: |
-          cmake . -B build -DBUILD_SHARED_LIBS=${{ matrix.shared }} -DCMAKE_BUILD_TYPE=${{ matrix.config }}
+          cmake . -B build -D${{ matrix.type }} -DCMAKE_BUILD_TYPE=${{ matrix.config }}
           cmake --build ${{github.workspace}}/build
