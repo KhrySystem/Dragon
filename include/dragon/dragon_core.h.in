@@ -20,8 +20,8 @@ extern "C" {
     #include <vulkan/vulkan.h>
 #endif
 
+#define GLFW_INCLUDE_NONE
 #define GLFW_INCLUDE_VULKAN
-
 // Include GLFW Headers
 #include <GLFW/glfw3.h>
 
