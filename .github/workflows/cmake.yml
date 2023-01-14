@@ -33,6 +33,11 @@ jobs:
           cmake . -B build -D${{ matrix.type }} -DCMAKE_BUILD_TYPE=Release
           cmake --build ${{github.workspace}}/build
 
+      - name: Test Dragon
+        run: |
+          cd ${{github.workspace}}/build
+          ctest -W --output-on-failure --parallel 2
+
 
   build-windows:
     name: Windows
@@ -57,3 +62,8 @@ jobs:
         run: |
           cmake . -B build -D${{ matrix.type }} -DCMAKE_BUILD_TYPE=Release
           cmake --build ${{github.workspace}}/build
+
+      - name: Test Dragon
+        run: |
+          cd ${{github.workspace}}/build
+          ctest -W --output-on-failure --parallel 2

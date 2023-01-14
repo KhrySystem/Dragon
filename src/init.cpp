@@ -133,14 +133,6 @@ void _dgStartQueueBuffers(DgEngine* pEngine) {
 
 	queueCreateInfos.push_back(graphicsQueueCreateInfo);
 
-	VkDeviceQueueCreateInfo presentQueueCreateInfo{};
-	presentQueueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-	presentQueueCreateInfo.queueFamilyIndex = pEngine->primaryGPU->queueFamilies.presentationQueueFamily.value();
-	presentQueueCreateInfo.queueCount = 1;
-	presentQueueCreateInfo.pQueuePriorities = &queuePriority;
-
-	queueCreateInfos.push_back(presentQueueCreateInfo);
-
 	VkDeviceCreateInfo deviceCreateInfo{};
 	deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 
@@ -218,10 +210,13 @@ DGAPI void dgTerminateEngine(DgEngine* pEngine) {
 			vkDestroyDevice(gpu.device, nullptr);
 		}
 	}
-
-	for (DgWindow window : pEngine->windows) {
-		vkDestroySurfaceKHR(pEngine->vulkan, window.surface, nullptr);
+		
+	for (int i = 0; i < pEngine->windows.size(); i++) {
+		glfwDestroyWindow(pEngine->windows.at(i).window);
+		vkDestroySurfaceKHR(pEngine->vulkan, pEngine->windows.at(i).surface, nullptr);
+		pEngine->windows.erase(pEngine->windows.begin() + i);
 	}
+	
 	vkDestroyInstance(pEngine->vulkan, nullptr);
 	glfwTerminate();
 }

@@ -32,8 +32,14 @@ DGAPI void dgGeneratePresentationQueue(DgGPU* pGPU, DgWindow* pWindow) {
 
 		if (presentSupport)
 			pGPU->queueFamilies.presentationQueueFamily = i;
-
 	}
+
+	VkDeviceQueueCreateInfo presentQueueCreateInfo{};
+	presentQueueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+	presentQueueCreateInfo.queueFamilyIndex =pGPU->queueFamilies.presentationQueueFamily.value();
+	presentQueueCreateInfo.queueCount = 1;
+	float queuePriority = 1.0f;
+	presentQueueCreateInfo.pQueuePriorities = &queuePriority;
 }
 
 DGAPI void dgGetSwapChainSupport(DgGPU* gpu) {
