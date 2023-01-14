@@ -9,5 +9,3 @@ typedef struct {
 	VkSurfaceKHR surface;
 } DgWindow;
 
-#include "engine.hpp"
-

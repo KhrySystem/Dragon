@@ -3,7 +3,7 @@
 #include <optional>
 
 #include "dragon_core.h"
-#include "engine.hpp"
+#include "window.hpp"
 
 typedef struct {
 	std::optional<uint32_t> graphicsQueueFamily;
@@ -32,4 +32,5 @@ typedef struct {
 
 // Helper creation/destruction methods
 DGAPI void dgFindQueueFamilies(DgGPU* gpu);
+DGAPI void dgGeneratePresentationQueue(DgGPU* pGPU, DgWindow* window);
 DGAPI void dgGetSwapChainSupport(DgGPU* gpu);

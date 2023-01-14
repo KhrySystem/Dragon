@@ -116,18 +116,31 @@ void _dgSetupGPUs(DgEngine* pEngine) {
 }
 
 void _dgStartQueueBuffers(DgEngine* pEngine) {
-	VkDeviceQueueCreateInfo queueCreateInfo{};
-	queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-	queueCreateInfo.queueFamilyIndex = pEngine->primaryGPU->queueFamilies.graphicsQueueFamily.value();
-	queueCreateInfo.queueCount = 1;
+	
+	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
+
+	VkDeviceQueueCreateInfo graphicsQueueCreateInfo{};
+	graphicsQueueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+	graphicsQueueCreateInfo.queueFamilyIndex = pEngine->primaryGPU->queueFamilies.graphicsQueueFamily.value();
+	graphicsQueueCreateInfo.queueCount = 1;
 	float queuePriority = 1.0f;
-	queueCreateInfo.pQueuePriorities = &queuePriority;
+	graphicsQueueCreateInfo.pQueuePriorities = &queuePriority;
+
+	queueCreateInfos.push_back(graphicsQueueCreateInfo);
+
+	VkDeviceQueueCreateInfo presentQueueCreateInfo{};
+	presentQueueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+	presentQueueCreateInfo.queueFamilyIndex = pEngine->primaryGPU->queueFamilies.presentationQueueFamily.value();
+	presentQueueCreateInfo.queueCount = 1;
+	presentQueueCreateInfo.pQueuePriorities = &queuePriority;
+
+	queueCreateInfos.push_back(presentQueueCreateInfo);
 
 	VkDeviceCreateInfo deviceCreateInfo{};
 	deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 
-	deviceCreateInfo.pQueueCreateInfos = &queueCreateInfo;
-	deviceCreateInfo.queueCreateInfoCount = 1;
+	deviceCreateInfo.pQueueCreateInfos = queueCreateInfos.data();
+	deviceCreateInfo.queueCreateInfoCount = queueCreateInfos.size();
 
 	deviceCreateInfo.pEnabledFeatures = &pEngine->primaryGPU->features;
 

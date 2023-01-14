@@ -29,8 +29,6 @@ DragonEngine is a C++, code-first, thin and lightweight Vulkan 3D game engine de
       - glfw/                        GLFW Headers
       - glm/                         GLM Headers
       - openal/                      OpenAL Headers
-      - opencl/                      Only if OpenCL was not pre-installed
-      - openxr/                      OpenXR Headers
       - vulkan/                      Only if Vulkan was not pre-installed
  - src/
       - boost/                       Only if Boost was not pre-installed
@@ -38,8 +36,6 @@ DragonEngine is a C++, code-first, thin and lightweight Vulkan 3D game engine de
       - glfw/                        GLFW Source
       - glm/                         GLM Source
       - openal/                      OpenAL Source
-      - opencl/                      Only if OpenCL was not pre-installed
-      - openxr/                      OpenXR Source
       - vulkan/                      Only if Vulkan was not pre-installed
 ```
 

@@ -1,9 +1,6 @@
 [submodule "external/glfw"]
 	path = external/glfw
 	url = https://github.com/glfw/glfw
-[submodule "external/openxr"]
-	path = external/openxr
-	url = https://github.com/KhronosGroup/OpenXR-SDK-Source
 [submodule "external/pysimplegui"]
 	path = external/pysimplegui
 	url = https://github.com/PySimpleGUI/PySimpleGUI
