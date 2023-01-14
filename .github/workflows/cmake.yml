@@ -2,22 +2,23 @@ name: Dragon Build
 on: [push, pull_request]
 
 jobs:
-  build-linux-static-x-debug:
-    name: Linux (X11, Static, Debug)
-    runs-on: ubuntu-latest
+  build-linux:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ ubuntu-18.04, ubuntu-20.04 ]
+        config: [ Debug, Release ]
+        shared: [ "ON", "OFF" ]
+    
     steps:
-      - name: Checkout Dragon
+      - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Install APT depencencies for GLFW
-        run: | 
-          sudo apt update
-          sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev
-                           
-
-      - name: Install APT dependencies for OpenXR
+      - name: Install APT dependencies for GLFW
         run: |
-            sudo apt install build-essential cmake libgl1-mesa-dev libvulkan-dev mesa-common-dev libx11-xcb-dev libxcb-dri2-0-dev libxcb-glx0-dev libxcb-icccm4-dev libxcb-keysyms1-dev libxcb-randr0-dev libxxf86vm-dev 
+          sudo apt update
+          sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libext-dev
 
       - name: Update Git Subdirectories
         run: |
@@ -25,97 +26,26 @@ jobs:
 
       - name: Build Dragon
         run: |
-          cd ${{ github.workspace }}
-          cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Debug
+          cmake . -B build -DBUILD_SHARED_LIBS=${{ matrix.shared }} -DCMAKE_BUILD_TYPE=${{ matrix.config }}
           cmake --build ${{github.workspace}}/build
 
-  build-linux-static-x-release:
-    name: Linux (X11, Static, Release)
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Dragon
-        uses: actions/checkout@v3
 
-      - name: Install APT depencencies for GLFW
-        run: | 
-          sudo apt update
-          sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev
-                           
-
-      - name: Install APT dependencies for OpenXR
-        run: |
-            sudo apt install build-essential cmake libgl1-mesa-dev libvulkan-dev mesa-common-dev libx11-xcb-dev libxcb-dri2-0-dev libxcb-glx0-dev libxcb-icccm4-dev libxcb-keysyms1-dev libxcb-randr0-dev libxxf86vm-dev 
-
-      - name: Update Git Subdirectories
-        run: |
-          git submodule update --init
-
-      - name: Build Dragon
-        run: |
-          cd ${{ github.workspace }}
-          cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Release
-          cmake --build ${{github.workspace}}/build
-
-  build-linux-shared-x-debug:
-    name: Linux (X11, Shared, Debug)
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Dragon
-        uses: actions/checkout@v3
-
-      - name: Install APT depencencies for GLFW
-        run: | 
-          sudo apt update
-          sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev
-                           
-
-      - name: Install APT dependencies for OpenXR
-        run: |
-            sudo apt install build-essential cmake libgl1-mesa-dev libvulkan-dev mesa-common-dev libx11-xcb-dev libxcb-dri2-0-dev libxcb-glx0-dev libxcb-icccm4-dev libxcb-keysyms1-dev libxcb-randr0-dev libxxf86vm-dev 
-
-      - name: Update Git Subdirectories
-        run: |
-          git submodule update --init
-
-      - name: Build Dragon
-        run: |
-          cd ${{ github.workspace }}
-          cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -DBUILD_SHARED_LIBS=ON -DDYNAMIC_LOADER=ON -DCMAKE_BUILD_TYPE=Debug
-          cmake --build ${{github.workspace}}/build
-
-  build-linux-shared-x-release:
-    name: Linux (X11, Shared, Release)
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Dragon
-        uses: actions/checkout@v3
-
-      - name: Install APT depencencies for GLFW
-        run: | 
-          sudo apt update
-          sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev
-                           
-
-      - name: Install APT dependencies for OpenXR
-        run: |
-            sudo apt install build-essential cmake libgl1-mesa-dev libvulkan-dev mesa-common-dev libx11-xcb-dev libxcb-dri2-0-dev libxcb-glx0-dev libxcb-icccm4-dev libxcb-keysyms1-dev libxcb-randr0-dev libxxf86vm-dev 
-
-      - name: Update Git Subdirectories
-        run: |
-          git submodule update --init
-
-      - name: Build Dragon
-        run: |
-          cd ${{ github.workspace }}
-          cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -DBUILD_SHARED_LIBS=ON -DDYNAMIC_LOADER=ON -DCMAKE_BUILD_TYPE=Release
-          cmake --build ${{github.workspace}}/build
-
-  build-windows-shared-release:
-    name: Windows (Win32, Shared, Release)
+  build-windows:
     runs-on: windows-latest
+
+    strategy:
+      matrix:
+        config: [ Debug, Release ]
+        shared: [ "ON", "OFF" ]
+    
     steps:
-      - name: Checkout Dragon
+      - name: Checkout Repository
         uses: actions/checkout@v3
+
+      - name: Install APT dependencies for GLFW
+        run: |
+          sudo apt update
+          sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libext-dev
 
       - name: Update Git Subdirectories
         run: |
@@ -126,6 +56,5 @@ jobs:
 
       - name: Build Dragon
         run: |
-          cd ${{ github.workspace }}
-          cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -DBUILD_SHARED_LIBS=ON -DDYNAMIC_LOADER=ON -DCMAKE_BUILD_TYPE=Release
+          cmake . -B build -DBUILD_SHARED_LIBS=${{ matrix.shared }} -DCMAKE_BUILD_TYPE=${{ matrix.config }}
           cmake --build ${{github.workspace}}/build
