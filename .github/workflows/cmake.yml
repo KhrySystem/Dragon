@@ -20,6 +20,10 @@ jobs:
           sudo apt update
           sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev
 
+      - name: Install Vulkan
+        run: |
+          sudo apt install libvulkan libvulkan-dev mesa-vulkan-drivers vulkan-utils
+
       - name: Update Git Subdirectories
         run: |
           git submodule update --init
@@ -36,7 +40,7 @@ jobs:
     strategy:
       matrix:
         config: [ Debug, Release ]
-        shared: [ "ON", "OFF" ]
+        type: [ BUILD_SHARED_LIBS=ON, BUILD_SHARED_LIBS=OFF ]
     
     steps:
       - name: Checkout Repository
@@ -46,7 +50,7 @@ jobs:
         run: |
           git submodule update --init
 
-      - name: Get Vulkan
+      - name: Install Vulkan
         uses: humbletim/install-vulkan-sdk@v1.1.1
 
       - name: Build Dragon
