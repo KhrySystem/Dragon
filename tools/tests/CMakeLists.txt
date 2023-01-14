@@ -9,3 +9,6 @@ endmacro()
 
 dragon_create_test(test_dg_open_window open_window.cpp)
 dragon_create_test(test_dg_compute compute_test.cpp)
+dragon_create_test(unit_eval_functions unit_test_eval_functions.cpp)
+
+add_test(NAME unit_eval_functions COMMAND $<TARGET_FILE:unit_eval_functions>)

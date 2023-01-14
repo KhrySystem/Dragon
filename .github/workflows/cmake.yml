@@ -3,6 +3,7 @@ on: [push, pull_request]
 
 jobs:
   build-linux:
+    name: Linux
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -35,6 +36,7 @@ jobs:
 
 
   build-windows:
+    name: Windows
     runs-on: windows-latest
 
     strategy:
