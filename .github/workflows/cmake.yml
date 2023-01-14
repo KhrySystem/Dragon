@@ -9,7 +9,6 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-18.04, ubuntu-20.04 ]
-        config: [ Debug, Release ]
         type: [ BUILD_SHARED_LIBS=ON, BUILD_SHARED_LIBS=OFF ]
     
     steps:
@@ -31,7 +30,7 @@ jobs:
 
       - name: Build Dragon
         run: |
-          cmake . -B build -D${{ matrix.type }} -DCMAKE_BUILD_TYPE=${{ matrix.config }}
+          cmake . -B build -D${{ matrix.type }} -DCMAKE_BUILD_TYPE=Release
           cmake --build ${{github.workspace}}/build
 
 
@@ -41,7 +40,6 @@ jobs:
 
     strategy:
       matrix:
-        config: [ Debug, Release ]
         type: [ BUILD_SHARED_LIBS=ON, BUILD_SHARED_LIBS=OFF ]
     
     steps:
@@ -57,5 +55,5 @@ jobs:
 
       - name: Build Dragon
         run: |
-          cmake . -B build -D${{ matrix.type }} -DCMAKE_BUILD_TYPE=${{ matrix.config }}
+          cmake . -B build -D${{ matrix.type }} -DCMAKE_BUILD_TYPE=Release
           cmake --build ${{github.workspace}}/build
