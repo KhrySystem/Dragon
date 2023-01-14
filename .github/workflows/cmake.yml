@@ -36,7 +36,8 @@ jobs:
       - name: Test Dragon
         run: |
           cd ${{github.workspace}}/build
-          ctest -W --output-on-failure --parallel 2 -C Release
+          ctest -VV --output-on-failure --parallel 2 -C Release
+          cat ${{ github.workspace }}/build/Testing/Temporary/LastTestsFailed.log
 
 
   build-windows:
@@ -61,10 +62,10 @@ jobs:
       - name: Build Dragon
         run: |
           cmake . -B build -D${{ matrix.type }} -DCMAKE_BUILD_TYPE=Release
-          cmake --build ${{github.workspace}}/build
+          cmake --build build
 
       - name: Test Dragon
         run: |
           cd ${{github.workspace}}/build
           ctest -VV --output-on-failure --parallel 2 -C Release
-          cat ${{ github.workspace }}/build/Testing/Temporary/LastTestsFailed.log
+          type ${{ github.workspace }}\build\Testing\Temporary\LastTestsFailed.log
