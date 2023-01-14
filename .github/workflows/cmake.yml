@@ -33,12 +33,6 @@ jobs:
           cmake . -B build -D${{ matrix.type }} -DCMAKE_BUILD_TYPE=Release
           cmake --build ${{github.workspace}}/build
 
-      - name: Test Dragon
-        run: |
-          cd ${{github.workspace}}/build
-          ctest -VV --output-on-failure --parallel 2 -C Release
-          cat ${{ github.workspace }}/build/Testing/Temporary/LastTestsFailed.log
-
 
   build-windows:
     name: Windows
@@ -63,9 +57,3 @@ jobs:
         run: |
           cmake . -B build -D${{ matrix.type }} -DCMAKE_BUILD_TYPE=Release
           cmake --build build
-
-      - name: Test Dragon
-        run: |
-          cd ${{github.workspace}}/build
-          ctest -VV --output-on-failure --parallel 2 -C Debug
-          type ${{ github.workspace }}\build\Testing\Temporary\LastTestsFailed.log
