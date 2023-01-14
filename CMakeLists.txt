@@ -41,17 +41,6 @@ set(GLFW_BUILD_DOCS ${Dragon_BUILD_DOCS})
 
 set(Dragon_LIB_NAME dragon-${Dragon_VERSION})
 
-if(BUILD_SHARED_LIBS)
-	add_compile_definitions(DRAGON_DLL)
-	if(WIN32)
-		set(GLFW_VULKAN_STATIC OFF)
-	endif()
-else()
-	if(WIN32)
-		set(GLFW_VULKAN_STATIC ON)
-	endif()
-endif()
-
 add_subdirectory(external/glfw)
 
 add_subdirectory(include/dragon)

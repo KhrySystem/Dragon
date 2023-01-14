@@ -1,5 +1,3 @@
-#pragma once
-
 #include <dragon/dragon.hpp>
 
 DGAPI void dgFindQueueFamilies(DgGPU* pGPU) {
