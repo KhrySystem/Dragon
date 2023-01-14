@@ -22,7 +22,7 @@ jobs:
 
       - name: Install Vulkan
         run: |
-          sudo apt install libvulkan libvulkan-dev mesa-vulkan-drivers vulkan-utils
+          sudo apt install libvulkan1 libvulkan-dev mesa-vulkan-drivers vulkan-utils
 
       - name: Update Git Subdirectories
         run: |
