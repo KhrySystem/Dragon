@@ -67,5 +67,5 @@ jobs:
       - name: Test Dragon
         run: |
           cd ${{github.workspace}}/build
-          ctest -VV --output-on-failure --parallel 2 -C Release
+          ctest -VV --output-on-failure --parallel 2 -C Debug
           type ${{ github.workspace }}\build\Testing\Temporary\LastTestsFailed.log
