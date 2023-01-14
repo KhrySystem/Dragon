@@ -66,4 +66,4 @@ jobs:
       - name: Test Dragon
         run: |
           cd ${{github.workspace}}/build
-          ctest -W --output-on-failure --parallel 2 -C Release
+          ctest --more-verbose --output-on-failure --parallel 2 -C Release
