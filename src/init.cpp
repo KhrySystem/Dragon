@@ -4,40 +4,45 @@
 #include <dragon/dragon.hpp>
 
 DGAPI DgBool32 dgAddLayerToEngine(DgEngine* pEngine, std::string layerName) {
-#ifndef NDEBUG
-	// Check Vulkan Layers
-	uint32_t layerCount;
-	vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
-
-	std::vector<VkLayerProperties> availableLayers(layerCount);
-	vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
-
-	for (const auto& layerProperties : availableLayers) {
-		if (strcmp(layerName.c_str(), layerProperties.layerName) == 0) {
-			for (const char* ext : pEngine->vkExtensions) {
-				if (strcmp(ext, layerName.c_str()) == 0) {
-					#ifndef NDEBUG
-					std::cout << "VkValidationLayer " << layerName << " already added to DgEngine instance located at " << pEngine << std::endl;
-					#endif
-					return DG_TRUE;
-				}
-			}
-
-			pEngine->validationLayers.push_back(layerName.c_str());
-			return DG_TRUE;
-		}
-	}
 	#ifndef NDEBUG
-	std::cout << "VkValidationLayer " << layerName << " not found in available extensions for DgEngine instance located at " << pEngine << std::endl;
+		// Check Vulkan Layers
+		uint32_t layerCount;
+		vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
+
+		std::vector<VkLayerProperties> availableLayers(layerCount);
+		vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
+
+		for (const auto& layerProperties : availableLayers) {
+			if (strcmp(layerName.c_str(), layerProperties.layerName) == 0) {
+				for (const char* ext : pEngine->vkExtensions) {
+					if (strcmp(ext, layerName.c_str()) == 0) {
+						#ifndef NDEBUG
+						std::cout << "VkValidationLayer " << layerName << " already added to DgEngine instance located at " << pEngine << std::endl;
+						#endif
+						return DG_TRUE;
+					}
+				}
+
+				pEngine->validationLayers.push_back(layerName.c_str());
+				return DG_TRUE;
+			}
+		}
+		#ifndef NDEBUG
+			std::cout << "VkValidationLayer " << layerName << " not found in available extensions for DgEngine instance located at " << pEngine << std::endl;
+		#endif
+		return DG_FALSE;
+	#else
+		return DG_FALSE;
 	#endif
-	return DG_FALSE;
-#else
-	return DG_FALSE;
-#endif
 }
 
 
 DGAPI DgBool32 dgAddVkExtensionToEngine(DgEngine* pEngine, const char* extName) {
+	for (const char* name : pEngine->vkExtensions) {
+		if (strcmp(name, extName) == 0) {
+			return DG_TRUE;
+		}
+	}
 	pEngine->vkExtensions.push_back(extName);
 	return DG_TRUE;
 }
@@ -50,15 +55,7 @@ void _dgSetupVulkan(DgEngine* pEngine) {
 	// App info. Contains info about the Engine, the user app, etc.
 	VkApplicationInfo appInfo{};
 	// Use the highest Vulkan version available, up to 1.3
-	#if defined(VK_API_VERSION_1_3)
-		appInfo.apiVersion = VK_API_VERSION_1_3;
-	#elif defined(VK_API_VERSION_1_2)
-		appInfo.apiVersion = VK_API_VERSION_1_2;
-	#elif defined(VK_API_VERSION_1_1)
-		appInfo.apiVersion = VK_API_VERSION_1_1;
-	#elif defined(VK_API_VERSION_1_0)
-		appInfo.apiVersion = VK_API_VERSION_1_0;
-	#endif
+	appInfo.apiVersion = VK_API_VERSION_1_3;
 	appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
 	appInfo.pApplicationName = APP_NAME;
 	appInfo.applicationVersion = APP_VERSION;
@@ -82,9 +79,11 @@ void _dgSetupVulkan(DgEngine* pEngine) {
 	#endif
 	// Officially create the VkInstance
 	VkResult result = vkCreateInstance(&createInfo, nullptr, &(pEngine->vulkan));
-
-	// Ensure result is ok
-	assert(result == VK_SUCCESS);
+	if (result != VK_SUCCESS) {
+		#ifndef NDEBUG
+		std::cerr << "Dragon: vkCreateInstance returned " << dgConvertVkResultToString(result) << std::endl;
+		#endif
+	}
 }
 #ifndef NDEBUG
 void _dgSetupVulkanDebug(DgEngine* pEngine) {
@@ -96,14 +95,21 @@ void _dgSetupVulkanDebug(DgEngine* pEngine) {
 	messengerCreateInfo.pUserData = nullptr;
 
 	VkResult result = dgCreateDebugUtilsMessengerEXT(pEngine->vulkan, &messengerCreateInfo, nullptr, &(pEngine->debugMessenger));
-	assert(result == VK_SUCCESS);
+	if (result != VK_SUCCESS) {
+		std::cerr << "Dragon: dgCreateDebugUtilsMessengerEXT returned " << dgConvertVkResultToString(result) << std::endl;
+	}
 }
 #endif
 void _dgSetupGPUs(DgEngine* pEngine) {
 	uint32_t deviceCount = 0;
 	vkEnumeratePhysicalDevices(pEngine->vulkan, &deviceCount, nullptr);
 
-	assert(deviceCount != 0);
+	if (deviceCount == 0) {
+		#ifndef NDEBUG
+		std::cerr << "Dragon: vkEnumeratePhysicalDevices gave 0 devices available for Vulkan" << std::endl;
+		#endif
+		return;
+	}
 
 	std::vector<VkPhysicalDevice> devices(deviceCount);
 	vkEnumeratePhysicalDevices(pEngine->vulkan, &deviceCount, devices.data());
@@ -158,11 +164,6 @@ void _dgStartQueueBuffers(DgEngine* pEngine) {
 }
 
 DGAPI DgBool32 dgCreateEngine(DgEngine* pEngine) {
-	// Must initialize GLFW first
-	#if BOOST_OS_WINDOWS
-	pEngine->vkExtensions.push_back("VK_KHR_win32_surface");
-	#endif
-
 	glfwInit();
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
@@ -171,6 +172,13 @@ DGAPI DgBool32 dgCreateEngine(DgEngine* pEngine) {
 
 	assert(glfwVulkanSupported());
 
+	uint32_t count;
+	const char** extensions = glfwGetRequiredInstanceExtensions(&count);
+	std::vector<const char*> glfwExtensions(extensions, extensions + count);
+
+	for (const char* required : glfwExtensions) {
+		dgAddVkExtensionToEngine(pEngine, required);
+	}
 	_dgSetupVulkan(pEngine);
 
 	// VkDebugMessenger Initialization
@@ -204,15 +212,17 @@ DGAPI void dgTerminateEngine(DgEngine* pEngine) {
 	#ifndef NDEBUG
 	dgDestroyDebugUtilsMessengerEXT(pEngine->vulkan, pEngine->debugMessenger, nullptr);
 	#endif
+	
+	for (DgWindow window : pEngine->windows) {
+		vkDestroySwapchainKHR(pEngine->primaryGPU->device, window.swapChain, nullptr);
+		vkDestroySurfaceKHR(pEngine->vulkan, window.surface, nullptr);
+		glfwDestroyWindow(window.window);
+	}
+
 	for (DgGPU gpu : pEngine->gpus) {
 		if (gpu.device != nullptr) {
 			vkDestroyDevice(gpu.device, nullptr);
 		}
-	}
-	int i = 0;
-	for (DgWindow window: pEngine->windows) {
-		vkDestroySurfaceKHR(pEngine->vulkan, window.surface, nullptr);
-		glfwDestroyWindow(window.window);
 	}
 	
 	vkDestroyInstance(pEngine->vulkan, nullptr);

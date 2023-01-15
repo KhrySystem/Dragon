@@ -31,7 +31,7 @@ DGAPI void dgGLFWErrorCallback(int code, const char* description) {
     std::cerr << "\tMessage:" << description << std::endl;
 }
 
-DGAPI void dgSendMessage(DgEngine* pEngine, DgMessage* pMessage) {
+DGAPI void _dgSendMessage(DgEngine* pEngine, DgMessage* pMessage) {
 	if (pEngine->fCallback != nullptr) {
 		pEngine->fCallback(pMessage);
 	}

@@ -3,6 +3,7 @@
 extern "C" {
 #endif
 
+#include <algorithm>
 #include <cstring>
 
 #include "predef/architecture.h"
@@ -13,7 +14,6 @@ extern "C" {
 #include "predef/platform.h"
 #include "predef/version.h"
 
-// Include Vulkan Headers
 #ifdef _cplusplus
     #include <vulkan/vulkan.hpp>
 #else
@@ -25,7 +25,9 @@ extern "C" {
 // Include GLFW Headers
 #include <GLFW/glfw3.h>
 
-// Properly define DGAPI
+/**
+ * @brief Macro for defining the export/import attribute of a function 
+ */
 #ifdef DG_C
     #if BOOST_OS_WINDOWS && defined(DRAGON_BUILD_DLL)
         #define DGAPI extern "C" __declspec(dllexport)
@@ -48,14 +50,18 @@ extern "C" {
     #endif
 #endif
 
-// Define DRAGON_VERSION
+/**
+ * @brief Macro for creating the version number for Dragon Engine
+ */
 #ifdef VK_MAKE_API_VERSION
     #define DRAGON_VERSION VK_MAKE_API_VERSION(@Dragon_VERSION_MAJOR@, @Dragon_VERSION_MINOR@, @Dragon_VERSION_PATCH@, @Dragon_VERSION_TWEAK@)
 #else
     #define DRAGON_VERSION VK_MAKE_VERSION(@Dragon_VERSION_MAJOR@, @Dragon_VERSION_MINOR@, @Dragon_VERSION_PATCH@)
 #endif
 
-// if not given, default the app version to 1.0.0.0
+/**
+ * @brief Macro for creating the version number for the application
+ */
 #ifndef APP_VERSION
     #ifdef VK_MAKE_API_VERSION
         #define APP_VERSION VK_MAKE_API_VERSION(1, 0, 0, 0)
@@ -64,7 +70,9 @@ extern "C" {
     #endif
 #endif
 
-// if not given, default the app name to "dgEngine"
+/**
+ * @brief Macro for the name of the application
+ */
 #ifndef APP_NAME
     #define APP_NAME "dgEngine"
 #endif

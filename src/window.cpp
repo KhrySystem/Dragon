@@ -41,18 +41,36 @@ DGAPI void _dgChooseSwapPresentMode(DgWindow* pWindow, const std::vector<VkPrese
 	// Ensure window is not null
 	assert(pWindow != nullptr);
 
-
-	// loop through all modes to find one that is good
-	for (const VkPresentModeKHR availablePresentMode : pPresentModes) {
-		if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
-			pWindow->presentMode = availablePresentMode;
-			return;
+	#if (BOOST_OS_WINDOWS || BOOST_OS_LINUX || BOOST_OS_MACOS) && !defined(DRAGON_LOW_POWER) // Desktop platforms, high power mode active
+		// loop through all modes 
+		for (const VkPresentModeKHR availablePresentMode : pPresentModes) {
+			if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) { // VK_PRESENT_MODE_MAILBOX_KHR is the highest power mode, triple-buffered. 
+				pWindow->presentMode = availablePresentMode;
+				return;
+			}
 		}
-	}
+	#endif
 	// return the default mode
-	pWindow->presentMode = VK_PRESENT_MODE_FIFO_KHR;
+	pWindow->presentMode = VK_PRESENT_MODE_FIFO_KHR; // VK_PRESENT_MODE_FIFO_KHR is the default double-bufferred mode. Best for mobile devices and devices without triple buffer capabilities.
 }
 
 DGAPI void _dgChooseSwapExtent2D(DgWindow* pWindow, const VkSurfaceCapabilitiesKHR* pCapabilities) {
+	pWindow->capabilities = *pCapabilities;
+	if (pCapabilities->currentExtent.width != std::numeric_limits<uint32_t>::max()) {
+		pWindow->extent2D = pCapabilities->currentExtent;
+		return;
+	} else {
+		int width, height;
+		glfwGetFramebufferSize(pWindow->window, &width, &height);
 
+		VkExtent2D actualExtent = {
+			static_cast<uint32_t>(width),
+			static_cast<uint32_t>(height)
+		};
+
+		actualExtent.width = std::clamp(actualExtent.width, pCapabilities->minImageExtent.width, pCapabilities->maxImageExtent.width);
+		actualExtent.height = std::clamp(actualExtent.height, pCapabilities->minImageExtent.height, pCapabilities->maxImageExtent.height);
+
+		pWindow->extent2D = actualExtent;
+	}
 }
