@@ -1,7 +1,9 @@
 #include <dragon/dragon.hpp>
 
-DGAPI void _dgFindQueueFamilies(DgGPU* pGPU) {
-	assert(pGPU != nullptr);
+DGAPI DgResult _dgFindQueueFamilies(DgGPU* pGPU) {
+	if (pGPU == nullptr) {
+		return DG_ARGUMENT_IS_NULL;
+	}
 
 	dgQueueFamilies indices;
 
@@ -15,55 +17,64 @@ DGAPI void _dgFindQueueFamilies(DgGPU* pGPU) {
 		if (queueFamilies.at(i).queueFlags & VK_QUEUE_GRAPHICS_BIT) {
 			indices.graphicsQueueFamily = i;
 		}
-
 	}
 
 	pGPU->queueFamilies = indices;
+	return DG_SUCCESS;
 }
 
-DGAPI void _dgGeneratePresentationQueue(DgGPU* pGPU, DgWindow* pWindow) {
-	assert(pGPU != nullptr && pWindow != nullptr);
+DGAPI DgResult _dgGeneratePresentationQueue(DgWindow* pWindow) {
+	if (pWindow == nullptr) {
+		return DG_ARGUMENT_IS_NULL;
+	}
 
 	uint32_t queueFamilyCount = 0;
-	vkGetPhysicalDeviceQueueFamilyProperties(pGPU->handle, &queueFamilyCount, nullptr);
+	vkGetPhysicalDeviceQueueFamilyProperties(pWindow->pGPU->handle, &queueFamilyCount, nullptr);
 
 	std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
-	vkGetPhysicalDeviceQueueFamilyProperties(pGPU->handle, &queueFamilyCount, queueFamilies.data());
+	vkGetPhysicalDeviceQueueFamilyProperties(pWindow->pGPU->handle, &queueFamilyCount, queueFamilies.data());
 
 	for (int i = 0; i < queueFamilies.size(); i++) {
 		VkBool32 presentSupport = false;
-		vkGetPhysicalDeviceSurfaceSupportKHR(pGPU->handle, i, pWindow->surface, &presentSupport);
+		vkGetPhysicalDeviceSurfaceSupportKHR(pWindow->pGPU->handle, i, pWindow->surface, &presentSupport);
 
 		if (presentSupport)
-			pGPU->queueFamilies.presentationQueueFamily = i;
+			pWindow->pGPU->queueFamilies.presentationQueueFamily = i;
 	}
 
 	VkDeviceQueueCreateInfo presentQueueCreateInfo{};
 	presentQueueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-	presentQueueCreateInfo.queueFamilyIndex =pGPU->queueFamilies.presentationQueueFamily.value();
+	presentQueueCreateInfo.queueFamilyIndex = pWindow->pGPU->queueFamilies.presentationQueueFamily.value();
 	presentQueueCreateInfo.queueCount = 1;
 	float queuePriority = 1.0f;
 	presentQueueCreateInfo.pQueuePriorities = &queuePriority;
+	return DG_SUCCESS;
 }
 
-DGAPI void _dgGetSwapChainSupport(DgGPU* pGPU, DgWindow* pWindow) {
-	assert(pGPU != nullptr && pWindow != nullptr);
+DGAPI DgResult _dgGetSwapChainSupport(DgWindow* pWindow) {
+	if (pWindow == nullptr) {
+		return DG_ARGUMENT_IS_NULL;
+	}
 
 	VkSurfaceCapabilitiesKHR capabilities;
 
-	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(pGPU->handle, pWindow->surface, &capabilities);
+	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(pWindow->pGPU->handle, pWindow->surface, &capabilities);
 
 	uint32_t formatCount;
-	vkGetPhysicalDeviceSurfaceFormatsKHR(pGPU->handle, pWindow->surface, &formatCount, nullptr);
-	assert(formatCount != 0);
+	vkGetPhysicalDeviceSurfaceFormatsKHR(pWindow->pGPU->handle, pWindow->surface, &formatCount, nullptr);
+	if (formatCount == 0) {
+		return DG_NO_VK_SURFACE_FORMATS_AVAILABLE;
+	}
 	std::vector<VkSurfaceFormatKHR> formats(formatCount);
-	vkGetPhysicalDeviceSurfaceFormatsKHR(pGPU->handle, pWindow->surface, &formatCount, formats.data());
+	vkGetPhysicalDeviceSurfaceFormatsKHR(pWindow->pGPU->handle, pWindow->surface, &formatCount, formats.data());
 
 	uint32_t presentModeCount;
-	vkGetPhysicalDeviceSurfacePresentModesKHR(pGPU->handle, pWindow->surface, &presentModeCount, nullptr);
-	assert(presentModeCount != 0);
+	vkGetPhysicalDeviceSurfacePresentModesKHR(pWindow->pGPU->handle, pWindow->surface, &presentModeCount, nullptr);
+	if (presentModeCount == 0) {
+		return DG_NO_VK_PRESENT_MODES_AVAILABLE;
+	}
 	std::vector<VkPresentModeKHR> presentModes(presentModeCount);
-	vkGetPhysicalDeviceSurfacePresentModesKHR(pGPU->handle, pWindow->surface, &presentModeCount, presentModes.data());
+	vkGetPhysicalDeviceSurfacePresentModesKHR(pWindow->pGPU->handle, pWindow->surface, &presentModeCount, presentModes.data());
 
 	_dgChooseSwapSurfaceFormat(pWindow, formats);
 	_dgChooseSwapPresentMode(pWindow, presentModes);
@@ -85,9 +96,9 @@ DGAPI void _dgGetSwapChainSupport(DgGPU* pGPU, DgWindow* pWindow) {
 	createInfo.imageArrayLayers = 1;
 	createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-	uint32_t queueFamilyIndices[] = { pGPU->queueFamilies.graphicsQueueFamily.value(), pGPU->queueFamilies.presentationQueueFamily.value() };
+	uint32_t queueFamilyIndices[] = { pWindow->pGPU->queueFamilies.graphicsQueueFamily.value(), pWindow->pGPU->queueFamilies.presentationQueueFamily.value() };
 
-	if (pGPU->queueFamilies.graphicsQueueFamily != pGPU->queueFamilies.presentationQueueFamily) {
+	if (pWindow->pGPU->queueFamilies.graphicsQueueFamily != pWindow->pGPU->queueFamilies.presentationQueueFamily) {
 		createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
 		createInfo.queueFamilyIndexCount = 2;
 		createInfo.pQueueFamilyIndices = queueFamilyIndices;
@@ -102,16 +113,17 @@ DGAPI void _dgGetSwapChainSupport(DgGPU* pGPU, DgWindow* pWindow) {
 	createInfo.clipped = VK_TRUE;
 
 	createInfo.oldSwapchain = VK_NULL_HANDLE;
-	VkResult result = vkCreateSwapchainKHR(pGPU->device, &createInfo, nullptr, &pWindow->swapChain);
+	VkResult result = vkCreateSwapchainKHR(pWindow->pGPU->device, &createInfo, nullptr, &pWindow->swapChain);
 	if (result != VK_SUCCESS) {
 		#ifndef NDEBUG
 		std::cerr << "vkCreateSwapchainKHR failed with " << dgConvertVkResultToString(result) << std::endl;
 		#endif
-		return;
+		return DG_VK_SWAPCHAIN_CREATION_FAILED;
 	}
 
-	vkGetSwapchainImagesKHR(pGPU->device, pWindow->swapChain, &imageCount, nullptr);
+	vkGetSwapchainImagesKHR(pWindow->pGPU->device, pWindow->swapChain, &imageCount, nullptr);
 	pWindow->swapChainImages.resize(imageCount);
-	vkGetSwapchainImagesKHR(pGPU->device, pWindow->swapChain, &imageCount, pWindow->swapChainImages.data());
+	vkGetSwapchainImagesKHR(pWindow->pGPU->device, pWindow->swapChain, &imageCount, pWindow->swapChainImages.data());
+	_dgCreateImageViews(pWindow);
 }
 

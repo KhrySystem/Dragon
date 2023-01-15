@@ -3,7 +3,7 @@
 
 #include <dragon/dragon.hpp>
 
-DGAPI DgBool32 dgAddLayerToEngine(DgEngine* pEngine, std::string layerName) {
+DGAPI DgResult dgAddLayerToEngine(DgEngine* pEngine, std::string layerName) {
 	#ifndef NDEBUG
 		// Check Vulkan Layers
 		uint32_t layerCount;
@@ -19,39 +19,39 @@ DGAPI DgBool32 dgAddLayerToEngine(DgEngine* pEngine, std::string layerName) {
 						#ifndef NDEBUG
 						std::cout << "VkValidationLayer " << layerName << " already added to DgEngine instance located at " << pEngine << std::endl;
 						#endif
-						return DG_TRUE;
+						return DG_VK_VALIDATION_LAYER_ALREADY_ADDED;
 					}
 				}
 
 				pEngine->validationLayers.push_back(layerName.c_str());
-				return DG_TRUE;
+				return DG_SUCCESS;
 			}
 		}
 		#ifndef NDEBUG
 			std::cout << "VkValidationLayer " << layerName << " not found in available extensions for DgEngine instance located at " << pEngine << std::endl;
 		#endif
-		return DG_FALSE;
+		return DG_VK_VALIDATION_LAYER_NOT_FOUND;
 	#else
-		return DG_FALSE;
+		return DG_IN_RELEASE_MODE;
 	#endif
 }
 
 
-DGAPI DgBool32 dgAddVkExtensionToEngine(DgEngine* pEngine, const char* extName) {
+DGAPI DgResult dgAddVkExtensionToEngine(DgEngine* pEngine, const char* extName) {
 	for (const char* name : pEngine->vkExtensions) {
 		if (strcmp(name, extName) == 0) {
-			return DG_TRUE;
+			return DG_VK_EXTENSION_ALREADY_ADDED;
 		}
 	}
 	pEngine->vkExtensions.push_back(extName);
-	return DG_TRUE;
+	return DG_SUCCESS;
 }
 
 DGAPI void dgSetCallback(DgEngine* pEngine, std::function<void(DgMessage*)> fCallback) {
 	pEngine->fCallback = fCallback;
 }
 
-void _dgSetupVulkan(DgEngine* pEngine) {
+DgResult _dgSetupVulkan(DgEngine* pEngine) {
 	// App info. Contains info about the Engine, the user app, etc.
 	VkApplicationInfo appInfo{};
 	// Use the highest Vulkan version available, up to 1.3
@@ -83,10 +83,12 @@ void _dgSetupVulkan(DgEngine* pEngine) {
 		#ifndef NDEBUG
 		std::cerr << "Dragon: vkCreateInstance returned " << dgConvertVkResultToString(result) << std::endl;
 		#endif
+		return DG_VK_INSTANCE_CREATION_FAILED;
 	}
+	return DG_SUCCESS;
 }
 #ifndef NDEBUG
-void _dgSetupVulkanDebug(DgEngine* pEngine) {
+DgResult _dgSetupVulkanDebug(DgEngine* pEngine) {
 	VkDebugUtilsMessengerCreateInfoEXT messengerCreateInfo{};
 	messengerCreateInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
 	messengerCreateInfo.messageSeverity =  VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
@@ -97,10 +99,12 @@ void _dgSetupVulkanDebug(DgEngine* pEngine) {
 	VkResult result = dgCreateDebugUtilsMessengerEXT(pEngine->vulkan, &messengerCreateInfo, nullptr, &(pEngine->debugMessenger));
 	if (result != VK_SUCCESS) {
 		std::cerr << "Dragon: dgCreateDebugUtilsMessengerEXT returned " << dgConvertVkResultToString(result) << std::endl;
+		return DG_VK_DEBUG_UTILS_INSTANCE_CREATION_FAILED;
 	}
+	return DG_SUCCESS;
 }
 #endif
-void _dgSetupGPUs(DgEngine* pEngine) {
+DgResult _dgSetupGPUs(DgEngine* pEngine) {
 	uint32_t deviceCount = 0;
 	vkEnumeratePhysicalDevices(pEngine->vulkan, &deviceCount, nullptr);
 
@@ -108,7 +112,7 @@ void _dgSetupGPUs(DgEngine* pEngine) {
 		#ifndef NDEBUG
 		std::cerr << "Dragon: vkEnumeratePhysicalDevices gave 0 devices available for Vulkan" << std::endl;
 		#endif
-		return;
+		return DG_NO_VK_PHYSICAL_DEVICES_FOUND;
 	}
 
 	std::vector<VkPhysicalDevice> devices(deviceCount);
@@ -122,11 +126,14 @@ void _dgSetupGPUs(DgEngine* pEngine) {
 		_dgFindQueueFamilies(&gpu);
 		pEngine->gpus.push_back(gpu);
 	}
-	assert(pEngine->gpus.at(0).queueFamilies.graphicsQueueFamily.has_value());
+	if (!pEngine->gpus.at(0).queueFamilies.graphicsQueueFamily.has_value()) {
+		return DG_NO_GRAPHICS_QUEUE_FOUND;
+	}
 	pEngine->primaryGPU = &pEngine->gpus.at(0);
+	return DG_SUCCESS;
 }
 
-void _dgStartQueueBuffers(DgEngine* pEngine) {
+DgResult _dgStartQueueBuffers(DgEngine* pEngine) {
 	
 	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
 
@@ -158,19 +165,29 @@ void _dgStartQueueBuffers(DgEngine* pEngine) {
 	#endif
 	VkResult result = vkCreateDevice((pEngine->primaryGPU->handle), &deviceCreateInfo, nullptr, &(pEngine->primaryGPU->device));
 
-	assert(result == VK_SUCCESS);
+	if (result != VK_SUCCESS) {
+		return DG_VK_DEVICE_CREATION_FAILED;
+	}
 
 	vkGetDeviceQueue(pEngine->primaryGPU->device, pEngine->primaryGPU->queueFamilies.graphicsQueueFamily.value(), 0, &pEngine->primaryGPU->graphicsQueue);
+	return DG_SUCCESS;
 }
 
-DGAPI DgBool32 dgCreateEngine(DgEngine* pEngine) {
-	glfwInit();
+DGAPI DgResult dgCreateEngine(DgEngine* pEngine) {
+	DgResult r;
+
+	if (!glfwInit()) {
+		return DG_GLFW_INITIALIZATION_FAILED;
+	}
+
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
 	// Vulkan Initialization
 	glfwSetErrorCallback(dgGLFWErrorCallback);
 
-	assert(glfwVulkanSupported());
+	if (!glfwVulkanSupported()) {
+		return DG_GLFW_VULKAN_NOT_SUPPORTED;
+	}
 
 	uint32_t count;
 	const char** extensions = glfwGetRequiredInstanceExtensions(&count);
@@ -179,33 +196,65 @@ DGAPI DgBool32 dgCreateEngine(DgEngine* pEngine) {
 	for (const char* required : glfwExtensions) {
 		dgAddVkExtensionToEngine(pEngine, required);
 	}
-	_dgSetupVulkan(pEngine);
+	r = _dgSetupVulkan(pEngine);
+	if (r != DG_SUCCESS) {
+		return r;
+	}
 
 	// VkDebugMessenger Initialization
 	#ifndef NDEBUG
-	_dgSetupVulkanDebug(pEngine);
+	r = _dgSetupVulkanDebug(pEngine);
+	if (r != DG_SUCCESS) {
+		return r;
+	}
 	#endif
 
 	// Get GPUs and start compute API
-	_dgSetupGPUs(pEngine);
-
+	r = _dgSetupGPUs(pEngine);
+	if (r != DG_SUCCESS) {
+		return r;
+	}
 	// Start Graphics Queue Buffers
-	_dgStartQueueBuffers(pEngine);
+	r = _dgStartQueueBuffers(pEngine);
+	if (r != DG_SUCCESS) {
+		return r;
+	}
 
-	return DG_TRUE;
+	return DG_SUCCESS;
 }
 
 DGAPI void dgUpdate(DgEngine* pEngine) {
 	glfwPollEvents();
-	GLFWwindow* window;
 	for (int i = 0; i < pEngine->windows.size(); i++) {
-		window = pEngine->windows.at(i).window;
-		if (glfwWindowShouldClose(window)) {
-			glfwDestroyWindow(window);
-			vkDestroySurfaceKHR(pEngine->vulkan, pEngine->windows.at(i).surface, nullptr);
+		DgWindow window = pEngine->windows[i];
+		if(glfwWindowShouldClose(window.window)) {
+			for (VkImageView imageView : window.swapChainImageViews) {
+				vkDestroyImageView(pEngine->primaryGPU->device, imageView, nullptr);
+			}
+			vkDestroySwapchainKHR(pEngine->primaryGPU->device, window.swapChain, nullptr);
+			vkDestroySurfaceKHR(pEngine->vulkan, window.surface, nullptr);
+			glfwDestroyWindow(window.window);
 			pEngine->windows.erase(pEngine->windows.begin() + i);
 		}
 	}
+}
+
+DGAPI std::vector<char> _dgLoadShaderSPV(const std::string& filename) {
+	std::ifstream file(filename, std::ios::ate | std::ios::binary);
+
+	if (!file.is_open()) {
+		return std::vector<char>(0);
+	}
+
+	size_t fileSize = (size_t)file.tellg();
+	std::vector<char> buffer(fileSize);
+
+	file.seekg(0);
+	file.read(buffer.data(), fileSize);
+
+	file.close();
+
+	return buffer;
 }
 
 DGAPI void dgTerminateEngine(DgEngine* pEngine) {
@@ -214,7 +263,15 @@ DGAPI void dgTerminateEngine(DgEngine* pEngine) {
 	#endif
 	
 	for (DgWindow window : pEngine->windows) {
-		vkDestroySwapchainKHR(pEngine->primaryGPU->device, window.swapChain, nullptr);
+		for (VkImageView imageView : window.swapChainImageViews) {
+			vkDestroyImageView(window.pGPU->device, imageView, nullptr);
+			for (VkShaderModule module : window.shaderModules) {
+				vkDestroyShaderModule(window.pGPU->device, module, nullptr);
+			}
+			vkDestroyPipelineLayout(window.pGPU->device, window.pipelineLayout, nullptr);
+		}
+		
+		vkDestroySwapchainKHR(window.pGPU->device, window.swapChain, nullptr);
 		vkDestroySurfaceKHR(pEngine->vulkan, window.surface, nullptr);
 		glfwDestroyWindow(window.window);
 	}

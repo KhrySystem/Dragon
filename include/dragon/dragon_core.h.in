@@ -4,7 +4,10 @@ extern "C" {
 #endif
 
 #include <algorithm>
+#include <cstdio>
 #include <cstring>
+#include <fstream>
+#include <string>
 
 #include "predef/architecture.h"
 #include "predef/compiler.h"
@@ -24,6 +27,19 @@ extern "C" {
 #define GLFW_INCLUDE_VULKAN
 // Include GLFW Headers
 #include <GLFW/glfw3.h>
+
+/**
+ * @brief Macro for finding the source directory of Dragon
+ */
+#ifndef DRAGON_SOURCE_DIR
+    #define DRAGON_SOURCE_DIR "@Dragon_SOURCE_DIR@"
+#endif'
+/**
+ * @brief Macro for finding the binary directory of Dragon
+ */
+#ifndef DRAGON_BIN_PATH
+    #define DRAGON_BIN_PATH "@Dragon_BINARY_DIR@"
+#endif
 
 /**
  * @brief Macro for defining the export/import attribute of a function 

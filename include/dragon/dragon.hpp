@@ -27,6 +27,7 @@
 #include "gpu.hpp"
 #include "init.hpp"
 #include "message.hpp"
+#include "result.hpp"
 #include "uiElement.hpp"
 #include "validation.hpp"
 #include "window.hpp"

@@ -14,6 +14,13 @@
  * @brief Structure that holds all the data for the engine instance
  */
 typedef struct DgEngine {
+    /**
+     * @brief boolean on if the engine was initialized successfully
+     */
+    DgBool32 initialized;
+    /**
+     * @brief Vulkan object instance for the engine
+     */
     VkInstance vulkan;
     /**
      * @brief Vector of required vulkan instance extensions
@@ -46,4 +53,5 @@ typedef struct DgEngine {
      * @brief Callback function for handling messages
      */
     std::function<void(DgMessage*)> fCallback;
+    
 } DgEngine;

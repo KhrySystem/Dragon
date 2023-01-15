@@ -3,7 +3,6 @@
 #include <optional>
 
 #include "dragon_core.h"
-#include "window.hpp"
 
 /**
  * @struct dgQueueFamilies

@@ -4,6 +4,7 @@
 
 #include "dragon_core.h"
 #include "message.hpp"
+#include "result.hpp"
 
 /**
  * @brief Function for handling debug messages for the vulkan validation layers
@@ -62,3 +63,11 @@ DGAPI void _dgSendMessage(DgEngine* pEngine, DgMessage* message);
  * @return std::string
  */
 DGAPI std::string dgConvertVkResultToString(VkResult result);
+/**
+ * @brief Convert a DgResult to a string representation
+ * 
+ * @param result DgResult to be converted
+ * 
+ * @return std::string
+ */
+DGAPI std::string dgConvertDgResultToString(DgResult result);

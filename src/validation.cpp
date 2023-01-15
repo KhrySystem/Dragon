@@ -91,3 +91,9 @@ DGAPI std::string dgConvertVkResultToString(VkResult result) {
 		default:														return "VK_ERROR_UNKNOWN";
 	};
 }
+
+DGAPI std::string dgConvertDgResultToString(DgResult result) {
+	switch (result) {
+		default: return "DG_ERROR_UNKNOWN";
+	}
+}
