@@ -15,6 +15,8 @@ int main(void) {
 	std::cout << "dgCreateWindow successful" << std::endl;
 
 	dgUpdate(&engine);
+	std::cout << "dgUpdate successful" << std::endl;
 	dgTerminateEngine(&engine);
+	std::cout << "dgTerminateEngine successful" << std::endl;
 	return 0;
 }

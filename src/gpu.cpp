@@ -1,6 +1,6 @@
 #include <dragon/dragon.hpp>
 
-DGAPI void dgFindQueueFamilies(DgGPU* pGPU) {
+DGAPI void _dgFindQueueFamilies(DgGPU* pGPU) {
 	dgQueueFamilies indices;
 
 	uint32_t queueFamilyCount = 0;
@@ -19,7 +19,9 @@ DGAPI void dgFindQueueFamilies(DgGPU* pGPU) {
 	pGPU->queueFamilies = indices;
 }
 
-DGAPI void dgGeneratePresentationQueue(DgGPU* pGPU, DgWindow* pWindow) {
+DGAPI void _dgGeneratePresentationQueue(DgGPU* pGPU, DgWindow* pWindow) {
+	assert(pGPU != nullptr && pWindow != nullptr);
+
 	uint32_t queueFamilyCount = 0;
 	vkGetPhysicalDeviceQueueFamilyProperties(pGPU->handle, &queueFamilyCount, nullptr);
 
@@ -42,6 +44,26 @@ DGAPI void dgGeneratePresentationQueue(DgGPU* pGPU, DgWindow* pWindow) {
 	presentQueueCreateInfo.pQueuePriorities = &queuePriority;
 }
 
-DGAPI void dgGetSwapChainSupport(DgGPU* gpu) {
+DGAPI void _dgGetSwapChainSupport(DgGPU* pGPU, DgWindow* pWindow) {
+	dgSwapChainSupportDetails details;
+	assert(pGPU != nullptr && pWindow != nullptr);
 
+	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(pGPU->handle, pWindow->surface, &details.capabilities);
+
+	uint32_t formatCount;
+	vkGetPhysicalDeviceSurfaceFormatsKHR(pGPU->handle, pWindow->surface, &formatCount, nullptr);
+	
+	assert(formatCount != 0);
+
+	details.formats.resize(formatCount);
+	vkGetPhysicalDeviceSurfaceFormatsKHR(pGPU->handle, pWindow->surface, &formatCount, details.formats.data());
+
+	uint32_t presentModeCount;
+	vkGetPhysicalDeviceSurfacePresentModesKHR(pGPU->handle, pWindow->surface, &presentModeCount, nullptr);
+
+	assert(presentModeCount != 0);
+
+	details.presentModes.resize(presentModeCount);
+	vkGetPhysicalDeviceSurfacePresentModesKHR(pGPU->handle, pWindow->surface, &presentModeCount, details.presentModes.data());
 }
+

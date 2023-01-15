@@ -29,8 +29,3 @@ typedef struct {
 
 	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
 } DgGPU;
-
-// Helper creation/destruction methods
-DGAPI void dgFindQueueFamilies(DgGPU* gpu);
-DGAPI void dgGeneratePresentationQueue(DgGPU* pGPU, DgWindow* window);
-DGAPI void dgGetSwapChainSupport(DgGPU* gpu);

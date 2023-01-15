@@ -42,8 +42,8 @@ DGAPI DgBool32 dgAddVkExtensionToEngine(DgEngine* pEngine, const char* extName) 
 	return DG_TRUE;
 }
 
-DGAPI void dgSetCallback(DgEngine* pEngine, std::function<void(DgMessage*)> optfCallback) {
-	pEngine->fCallback = optfCallback;
+DGAPI void dgSetCallback(DgEngine* pEngine, std::function<void(DgMessage*)> fCallback) {
+	pEngine->fCallback = fCallback;
 }
 
 void _dgSetupVulkan(DgEngine* pEngine) {
@@ -113,7 +113,7 @@ void _dgSetupGPUs(DgEngine* pEngine) {
 		gpu.handle = dev;
 		vkGetPhysicalDeviceFeatures(dev, &(gpu.features));
 		vkGetPhysicalDeviceProperties(dev, &(gpu.properties));
-		dgFindQueueFamilies(&gpu);
+		_dgFindQueueFamilies(&gpu);
 		pEngine->gpus.push_back(gpu);
 	}
 	assert(pEngine->gpus.at(0).queueFamilies.graphicsQueueFamily.has_value());
@@ -157,14 +157,13 @@ void _dgStartQueueBuffers(DgEngine* pEngine) {
 	vkGetDeviceQueue(pEngine->primaryGPU->device, pEngine->primaryGPU->queueFamilies.graphicsQueueFamily.value(), 0, &pEngine->primaryGPU->graphicsQueue);
 }
 
-
 DGAPI DgBool32 dgCreateEngine(DgEngine* pEngine) {
 	// Must initialize GLFW first
 	#if BOOST_OS_WINDOWS
 	pEngine->vkExtensions.push_back("VK_KHR_win32_surface");
 	#endif
 
-	assert(glfwInit());
+	glfwInit();
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
 	// Vulkan Initialization
@@ -210,11 +209,10 @@ DGAPI void dgTerminateEngine(DgEngine* pEngine) {
 			vkDestroyDevice(gpu.device, nullptr);
 		}
 	}
-		
-	for (int i = 0; i < pEngine->windows.size(); i++) {
-		glfwDestroyWindow(pEngine->windows.at(i).window);
-		vkDestroySurfaceKHR(pEngine->vulkan, pEngine->windows.at(i).surface, nullptr);
-		pEngine->windows.erase(pEngine->windows.begin() + i);
+	int i = 0;
+	for (DgWindow window: pEngine->windows) {
+		vkDestroySurfaceKHR(pEngine->vulkan, window.surface, nullptr);
+		glfwDestroyWindow(window.window);
 	}
 	
 	vkDestroyInstance(pEngine->vulkan, nullptr);
