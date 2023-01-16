@@ -22,41 +22,21 @@ else()
 	target_compile_definitions(${Dragon_LIB_NAME} PUBLIC -DDRAGON_BUILD_DLL)
 endif()
 
-if (${CMAKE_HOST_SYSTEM_PROCESSOR} STREQUAL "AMD64")
-    set(GLSL_VALIDATOR "$ENV{VULKAN_SDK}/Bin/glslangValidator.exe")
-else()
-    set(GLSL_VALIDATOR "$ENV{VULKAN_SDK}/Bin32/glslangValidator.exe")
+if(${Vulkan_glslc_FOUND})
+	add_custom_command(
+		OUTPUT "${Dragon_BINARY_DIR}/shaders/frag.spv" "${Dragon_BINARY_DIR}/shaders/vert.spv"
+		COMMAND ${CMAKE_COMMAND} -E make_directory ${Dragon_BINARY_DIR}/shaders/
+		COMMAND ${Vulkan_GLSLC_EXECUTABLE} ${Dragon_SOURCE_DIR}/src/shaders/shader.frag -o ${Dragon_BINARY_DIR}/shaders/frag.spv --target-env=vulkan1.2
+		COMMAND ${Vulkan_GLSLC_EXECUTABLE} ${Dragon_SOURCE_DIR}/src/shaders/shader.vert -o ${Dragon_BINARY_DIR}/shaders/vert.spv --target-env=vulkan1.2
+		DEPENDS "${Dragon_SOURCE_DIR}/src/shaders/shader.frag" "${Dragon_SOURCE_DIR}/src/shaders/shader.vert"
+	)
+
+	add_custom_target(Shaders
+		DEPENDS "${Dragon_BINARY_DIR}/shaders/frag.spv" "${Dragon_BINARY_DIR}/shaders/vert.spv"
+	)
+
+	add_dependencies(${Dragon_LIB_NAME} Shaders)
 endif()
-
-file(GLOB_RECURSE GLSL_SOURCE_FILES
-    "shaders/*.glsl"
-)
-
-foreach(GLSL ${GLSL_SOURCE_FILES})
-    get_filename_component(FILE_NAME ${GLSL} NAME)
-    set(SPIRV "${PROJECT_BINARY_DIR}/shaders/${FILE_NAME}.spv")
-    add_custom_command(
-        OUTPUT ${SPIRV}
-            COMMAND ${CMAKE_COMMAND} -E make_directory "${PROJECT_BINARY_DIR}/shaders/"
-            COMMAND ${GLSL_VALIDATOR} -V ${GLSL} -o ${SPIRV}
-            DEPENDS ${GLSL}
-    )
-    list(APPEND SPIRV_BINARY_FILES ${SPIRV})
-endforeach(GLSL)
-
-add_custom_target(
-    Shaders 
-    DEPENDS ${SPIRV_BINARY_FILES}
-)
-
-add_dependencies(${Dragon_LIB_NAME} Shaders)
-
-add_custom_command(TARGET ${Dragon_LIB_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:${Dragon_LIB_NAME}>/shaders/"
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "${Dragon_BINARY_DIR}/shaders"
-        "$<TARGET_FILE_DIR:${Dragon_LIB_NAME}>/shaders"
-)
 
 # Specify the include directories for the library
 target_include_directories(${Dragon_LIB_NAME} PUBLIC ${Dragon_INCLUDE_DIRS})

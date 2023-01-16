@@ -14,13 +14,16 @@ DGAPI DgResult dgCreateWindow(DgEngine* pEngine, std::string title, unsigned int
 	if (result != VK_SUCCESS) {
 		return DG_GLFW_WINDOW_SURFACE_CREATION_FAILED;
 	}
-
+	DgResult r;
 	if (pEngine->primaryGPU->presentationQueue == nullptr) {
-		_dgGeneratePresentationQueue(&window);
+		 r = _dgGeneratePresentationQueue(&window);
+		 if (r != DG_SUCCESS)
+			 return r;
 	}
 
-	_dgGenerateGraphicsPipeline(&window);
-
+	r = _dgGenerateGraphicsPipeline(&window);
+	if (r != DG_SUCCESS)
+		return r;
 	return DG_SUCCESS;
 }
 
@@ -134,7 +137,9 @@ DGAPI DgResult _dgGenerateGraphicsPipeline(DgWindow* pWindow) {
 	}
 
 	std::vector<char> vertShaderCode = _dgLoadShaderSPV("shaders/vert.spv");
-
+	if (vertShaderCode.size() == 0) {
+		return DG_SHADER_SOURCE_NOT_FOUND;
+	}
 	VkShaderModuleCreateInfo vertCreateInfo{};
 	vertCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
 	vertCreateInfo.codeSize = vertShaderCode.size();
@@ -146,11 +151,15 @@ DGAPI DgResult _dgGenerateGraphicsPipeline(DgWindow* pWindow) {
 		#ifndef NDEBUG
 		std::cerr << "Dragon: vkCreateShaderModule returned " << dgConvertVkResultToString(result) << std::endl;
 		#endif
+		vkDestroyShaderModule(pWindow->pGPU->device, vertModule, nullptr);
 		return DG_SHADER_MODULE_CREATION_FAILED;
 	}
 	pWindow->shaderModules.push_back(vertModule);
 
 	std::vector<char> fragShaderCode = _dgLoadShaderSPV("shaders/frag.spv");
+	if (fragShaderCode.size() == 0) {
+		return DG_SHADER_SOURCE_NOT_FOUND;
+	}
 
 	VkShaderModuleCreateInfo fragCreateInfo{};
 	fragCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;

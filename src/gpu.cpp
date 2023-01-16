@@ -125,5 +125,6 @@ DGAPI DgResult _dgGetSwapChainSupport(DgWindow* pWindow) {
 	pWindow->swapChainImages.resize(imageCount);
 	vkGetSwapchainImagesKHR(pWindow->pGPU->device, pWindow->swapChain, &imageCount, pWindow->swapChainImages.data());
 	_dgCreateImageViews(pWindow);
+	return DG_SUCCESS;
 }
 

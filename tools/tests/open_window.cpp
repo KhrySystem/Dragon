@@ -2,10 +2,16 @@
 
 int main(void) {
 	DgEngine e;
-	if (!dgCreateEngine(&e)) {
+	DgResult result = dgCreateEngine(&e);
+	if (result != DG_SUCCESS) {
+		std::cout << result << std::endl;
+		dgTerminateEngine(&e);
 		return 1;
 	}
-	if (!dgCreateWindow(&e, "Not Resizable", 800, 600, DG_FALSE)) {
+	result = dgCreateWindow(&e, "Not Resizable", 800, 600, DG_FALSE);
+	if (result != DG_SUCCESS) {
+		std::cout << result << std::endl;
+		dgTerminateEngine(&e);
 		return 2;
 	}
 

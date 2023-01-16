@@ -5,6 +5,7 @@ typedef enum DgResult {
 	// Dragon errors that dragon throws
 	DG_ENGINE_NOT_INITIALIZED,
 	DG_ARGUMENT_IS_NULL,
+	DG_SHADER_SOURCE_NOT_FOUND,
 	// Warnings that are potentially unoptimal / could turn into errors if not dealt with
 	DG_VK_EXTENSION_ALREADY_ADDED,
 	DG_VK_VALIDATION_LAYER_ALREADY_ADDED,

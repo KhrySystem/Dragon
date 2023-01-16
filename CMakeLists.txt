@@ -24,8 +24,6 @@ project(Dragon VERSION 1.0.2.0 LANGUAGES CXX C)
 include(CTest)
 include(tools/cmake/build_vars.cmake)
 
-add_subdirectory(tools/vulkan_sdk)
-
 # Find and include the Python, Vulkan, Doxygen, and GTest packages
 find_package(Python REQUIRED COMPONENTS Interpreter)
 find_package(Vulkan REQUIRED)

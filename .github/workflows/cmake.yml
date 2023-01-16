@@ -20,6 +20,13 @@ jobs:
           sudo apt update
           sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev
 
+      - name: Prepare Vulkan SDK
+        uses: humbletim/setup-vulkan-sdk@v1.2.0
+        with:
+          vulkan-query-version: latest 
+          vulkan-components: Vulkan-Headers, Vulkan-Loader, Glslang
+          vulkan-use-cache: true
+
       - name: Update Git Subdirectories
         run: |
           git submodule update --init
@@ -45,6 +52,13 @@ jobs:
       - name: Update Git Subdirectories
         run: |
           git submodule update --init
+
+      - name: Prepare Vulkan SDK
+        uses: humbletim/setup-vulkan-sdk@v1.2.0
+        with:
+          vulkan-query-version: latest 
+          vulkan-components: Vulkan-Headers, Vulkan-Loader, Glslang, shaderc 
+          vulkan-use-cache: true
 
       - name: Build Dragon
         run: |

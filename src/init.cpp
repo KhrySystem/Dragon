@@ -54,8 +54,8 @@ DGAPI void dgSetCallback(DgEngine* pEngine, std::function<void(DgMessage*)> fCal
 DgResult _dgSetupVulkan(DgEngine* pEngine) {
 	// App info. Contains info about the Engine, the user app, etc.
 	VkApplicationInfo appInfo{};
-	// Use the highest Vulkan version available, up to 1.3
-	appInfo.apiVersion = VK_API_VERSION_1_3;
+	// Use the version that matches the shaders
+	appInfo.apiVersion = VK_API_VERSION_1_2;
 	appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
 	appInfo.pApplicationName = APP_NAME;
 	appInfo.applicationVersion = APP_VERSION;
@@ -241,21 +241,19 @@ DGAPI void dgUpdate(DgEngine* pEngine) {
 
 DGAPI std::vector<char> _dgLoadShaderSPV(const std::string& filename) {
 	std::ifstream file(filename, std::ios::ate | std::ios::binary);
-
+	// ensure file is found
 	if (!file.is_open()) {
-		return std::vector<char>(0);
+		throw std::runtime_error("failed to open file!");
 	}
-
+	// get file size
 	size_t fileSize = (size_t)file.tellg();
-	std::vector<char> buffer(fileSize);
-
-	file.seekg(0);
-	file.read(buffer.data(), fileSize);
+	std::vector<char> buffer(std::istreambuf_iterator<char>(file), {});
 
 	file.close();
 
 	return buffer;
 }
+
 
 DGAPI void dgTerminateEngine(DgEngine* pEngine) {
 	#ifndef NDEBUG
