@@ -45,18 +45,15 @@ set(USE_MSVC_RUNTIME_LIBRARY_DLL ${Dragon_BUILD_SHARED})
 
 # Create an option to build Dragon specific tests
 option(Dragon_BUILD_TESTS "Build Dragon-specific tests" ON)
-# Backload variables based on Dragon_BUILD_TESTS
-set(GLFW_BUILD_TESTS ${Dragon_BUILD_TESTS})
-set(GLFW_BUILD_EXAMPLES ${Dragon_BUILD_TESTS})
-
 # Create an option to build Dragon documentation
 option(Dragon_BUILD_DOCS "Build Dragon Documentation" ON)
-# Backload variables based on Dragon_BUILD_DOCS
-set(GLFW_BUILD_DOCS ${Dragon_BUILD_DOCS})
-
 # Set the name of the library to "dragon-{version}"
 set(Dragon_LIB_NAME dragon-${Dragon_VERSION})
 
+#Remove GLFW options
+set(GLFW_BUILD_TESTS OFF)
+set(GLFW_BUILD_EXAMPLES OFF)
+set(GLFW_BUILD_DOCS OFF)
 # Add the GLFW library as a subdirectory
 add_subdirectory(external/glfw)
 
