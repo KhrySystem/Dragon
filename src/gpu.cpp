@@ -76,9 +76,18 @@ DGAPI DgResult _dgGetSwapChainSupport(DgWindow* pWindow) {
 	std::vector<VkPresentModeKHR> presentModes(presentModeCount);
 	vkGetPhysicalDeviceSurfacePresentModesKHR(pWindow->pGPU->handle, pWindow->surface, &presentModeCount, presentModes.data());
 
-	_dgChooseSwapSurfaceFormat(pWindow, formats);
-	_dgChooseSwapPresentMode(pWindow, presentModes);
-	_dgChooseSwapExtent2D(pWindow, &capabilities);
+	DgResult r = _dgChooseSwapSurfaceFormat(pWindow, formats);
+	if (r != DG_SUCCESS) {
+		return DG_VK_SURFACE_FORMAT_SELECTION_FAILED;
+	}
+	r = _dgChooseSwapPresentMode(pWindow, presentModes);
+	if (r != DG_SUCCESS) {
+		return DG_VK_PRESENT_MODE_SELECTION_FAILED;
+	}
+	r = _dgChooseSwapExtent2D(pWindow, &capabilities);
+	if (r != DG_SUCCESS) {
+		return DG_VK_EXTENT_2D_SELECTION_FAILED;
+	}
 
 	VkSwapchainCreateInfoKHR createInfo{};
 	createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;

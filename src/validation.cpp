@@ -13,7 +13,7 @@ VkResult dgCreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsM
 VKAPI_ATTR VkBool32 VKAPI_CALL dgVulkanDebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData) {
     std::cerr << "Vulkan Debug:" << std::endl;
     std::cerr << "\tSeverity: " << messageSeverity << std::endl;
-    std::cerr << "\tMessage" << pCallbackData->pMessage << std::endl;
+    std::cerr << "\tMessage: " << pCallbackData->pMessage << std::endl;
 
     return VK_FALSE;
 }

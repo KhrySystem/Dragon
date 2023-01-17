@@ -239,22 +239,6 @@ DGAPI void dgUpdate(DgEngine* pEngine) {
 	}
 }
 
-DGAPI std::vector<char> _dgLoadShaderSPV(const std::string& filename) {
-	std::ifstream file(filename, std::ios::ate | std::ios::binary);
-	// ensure file is found
-	if (!file.is_open()) {
-		throw std::runtime_error("failed to open file!");
-	}
-	// get file size
-	size_t fileSize = (size_t)file.tellg();
-	std::vector<char> buffer(std::istreambuf_iterator<char>(file), {});
-
-	file.close();
-
-	return buffer;
-}
-
-
 DGAPI void dgTerminateEngine(DgEngine* pEngine) {
 	#ifndef NDEBUG
 	dgDestroyDebugUtilsMessengerEXT(pEngine->vulkan, pEngine->debugMessenger, nullptr);

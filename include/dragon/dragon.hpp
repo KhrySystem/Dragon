@@ -28,6 +28,7 @@
 #include "init.hpp"
 #include "message.hpp"
 #include "result.hpp"
+#include "shaders.hpp"
 #include "uiElement.hpp"
 #include "validation.hpp"
 #include "window.hpp"

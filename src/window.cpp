@@ -3,27 +3,48 @@
 DGAPI DgResult dgCreateWindow(DgEngine* pEngine, std::string title, unsigned int width, unsigned int height, DgBool32 isResizable) {
 	glfwWindowHint(GLFW_RESIZABLE, isResizable);
 	GLFWwindow* glfw = glfwCreateWindow(width, height, title.c_str(), NULL, NULL);
+	// Check if window is null 
 	if (glfw == NULL) {
 		return DG_GLFW_WINDOW_NULL_AFTER_CREATION;
 	}
-	DgWindow window;
-	window.window = glfw;
-	VkResult result = glfwCreateWindowSurface(pEngine->vulkan, window.window, nullptr, &window.surface);
-	window.pGPU = pEngine->primaryGPU;
 
+	DgWindow window;
+	// Create the reference
+	window.window = glfw;
+	// Create window surface (the important thing)
+	VkResult result = glfwCreateWindowSurface(pEngine->vulkan, window.window, nullptr, &window.surface);
+	// The current primary GPU is now responsible for this window
+	window.pGPU = pEngine->primaryGPU;
+	
+	// If for some reason it fails, destroy everything created by this function up to this point
 	if (result != VK_SUCCESS) {
+		glfwDestroyWindow(window.window);
 		return DG_GLFW_WINDOW_SURFACE_CREATION_FAILED;
 	}
+
 	DgResult r;
+	// if the current GPU doesn't have a presentation queue, generate one
 	if (pEngine->primaryGPU->presentationQueue == nullptr) {
 		 r = _dgGeneratePresentationQueue(&window);
-		 if (r != DG_SUCCESS)
+		 if (r != DG_SUCCESS) {
+			 // Destroy everything this function has created so far
+			 glfwDestroyWindow(window.window);
+			 vkDestroySurfaceKHR(pEngine->vulkan, window.surface, nullptr);
 			 return r;
+		 }
 	}
 
+	// Generate this window's graphics pipeline
 	r = _dgGenerateGraphicsPipeline(&window);
-	if (r != DG_SUCCESS)
+	if (r != DG_SUCCESS) {
+		glfwDestroyWindow(window.window);
+		vkDestroySurfaceKHR(pEngine->vulkan, window.surface, nullptr);
+		for (VkShaderModule module : window.shaderModules) {
+			vkDestroyShaderModule(window.pGPU->device, module, nullptr);
+		}
+		vkDestroyPipelineLayout(window.pGPU->device, window.pipelineLayout, nullptr);
 		return r;
+	}
 	return DG_SUCCESS;
 }
 
@@ -39,6 +60,7 @@ DGAPI DgResult _dgChooseSwapSurfaceFormat(DgWindow* pWindow, const std::vector<V
 
 	// Loop through all formats to find one that is good
 	for (const VkSurfaceFormatKHR format : pFormats) {
+		std::cout << "format:" << format.format << std::endl;
 		if (format.format == VK_FORMAT_B8G8R8A8_SRGB && format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
 			pWindow->surfaceFormat = format;
 			return DG_SUCCESS;
@@ -136,14 +158,10 @@ DGAPI DgResult _dgGenerateGraphicsPipeline(DgWindow* pWindow) {
 		return DG_ARGUMENT_IS_NULL;
 	}
 
-	std::vector<char> vertShaderCode = _dgLoadShaderSPV("shaders/vert.spv");
-	if (vertShaderCode.size() == 0) {
-		return DG_SHADER_SOURCE_NOT_FOUND;
-	}
 	VkShaderModuleCreateInfo vertCreateInfo{};
 	vertCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-	vertCreateInfo.codeSize = vertShaderCode.size();
-	vertCreateInfo.pCode = reinterpret_cast<const uint32_t*>(vertShaderCode.data());
+	vertCreateInfo.codeSize = DRAGON_VERT_SHADER_SIZE;
+	vertCreateInfo.pCode = reinterpret_cast<const uint32_t*>(DRAGON_VERT_SHADER);
 
 	VkShaderModule vertModule;
 	VkResult result = vkCreateShaderModule(pWindow->pGPU->device, &vertCreateInfo, nullptr, &vertModule);
@@ -156,15 +174,10 @@ DGAPI DgResult _dgGenerateGraphicsPipeline(DgWindow* pWindow) {
 	}
 	pWindow->shaderModules.push_back(vertModule);
 
-	std::vector<char> fragShaderCode = _dgLoadShaderSPV("shaders/frag.spv");
-	if (fragShaderCode.size() == 0) {
-		return DG_SHADER_SOURCE_NOT_FOUND;
-	}
-
 	VkShaderModuleCreateInfo fragCreateInfo{};
 	fragCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-	fragCreateInfo.codeSize = vertShaderCode.size();
-	fragCreateInfo.pCode = reinterpret_cast<const uint32_t*>(fragShaderCode.data());
+	fragCreateInfo.codeSize = DRAGON_FRAG_SHADER_SIZE;
+	fragCreateInfo.pCode = reinterpret_cast<const uint32_t*>(DRAGON_FRAG_SHADER);
 
 	VkShaderModule fragModule = nullptr;
 	result = vkCreateShaderModule(pWindow->pGPU->device, &fragCreateInfo, nullptr, &fragModule);
@@ -172,6 +185,7 @@ DGAPI DgResult _dgGenerateGraphicsPipeline(DgWindow* pWindow) {
 		#ifndef NDEBUG
 		std::cerr << "Dragon: vkCreateShaderModule returned " << dgConvertVkResultToString(result) << std::endl;
 		#endif
+		vkDestroyShaderModule(pWindow->pGPU->device, fragModule, nullptr);
 		return DG_SHADER_MODULE_CREATION_FAILED;
 	}
 	pWindow->shaderModules.push_back(fragModule);
@@ -260,12 +274,14 @@ DGAPI DgResult _dgGenerateGraphicsPipeline(DgWindow* pWindow) {
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 
+
 	result = vkCreatePipelineLayout(pWindow->pGPU->device, &pipelineLayoutInfo, nullptr, &pWindow->pipelineLayout);
 
 	if (result != VK_SUCCESS) {
 		#ifndef NDEBUG
 		std::cerr << "vkCreatePipelineLayout failed with " << dgConvertVkResultToString(result) << std::endl;
 		#endif
+		vkDestroyPipelineLayout(pWindow->pGPU->device, pWindow->pipelineLayout, nullptr);
 		return DG_VK_PIPELINE_CREATION_FAILED;
 	}
 
@@ -295,11 +311,12 @@ DGAPI DgResult _dgGenerateGraphicsPipeline(DgWindow* pWindow) {
 	renderPassInfo.subpassCount = 1;
 	renderPassInfo.pSubpasses = &subpass;
 
-	result = vkCreateRenderPass(pWindow->pGPU->device, &renderPassInfo, nullptr, &pWindow->renderPass);
 
+	result = vkCreateRenderPass(pWindow->pGPU->device, &renderPassInfo, nullptr, &pWindow->renderPass);
 	if (result != VK_SUCCESS) {
-		throw std::runtime_error("failed to create render pass!");
+		vkDestroyRenderPass(pWindow->pGPU->device, pWindow->renderPass, nullptr);
 		return DG_VK_RENDER_PASS_CREATION_FAILED;
 	}
+
 	return DG_SUCCESS;
 }

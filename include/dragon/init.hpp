@@ -1,3 +1,4 @@
+// Methods that are either only called at initialization / termination, or that don't fit into another category
 #pragma once
 
 #include <string>
@@ -65,7 +66,6 @@ DGAPI void dgUpdate(DgEngine* pEngine);
 */
 DGAPI void dgTerminateEngine(DgEngine* pEngine);
 // Internal methods
-DGAPI std::vector<char> _dgLoadShaderSPV(const std::string& filename);
 /**
 * INTERNAL METHOD
 * @param pGPU The GPU to populate the queueFamilies of
