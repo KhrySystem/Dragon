@@ -18,7 +18,7 @@ DGAPI DgResult dgCreateWindow(DgEngine* pEngine, std::string title, unsigned int
 	
 	// If for some reason it fails, destroy everything created by this function up to this point
 	if (result != VK_SUCCESS) {
-		glfwDestroyWindow(window.window);
+		dgDestroyWindow(pEngine->vulkan, &window);
 		return DG_GLFW_WINDOW_SURFACE_CREATION_FAILED;
 	}
 
@@ -28,8 +28,7 @@ DGAPI DgResult dgCreateWindow(DgEngine* pEngine, std::string title, unsigned int
 		 r = _dgGeneratePresentationQueue(&window);
 		 if (r != DG_SUCCESS) {
 			 // Destroy everything this function has created so far
-			 glfwDestroyWindow(window.window);
-			 vkDestroySurfaceKHR(pEngine->vulkan, window.surface, nullptr);
+			 dgDestroyWindow(pEngine->vulkan, &window);
 			 return r;
 		 }
 	}
@@ -37,14 +36,18 @@ DGAPI DgResult dgCreateWindow(DgEngine* pEngine, std::string title, unsigned int
 	// Generate this window's graphics pipeline
 	r = _dgGenerateGraphicsPipeline(&window);
 	if (r != DG_SUCCESS) {
-		glfwDestroyWindow(window.window);
-		vkDestroySurfaceKHR(pEngine->vulkan, window.surface, nullptr);
-		for (VkShaderModule module : window.shaderModules) {
-			vkDestroyShaderModule(window.pGPU->device, module, nullptr);
-		}
-		vkDestroyPipelineLayout(window.pGPU->device, window.pipelineLayout, nullptr);
+		dgDestroyWindow(pEngine->vulkan, &window);
 		return r;
 	}
+
+	r = _dgCreateFramebuffers(&window);
+	r = _dgGenerateGraphicsPipeline(&window);
+	if (r != DG_SUCCESS) {
+		dgDestroyWindow(pEngine->vulkan, &window);
+		return r;
+	}
+
+	pEngine->windows.push_back(window);
 	return DG_SUCCESS;
 }
 
@@ -205,11 +208,6 @@ DGAPI DgResult _dgGenerateGraphicsPipeline(DgWindow* pWindow) {
 
 	VkPipelineShaderStageCreateInfo shaderStages[] = { vertShaderStageInfo, fragShaderStageInfo };
 
-	VkPipelineDynamicStateCreateInfo dynamicState{};
-	dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-	dynamicState.dynamicStateCount = static_cast<uint32_t>(pWindow->dynamicStates.size());
-	dynamicState.pDynamicStates = pWindow->dynamicStates.data();
-
 	VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
 	vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 	vertexInputInfo.vertexBindingDescriptionCount = 0;
@@ -220,24 +218,10 @@ DGAPI DgResult _dgGenerateGraphicsPipeline(DgWindow* pWindow) {
 	inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 	inputAssembly.primitiveRestartEnable = VK_FALSE;
 
-	VkViewport viewport{};
-	viewport.x = 0.0f;
-	viewport.y = 0.0f;
-	viewport.width = (float)pWindow->extent2D.width;
-	viewport.height = (float)pWindow->extent2D.height;
-	viewport.minDepth = 0.0f;
-	viewport.maxDepth = 1.0f;
-
-	VkRect2D scissor{};
-	scissor.offset = { 0, 0 };
-	scissor.extent = pWindow->extent2D;
-
 	VkPipelineViewportStateCreateInfo viewportState{};
 	viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
 	viewportState.viewportCount = 1;
-	viewportState.pViewports = &viewport;
 	viewportState.scissorCount = 1;
-	viewportState.pScissors = &scissor;
 
 	VkPipelineRasterizationStateCreateInfo rasterizer{};
 	rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
@@ -257,19 +241,17 @@ DGAPI DgResult _dgGenerateGraphicsPipeline(DgWindow* pWindow) {
 	VkPipelineColorBlendAttachmentState colorBlendAttachment{};
 	colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 	colorBlendAttachment.blendEnable = VK_FALSE;
-	colorBlendAttachment.blendEnable = VK_TRUE;
-	colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
-	colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
-	colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
-	colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
-	colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
-	colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
 
 	VkPipelineColorBlendStateCreateInfo colorBlending{};
 	colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
 	colorBlending.logicOpEnable = VK_FALSE;
+	colorBlending.logicOp = VK_LOGIC_OP_COPY;
 	colorBlending.attachmentCount = 1;
 	colorBlending.pAttachments = &colorBlendAttachment;
+	colorBlending.blendConstants[0] = 0.0f;
+	colorBlending.blendConstants[1] = 0.0f;
+	colorBlending.blendConstants[2] = 0.0f;
+	colorBlending.blendConstants[3] = 0.0f;
 
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -286,7 +268,7 @@ DGAPI DgResult _dgGenerateGraphicsPipeline(DgWindow* pWindow) {
 	}
 
 	VkAttachmentDescription colorAttachment{};
-	colorAttachment.format = pWindow->surfaceFormat.format;
+	colorAttachment.format = pWindow->surfaceFormat.format; // Does not fall within range and is not added by an extension? Does not contain VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT
 	colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
 	colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 	colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -302,7 +284,7 @@ DGAPI DgResult _dgGenerateGraphicsPipeline(DgWindow* pWindow) {
 	VkSubpassDescription subpass{};
 	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
 	subpass.colorAttachmentCount = 1;
-	subpass.pColorAttachments = &colorAttachmentRef;
+	subpass.pColorAttachments = &colorAttachmentRef; // Validation Error references the above
 
 	VkRenderPassCreateInfo renderPassInfo{};
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
@@ -311,6 +293,14 @@ DGAPI DgResult _dgGenerateGraphicsPipeline(DgWindow* pWindow) {
 	renderPassInfo.subpassCount = 1;
 	renderPassInfo.pSubpasses = &subpass;
 
+	std::vector<VkDynamicState> dynamicStates = {
+			VK_DYNAMIC_STATE_VIEWPORT,
+			VK_DYNAMIC_STATE_SCISSOR
+	};
+	VkPipelineDynamicStateCreateInfo dynamicState{};
+	dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+	dynamicState.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
+	dynamicState.pDynamicStates = dynamicStates.data();
 
 	result = vkCreateRenderPass(pWindow->pGPU->device, &renderPassInfo, nullptr, &pWindow->renderPass);
 	if (result != VK_SUCCESS) {
@@ -318,5 +308,154 @@ DGAPI DgResult _dgGenerateGraphicsPipeline(DgWindow* pWindow) {
 		return DG_VK_RENDER_PASS_CREATION_FAILED;
 	}
 
+	VkGraphicsPipelineCreateInfo pipelineInfo{};
+	pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+	pipelineInfo.stageCount = 2;
+	pipelineInfo.pStages = shaderStages;
+	pipelineInfo.pVertexInputState = &vertexInputInfo;
+	pipelineInfo.pInputAssemblyState = &inputAssembly;
+	pipelineInfo.pViewportState = &viewportState;
+	pipelineInfo.pRasterizationState = &rasterizer;
+	pipelineInfo.pMultisampleState = &multisampling;
+	pipelineInfo.pDepthStencilState = nullptr; // Optional
+	pipelineInfo.pColorBlendState = &colorBlending;
+	pipelineInfo.pDynamicState = &dynamicState;
+	pipelineInfo.layout = pWindow->pipelineLayout;
+	pipelineInfo.renderPass = pWindow->renderPass;
+	pipelineInfo.subpass = 0;
+	pipelineInfo.basePipelineHandle = VK_NULL_HANDLE; // Optional
+	pipelineInfo.basePipelineIndex = -1; // Optional
+
+	result = vkCreateGraphicsPipelines(pWindow->pGPU->device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &pWindow->graphicsPipeline);
+
+	if (result != VK_SUCCESS) {
+		return DG_VK_GRAPHICS_PIPELINE_CREATION_FAILED;
+	}
+
 	return DG_SUCCESS;
+}
+
+DGAPI DgResult _dgCreateFramebuffers(DgWindow* pWindow) {
+	pWindow->swapChainFramebuffers.resize(pWindow->swapChainImageViews.size());
+
+	for (size_t i = 0; i < pWindow->swapChainImageViews.size(); i++) {
+		VkImageView attachments[] = {
+			pWindow->swapChainImageViews[i]
+		};
+
+		VkFramebufferCreateInfo framebufferInfo{};
+		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+		framebufferInfo.renderPass = pWindow->renderPass;
+		framebufferInfo.attachmentCount = 1;
+		framebufferInfo.pAttachments = attachments;
+		framebufferInfo.width = pWindow->extent2D.width;
+		framebufferInfo.height = pWindow->extent2D.height;
+		framebufferInfo.layers = 1;
+
+		VkResult result = vkCreateFramebuffer(pWindow->pGPU->device, &framebufferInfo, nullptr, &pWindow->swapChainFramebuffers[i]);
+
+		if (result != VK_SUCCESS) {
+			return DG_VK_FRAMEBUFFER_CREATION_FAILED;
+		}
+	}
+
+	return DG_SUCCESS;
+}
+
+DGAPI DgResult _dgCreateCommandPool(DgWindow* pWindow) {
+	VkCommandPoolCreateInfo poolInfo{};
+	poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+	poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+	poolInfo.queueFamilyIndex = pWindow->pGPU->queueFamilies.graphicsQueueFamily.value();
+
+	VkResult result = vkCreateCommandPool(pWindow->pGPU->device, &poolInfo, nullptr, &pWindow->commandPool);
+	if (result != VK_SUCCESS) {
+		return DG_VK_COMMAND_POOL_CREATION_FAILED;
+	}
+	return DG_SUCCESS;
+}
+
+DGAPI DgResult _dgCreateCommandBuffer(DgWindow* pWindow) {
+	VkCommandBufferAllocateInfo allocInfo{};
+	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+	allocInfo.commandPool = pWindow->commandPool;
+	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+	allocInfo.commandBufferCount = 1;
+
+	VkResult result = vkAllocateCommandBuffers(pWindow->pGPU->device, &allocInfo, &pWindow->commandBuffer);
+
+	if (result != VK_SUCCESS) {
+		return DG_VK_COMMAND_BUFFER_CREATION_FAILED;
+	}
+	return DG_SUCCESS;
+}
+
+DGAPI DgResult _dgRecordCommandBuffer(DgWindow* pWindow, uint32_t imageIndex) {
+	VkCommandBufferBeginInfo beginInfo{};
+	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+
+	if (vkBeginCommandBuffer(pWindow->commandBuffer, &beginInfo) != VK_SUCCESS) {
+		return DG_VK_COMMAND_BUFFER_FAILED_RECORD_START;
+	}
+
+	VkRenderPassBeginInfo renderPassInfo{};
+	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+	renderPassInfo.renderPass = pWindow->renderPass;
+	renderPassInfo.framebuffer = pWindow->swapChainFramebuffers[imageIndex];
+	renderPassInfo.renderArea.offset = { 0, 0 };
+	renderPassInfo.renderArea.extent = pWindow->extent2D;
+
+	VkClearValue clearColor = { {{0.0f, 0.0f, 0.0f, 1.0f}} };
+	renderPassInfo.clearValueCount = 1;
+	renderPassInfo.pClearValues = &clearColor;
+
+	vkCmdBeginRenderPass(pWindow->commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+	vkCmdBindPipeline(pWindow->commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pWindow->graphicsPipeline);
+
+	VkViewport viewport{};
+	viewport.x = 0.0f;
+	viewport.y = 0.0f;
+	viewport.width = (float)pWindow->extent2D.width;
+	viewport.height = (float)pWindow->extent2D.height;
+	viewport.minDepth = 0.0f;
+	viewport.maxDepth = 1.0f;
+	vkCmdSetViewport(pWindow->commandBuffer, 0, 1, &viewport);
+
+	VkRect2D scissor{};
+	scissor.offset = { 0, 0 };
+	scissor.extent = pWindow->extent2D;
+	vkCmdSetScissor(pWindow->commandBuffer, 0, 1, &scissor);
+
+	vkCmdDraw(pWindow->commandBuffer, 3, 1, 0, 0);
+
+	vkCmdEndRenderPass(pWindow->commandBuffer);
+
+	if (vkEndCommandBuffer(pWindow->commandBuffer) != VK_SUCCESS) {
+		return DG_VK_COMMAND_BUFFER_RECORD_FAILED;
+	}
+	return DG_SUCCESS;
+}
+
+DGAPI void dgDestroyWindow(VkInstance instance, DgWindow* pWindow) {
+	vkDestroyCommandPool(pWindow->pGPU->device, pWindow->commandPool, nullptr);
+
+	for (VkFramebuffer framebuffer : pWindow->swapChainFramebuffers) {
+		vkDestroyFramebuffer(pWindow->pGPU->device, framebuffer, nullptr);
+	}
+
+	if(pWindow->graphicsPipeline != VK_NULL_HANDLE)
+		vkDestroyPipeline(pWindow->pGPU->device, pWindow->graphicsPipeline, nullptr);
+	if(pWindow->graphicsPipeline != VK_NULL_HANDLE)
+		vkDestroyPipelineLayout(pWindow->pGPU->device, pWindow->pipelineLayout, nullptr);
+	if(pWindow->renderPass != VK_NULL_HANDLE)
+		vkDestroyRenderPass(pWindow->pGPU->device, pWindow->renderPass, nullptr);
+
+	for (VkImageView imageView : pWindow->swapChainImageViews) {
+		vkDestroyImageView(pWindow->pGPU->device, imageView, nullptr);
+	}
+
+	vkDestroySwapchainKHR(pWindow->pGPU->device, pWindow->swapChain, nullptr);
+	vkDestroySurfaceKHR(instance, pWindow->surface, nullptr);
+	glfwDestroyWindow(pWindow->window);
 }

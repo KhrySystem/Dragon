@@ -10,4 +10,3 @@ out/*
 build/*
 
 include/dragon/dragon_core.h
-include/dragon/shaders.hpp

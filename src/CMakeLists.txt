@@ -105,6 +105,7 @@ else()
 endif()
 
 if(${Vulkan_glslc_FOUND})
+    message(DEBUG "Using glslc to build SPIR-V Binaries")
 	add_custom_command(
 		OUTPUT "${Dragon_BINARY_DIR}/shaders/frag.spv" "${Dragon_BINARY_DIR}/shaders/vert.spv"
 		COMMAND ${CMAKE_COMMAND} -E make_directory ${Dragon_BINARY_DIR}/shaders/
@@ -119,6 +120,25 @@ if(${Vulkan_glslc_FOUND})
     file(REMOVE "${Dragon_SOURCE_DIR}/include/dragon/shaders.hpp")
 	bin2h(SOURCE_FILE "${Dragon_BINARY_DIR}/shaders/frag.spv" HEADER_FILE "${Dragon_SOURCE_DIR}/include/dragon/shaders.hpp" VARIABLE_NAME DRAGON_FRAG_SHADER APPEND NULL_TERMINATE)
 	bin2h(SOURCE_FILE "${Dragon_BINARY_DIR}/shaders/vert.spv" HEADER_FILE "${Dragon_SOURCE_DIR}/include/dragon/shaders.hpp" VARIABLE_NAME DRAGON_VERT_SHADER APPEND NULL_TERMINATE)
+elseif(${Vulkan_glslangValidator_FOUND})
+    message(DEBUG "Using glslangValidator to build SPIR-V Binaries")
+    add_custom_command(
+		OUTPUT "${Dragon_BINARY_DIR}/shaders/frag.spv" "${Dragon_BINARY_DIR}/shaders/vert.spv"
+		COMMAND ${CMAKE_COMMAND} -E make_directory ${Dragon_BINARY_DIR}/shaders/
+		COMMAND ${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE} -V ${Dragon_SOURCE_DIR}/src/shaders/shader.frag -o ${Dragon_BINARY_DIR}/shaders/frag.spv --target-env=vulkan1.2
+		COMMAND ${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE} -V ${Dragon_SOURCE_DIR}/src/shaders/shader.vert -o ${Dragon_BINARY_DIR}/shaders/vert.spv --target-env=vulkan1.2
+		DEPENDS "${Dragon_SOURCE_DIR}/src/shaders/shader.frag" "${Dragon_SOURCE_DIR}/src/shaders/shader.vert"
+	)
+
+	add_custom_target(Shaders
+		DEPENDS "${Dragon_BINARY_DIR}/shaders/frag.spv" "${Dragon_BINARY_DIR}/shaders/vert.spv"
+	)
+    file(REMOVE "${Dragon_SOURCE_DIR}/include/dragon/shaders.hpp")
+	bin2h(SOURCE_FILE "${Dragon_BINARY_DIR}/shaders/frag.spv" HEADER_FILE "${Dragon_SOURCE_DIR}/include/dragon/shaders.hpp" VARIABLE_NAME DRAGON_FRAG_SHADER APPEND NULL_TERMINATE)
+	bin2h(SOURCE_FILE "${Dragon_BINARY_DIR}/shaders/vert.spv" HEADER_FILE "${Dragon_SOURCE_DIR}/include/dragon/shaders.hpp" VARIABLE_NAME DRAGON_VERT_SHADER APPEND NULL_TERMINATE)
+
+else()
+    message(WARNING "Using prebuilt SPIR-V Binaries")
 endif()
 
 # Specify the include directories for the library

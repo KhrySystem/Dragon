@@ -245,17 +245,7 @@ DGAPI void dgTerminateEngine(DgEngine* pEngine) {
 	#endif
 	
 	for (DgWindow window : pEngine->windows) {
-		for (VkImageView imageView : window.swapChainImageViews) {
-			vkDestroyImageView(window.pGPU->device, imageView, nullptr);
-			for (VkShaderModule module : window.shaderModules) {
-				vkDestroyShaderModule(window.pGPU->device, module, nullptr);
-			}
-			vkDestroyPipelineLayout(window.pGPU->device, window.pipelineLayout, nullptr);
-		}
-		
-		vkDestroySwapchainKHR(window.pGPU->device, window.swapChain, nullptr);
-		vkDestroySurfaceKHR(pEngine->vulkan, window.surface, nullptr);
-		glfwDestroyWindow(window.window);
+		dgDestroyWindow(pEngine->vulkan, &window);
 	}
 
 	for (DgGPU gpu : pEngine->gpus) {

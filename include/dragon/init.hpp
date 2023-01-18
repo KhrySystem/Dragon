@@ -58,6 +58,7 @@ DGAPI int dgGetWindowCount(DgEngine* pEngine);
 */
 DGAPI void dgUpdate(DgEngine* pEngine);
 // Destruction functions
+DGAPI void dgDestroyWindow(VkInstance instance, DgWindow* pWindow);
 /**
 * Terminates an engine instance, immediately closing all still-open windows, the Vulkan instance, stopping queues, and rendering the whole engine null and void. 
 * Only call when you're not using this instance again. 
@@ -108,3 +109,6 @@ DGAPI DgResult _dgChooseSwapExtent2D(DgWindow* pWindow, const VkSurfaceCapabilit
  */
 DGAPI DgResult _dgCreateImageViews(DgWindow* pWindow);
 DGAPI DgResult _dgGenerateGraphicsPipeline(DgWindow* pWindow);
+DGAPI DgResult _dgCreateFramebuffers(DgWindow* pWindow);
+DGAPI DgResult _dgCreateCommandPool(DgWindow* pWindow);
+DGAPI DgResult _dgCreateCommandBuffer(DgWindow* pWindow);

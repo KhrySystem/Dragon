@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.24)
 
 # Set the output directories for the library and executable
 set(LIBRARY_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
@@ -18,7 +18,7 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 20)
 
 # Define the project and its version and languages
-project(Dragon VERSION 1.0.2.1 LANGUAGES CXX C)
+project(Dragon VERSION 1.0.2.2 LANGUAGES CXX C)
 
 # Include the CTest and build_vars modules
 include(CTest)

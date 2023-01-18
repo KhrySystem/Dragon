@@ -69,4 +69,11 @@ typedef struct DgWindow {
      * @brief Render pass for the graphics pipeline of the window
      */
     VkRenderPass renderPass;
+    /**
+     * @brief Vulkan Pipeline object for the window
+     */
+    VkPipeline graphicsPipeline;
+    std::vector<VkFramebuffer> swapChainFramebuffers;
+    VkCommandPool commandPool;
+    VkCommandBuffer commandBuffer;
 } DgWindow;

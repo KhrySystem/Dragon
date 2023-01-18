@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 3.20)
-
 macro(dragon_create_test TARGET SOURCES)
 	add_executable(${TARGET} ${SOURCES})
 	target_include_directories(${TARGET} PUBLIC ${Dragon_INCLUDE_DIRS})
