@@ -76,4 +76,9 @@ typedef struct DgWindow {
     std::vector<VkFramebuffer> swapChainFramebuffers;
     VkCommandPool commandPool;
     VkCommandBuffer commandBuffer;
+
+    VkSemaphore imageAvailableSemaphore;
+    VkSemaphore renderFinishedSemaphore;
+    VkFence inFlightFence;
 } DgWindow;
+

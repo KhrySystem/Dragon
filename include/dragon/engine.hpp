@@ -55,3 +55,5 @@ typedef struct DgEngine {
     std::function<void(DgMessage*)> fCallback;
     
 } DgEngine;
+
+

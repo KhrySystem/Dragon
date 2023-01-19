@@ -4,6 +4,5 @@ add_library(Dragon-Headers INTERFACE
 	"dragon.hpp"
 	"dragon_core.h.in"
 	"engine.hpp"
-	"init.hpp"
 	"window.hpp"
 )

@@ -87,7 +87,7 @@ endfunction()
 if(${Dragon_BUILD_STATIC})
 	# Create a static library with the given name, and specify the sources to be compiled
 	add_library(${Dragon_LIB_NAME} STATIC
-		"init.cpp"
+		"engine.cpp"
 		"window.cpp"
 		"gpu.cpp"
 		"validation.cpp"
@@ -95,7 +95,7 @@ if(${Dragon_BUILD_STATIC})
 else() 
 	# Create a shared library with the given name, and specify the sources to be compiled
 	add_library(${Dragon_LIB_NAME} SHARED 
-		"init.cpp"
+		"engine.cpp"
 		"window.cpp"
 		"gpu.cpp"
 		"validation.cpp"

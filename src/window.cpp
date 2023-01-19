@@ -173,7 +173,7 @@ DGAPI DgResult _dgGenerateGraphicsPipeline(DgWindow* pWindow) {
 		std::cerr << "Dragon: vkCreateShaderModule returned " << dgConvertVkResultToString(result) << std::endl;
 		#endif
 		vkDestroyShaderModule(pWindow->pGPU->device, vertModule, nullptr);
-		return DG_SHADER_MODULE_CREATION_FAILED;
+		return DG_VK_SHADER_MODULE_CREATION_FAILED;
 	}
 	pWindow->shaderModules.push_back(vertModule);
 
@@ -189,7 +189,7 @@ DGAPI DgResult _dgGenerateGraphicsPipeline(DgWindow* pWindow) {
 		std::cerr << "Dragon: vkCreateShaderModule returned " << dgConvertVkResultToString(result) << std::endl;
 		#endif
 		vkDestroyShaderModule(pWindow->pGPU->device, fragModule, nullptr);
-		return DG_SHADER_MODULE_CREATION_FAILED;
+		return DG_VK_SHADER_MODULE_CREATION_FAILED;
 	}
 	pWindow->shaderModules.push_back(fragModule);
 
@@ -437,7 +437,43 @@ DGAPI DgResult _dgRecordCommandBuffer(DgWindow* pWindow, uint32_t imageIndex) {
 	return DG_SUCCESS;
 }
 
+DGAPI DgResult _dgCreateSyncObjects(DgWindow* pWindow) {
+	VkSemaphoreCreateInfo semaphoreInfo{};
+	semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+	VkFenceCreateInfo fenceInfo{};
+	fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+
+	VkResult result = vkCreateSemaphore(pWindow->pGPU->device, &semaphoreInfo, nullptr, &pWindow->imageAvailableSemaphore);
+
+	if (result != VK_SUCCESS)
+		return DG_VK_SEMAPHORE_CREATION_FAILED;
+
+
+	result = vkCreateSemaphore(pWindow->pGPU->device, &semaphoreInfo, nullptr, &pWindow->renderFinishedSemaphore);
+
+	if (result != VK_SUCCESS)
+		return DG_VK_SEMAPHORE_CREATION_FAILED;
+
+	result = vkCreateFence(pWindow->pGPU->device, &fenceInfo, nullptr, &pWindow->inFlightFence);
+
+	if (result != VK_SUCCESS) {
+		return DG_VK_FENCE_CREATION_FAILED;
+	}
+	return DG_SUCCESS;
+}
+
+DGAPI DgResult _dgRenderWindow(DgWindow* pWindow) {
+	vkWaitForFences(pWindow->pGPU->device, 1, &pWindow->inFlightFence, VK_TRUE, UINT64_MAX);
+	vkResetFences(pWindow->pGPU->device, 1, &pWindow->inFlightFence);
+	return DG_SUCCESS;
+}
+
 DGAPI void dgDestroyWindow(VkInstance instance, DgWindow* pWindow) {
+	vkDestroySemaphore(pWindow->pGPU->device, pWindow->imageAvailableSemaphore, nullptr);
+	vkDestroySemaphore(pWindow->pGPU->device, pWindow->renderFinishedSemaphore, nullptr);
+	vkDestroyFence(pWindow->pGPU->device, pWindow->inFlightFence, nullptr);
+
 	vkDestroyCommandPool(pWindow->pGPU->device, pWindow->commandPool, nullptr);
 
 	for (VkFramebuffer framebuffer : pWindow->swapChainFramebuffers) {
