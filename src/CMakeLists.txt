@@ -119,8 +119,8 @@ if(${Vulkan_glslc_FOUND})
 elseif(${Vulkan_glslangValidator_FOUND})
     message(STATUS "Using glslangValidator to build SPIR-V Binaries")
 
-    execute_process(COMMAND ${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE} -V ${Dragon_SOURCE_DIR}/src/shaders/shader.frag -o ${Dragon_BINARY_DIR}/shaders/frag.spv --target-env=vulkan1.2)
-    execute_process(COMMAND ${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE} -V ${Dragon_SOURCE_DIR}/src/shaders/shader.vert -o ${Dragon_BINARY_DIR}/shaders/vert.spv --target-env=vulkan1.2)
+    execute_process(COMMAND ${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE} -V ${Dragon_SOURCE_DIR}/src/shaders/shader.frag -o ${Dragon_BINARY_DIR}/shaders/frag.spv --target-env vulkan1.2)
+    execute_process(COMMAND ${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE} -V ${Dragon_SOURCE_DIR}/src/shaders/shader.vert -o ${Dragon_BINARY_DIR}/shaders/vert.spv --target-env vulkan1.2)
 
     add_custom_target(Shaders DEPENDS ${Dragon_BINARY_DIR}/shaders/vert.spv ${Dragon_BINARY_DIR}/shaders/frag.spv SOURCES ${Dragon_SOURCE_DIR}/src/shaders/shader.frag ${Dragon_SOURCE_DIR}/src/shaders/shader.vert)
 
