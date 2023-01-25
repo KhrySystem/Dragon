@@ -23,7 +23,7 @@ typedef struct {
  * @struct DgGPU
  * @brief Structure that holds all the data for a GPU
  */
-typedef struct {
+typedef struct DgGPU {
     /**
      * @brief Handle to the GPU
      */
@@ -43,7 +43,7 @@ typedef struct {
     /**
      * @brief Logical device of the GPU
      */
-    VkDevice device;
+    VkDevice device = VK_NULL_HANDLE;
     /**
      * @brief Graphics queue of the GPU
      */
@@ -52,9 +52,4 @@ typedef struct {
      * @brief Presentation queue of the GPU
      */
     VkQueue presentationQueue;
-
-    /**
-     * @brief Vector of DeviceQueueCreateInfo for the GPU
-     */
-    std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
 } DgGPU;

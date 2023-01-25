@@ -65,6 +65,7 @@ DGAPI DgResult dgCreateWindow(DgEngine* pEngine, std::string title, unsigned int
 * @param fCallback a function, of type void, that takes a pointer of a DgMessage
 */
 DGAPI void dgSetCallback(DgEngine* pEngine, std::function<void(int, const char*, void*)> fCallback);
+DGAPI void _dgGlfwCallback(int code, const char* description);
 // Runtime functions
 /**
 * Checks to see how many windows are on this specific engine instance.

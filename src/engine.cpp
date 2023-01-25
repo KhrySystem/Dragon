@@ -37,6 +37,7 @@ DGAPI DgResult dgAddVkExtensionToEngine(DgEngine* pEngine, const char* extName) 
 		}
 	}
 
+	pEngine->vkExtensions.push_back(extName);
 	return DG_SUCCESS;
 }
 
@@ -136,6 +137,8 @@ DGAPI DgResult dgCreateEngine(DgEngine* pEngine) {
 		return DG_GLFW_INITIALIZATION_FAILED;
 	}
 
+	glfwSetErrorCallback(_dgGlfwCallback);
+
 	// Vulkan Initialization
 	if (!glfwVulkanSupported()) {
 		return DG_GLFW_VULKAN_NOT_SUPPORTED;
@@ -143,9 +146,13 @@ DGAPI DgResult dgCreateEngine(DgEngine* pEngine) {
 
 	uint32_t count;
 	const char** extensions = glfwGetRequiredInstanceExtensions(&count);
+	if (count == 0) {
+		return DG_GLFW_NO_INSTANCE_EXTENSIONS_FOUND;
+	}
 	std::vector<const char*> glfwExtensions(extensions, extensions + count);
 
 	for (const char* required : glfwExtensions) {
+		std::cout << required << std::endl;
 		dgAddVkExtensionToEngine(pEngine, required);
 	}
 	r = _dgSetupVulkan(pEngine);
@@ -198,7 +205,7 @@ DGAPI void dgTerminateEngine(DgEngine* pEngine) {
 	}
 
 	for (DgGPU gpu : pEngine->gpus) {
-		if (gpu.device != nullptr) {
+		if (gpu.device != VK_NULL_HANDLE) {
 			vkDestroyDevice(gpu.device, nullptr);
 		}
 	}

@@ -25,6 +25,11 @@ DGAPI void dgDestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMess
     }
 }
 
+DGAPI void _dgGlfwCallback(int code, const char* description) {
+	std::cerr << "GLFW Error " << code << ":" << std::endl;
+	std::cerr << "\t" << description << std::endl;
+}
+
 DGAPI std::string dgConvertVkResultToString(VkResult result) {
 	switch (result) {
 		case VK_SUCCESS: 												return "VK_SUCCESS";

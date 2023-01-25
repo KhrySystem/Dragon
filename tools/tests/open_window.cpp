@@ -15,6 +15,10 @@ int main(void) {
 		return result;
 	}
 
+	while (dgGetWindowCount(&e) > 0) {
+		dgUpdate(&e);
+	}
+
 	dgTerminateEngine(&e);
 	return 0;
 }
