@@ -8,7 +8,7 @@ int main(void) {
 	}
 	std::cout << "dgCreateEngine successful" << std::endl;
 		
-	if (!dgCreateWindow(&engine, "Win", 300, 300, false)) {
+	if (!dgCreateWindow(&engine, "Win", 300, 300, false, false)) {
 		std::cerr << "dgCreateWindow failed" << std::endl;
 		return 2;
 	}

@@ -1,39 +1,68 @@
 #include <dragon/dragon.hpp>
 
-DGAPI DgResult dgCreateWindow(DgEngine* pEngine, std::string title, unsigned int width, unsigned int height, DgBool32 isResizable) {
+DGAPI DgResult dgCreateWindow(DgEngine* pEngine, std::string title, unsigned int width, unsigned int height, DgBool32 isResizable, DgBool32 isFullscreen) {
+	if (pEngine == nullptr) {
+		return DG_ARGUMENT_IS_NULL;
+	}
+
+	GLFWmonitor* monitor;
+	if (isFullscreen) {
+		monitor = glfwGetPrimaryMonitor();
+		if (monitor != NULL) {
+			const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+			width = mode->width;
+			height = mode->height;
+			glfwWindowHint(GLFW_RED_BITS, mode->redBits);
+			glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
+			glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
+			glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+		}
+		
+	}
+	else {
+		monitor = NULL;
+	}
+
 	glfwWindowHint(GLFW_RESIZABLE, isResizable);
-	GLFWwindow* glfw = glfwCreateWindow(width, height, title.c_str(), NULL, NULL);
-	// Check if window is null 
+	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+	GLFWwindow* glfw = glfwCreateWindow(width, height, title.c_str(), monitor, NULL);
 	if (glfw == NULL) {
+		std::cout << "Window was null" << std::endl;
 		return DG_GLFW_WINDOW_NULL_AFTER_CREATION;
 	}
 
 	DgWindow window;
-	// Create the reference
 	window.window = glfw;
-	// Create window surface (the important thing)
-	VkResult result = glfwCreateWindowSurface(pEngine->vulkan, window.window, nullptr, &window.surface);
-	// The current primary GPU is now responsible for this window
 	window.pGPU = pEngine->primaryGPU;
+	window.imageAvailableSemaphores.resize(DRAGON_RENDER_FRAME_MAX);
+	window.renderFinishedSemaphores.resize(DRAGON_RENDER_FRAME_MAX);
+	window.inFlightFences.resize(DRAGON_RENDER_FRAME_MAX);
 	
-	// If for some reason it fails, destroy everything created by this function up to this point
-	if (result != VK_SUCCESS) {
-		dgDestroyWindow(pEngine->vulkan, &window);
+	if (glfwCreateWindowSurface(pEngine->vulkan, window.window, NULL, &window.surface) != VK_SUCCESS) {
 		return DG_GLFW_WINDOW_SURFACE_CREATION_FAILED;
 	}
 
 	DgResult r;
-	// if the current GPU doesn't have a presentation queue, generate one
-	if (pEngine->primaryGPU->presentationQueue == nullptr) {
+	if (!window.pGPU->queueFamilies.presentationQueueFamily.has_value()) {
 		 r = _dgGeneratePresentationQueue(&window);
 		 if (r != DG_SUCCESS) {
-			 // Destroy everything this function has created so far
+			 dgDestroyWindow(pEngine->vulkan, &window);
+			 return r;
+		 }
+		 r = _dgStartQueueBuffers(pEngine, window.pGPU);
+		 if (r != DG_SUCCESS) {
 			 dgDestroyWindow(pEngine->vulkan, &window);
 			 return r;
 		 }
 	}
 
-	// Generate this window's graphics pipeline
+	r = _dgCreateSwapchain(&window);
+
+	if (r != DG_SUCCESS) {
+		dgDestroyWindow(pEngine->vulkan, &window);
+		return r;
+	}
+
 	r = _dgGenerateGraphicsPipeline(&window);
 	if (r != DG_SUCCESS) {
 		dgDestroyWindow(pEngine->vulkan, &window);
@@ -41,18 +70,153 @@ DGAPI DgResult dgCreateWindow(DgEngine* pEngine, std::string title, unsigned int
 	}
 
 	r = _dgCreateFramebuffers(&window);
+	if (r != DG_SUCCESS) {
+		dgDestroyWindow(pEngine->vulkan, &window);
+		return r;
+	}
+
 	r = _dgGenerateGraphicsPipeline(&window);
 	if (r != DG_SUCCESS) {
 		dgDestroyWindow(pEngine->vulkan, &window);
 		return r;
 	}
 
+	r = _dgCreateCommandPool(&window);
+	if (r != DG_SUCCESS) {
+		dgDestroyWindow(pEngine->vulkan, &window);
+		return r;
+	}
+
+	r = _dgCreateCommandBuffer(&window);
+	if (r != DG_SUCCESS) {
+		dgDestroyWindow(pEngine->vulkan, &window);
+		return r;
+	}
+
+	r = _dgCreateSyncObjects(&window);
+	if (r != DG_SUCCESS) {
+		dgDestroyWindow(pEngine->vulkan, &window);
+		return r;
+	}
+
+	window.currentFrame = 0;
 	pEngine->windows.push_back(window);
 	return DG_SUCCESS;
 }
 
 DGAPI int dgGetWindowCount(DgEngine* pEngine) {
+	if (pEngine == nullptr)
+		return -1;
 	return pEngine->windows.size();
+}
+
+DGAPI DgResult _dgGeneratePresentationQueue(DgWindow* pWindow) {
+	if (pWindow == nullptr) {
+		return DG_ARGUMENT_IS_NULL;
+	}
+
+	uint32_t queueFamilyCount = 0;
+	vkGetPhysicalDeviceQueueFamilyProperties(pWindow->pGPU->handle, &queueFamilyCount, nullptr);
+
+	std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
+	vkGetPhysicalDeviceQueueFamilyProperties(pWindow->pGPU->handle, &queueFamilyCount, queueFamilies.data());
+
+	for (int i = 0; i < queueFamilies.size(); i++) {
+		VkBool32 presentSupport = false;
+		vkGetPhysicalDeviceSurfaceSupportKHR(pWindow->pGPU->handle, i, pWindow->surface, &presentSupport);
+
+		if (presentSupport)
+			pWindow->pGPU->queueFamilies.presentationQueueFamily = i;
+	}
+	return DG_SUCCESS;
+}
+
+DGAPI DgResult _dgCreateSwapchain(DgWindow* pWindow) {
+	if (pWindow == nullptr) {
+		return DG_ARGUMENT_IS_NULL;
+	}
+
+	VkSurfaceCapabilitiesKHR capabilities;
+
+	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(pWindow->pGPU->handle, pWindow->surface, &capabilities);
+
+	uint32_t formatCount;
+	vkGetPhysicalDeviceSurfaceFormatsKHR(pWindow->pGPU->handle, pWindow->surface, &formatCount, nullptr);
+	if (formatCount == 0) {
+		return DG_NO_VK_SURFACE_FORMATS_AVAILABLE;
+	}
+	std::vector<VkSurfaceFormatKHR> formats(formatCount);
+	vkGetPhysicalDeviceSurfaceFormatsKHR(pWindow->pGPU->handle, pWindow->surface, &formatCount, formats.data());
+
+	uint32_t presentModeCount;
+	vkGetPhysicalDeviceSurfacePresentModesKHR(pWindow->pGPU->handle, pWindow->surface, &presentModeCount, nullptr);
+	if (presentModeCount == 0) {
+		return DG_NO_VK_PRESENT_MODES_AVAILABLE;
+	}
+	std::vector<VkPresentModeKHR> presentModes(presentModeCount);
+	vkGetPhysicalDeviceSurfacePresentModesKHR(pWindow->pGPU->handle, pWindow->surface, &presentModeCount, presentModes.data());
+
+	if (_dgChooseSwapSurfaceFormat(pWindow, formats) != DG_SUCCESS) {
+		return DG_VK_SURFACE_FORMAT_SELECTION_FAILED;
+	}
+
+	if (_dgChooseSwapPresentMode(pWindow, presentModes) != DG_SUCCESS) {
+		return DG_VK_PRESENT_MODE_SELECTION_FAILED;
+	}
+
+	if (_dgChooseSwapExtent2D(pWindow, &capabilities) != DG_SUCCESS) {
+		return DG_VK_EXTENT_2D_SELECTION_FAILED;
+	}
+
+	VkSwapchainCreateInfoKHR createInfo{};
+	createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+	createInfo.surface = pWindow->surface;
+
+	uint32_t imageCount = pWindow->capabilities.minImageCount + 1;
+	if (pWindow->capabilities.maxImageCount > 0 && imageCount > pWindow->capabilities.maxImageCount) {
+		imageCount = pWindow->capabilities.maxImageCount;
+	}
+
+	createInfo.minImageCount = imageCount;
+	createInfo.imageFormat = pWindow->surfaceFormat.format;
+	createInfo.imageColorSpace = pWindow->surfaceFormat.colorSpace;
+	createInfo.imageExtent = pWindow->extent2D;
+	createInfo.imageArrayLayers = 1;
+	createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+
+	uint32_t queueFamilyIndices[] = { pWindow->pGPU->queueFamilies.graphicsQueueFamily.value(), pWindow->pGPU->queueFamilies.presentationQueueFamily.value() };
+
+	if (pWindow->pGPU->queueFamilies.graphicsQueueFamily != pWindow->pGPU->queueFamilies.presentationQueueFamily) {
+		createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
+		createInfo.queueFamilyIndexCount = 2;
+		createInfo.pQueueFamilyIndices = queueFamilyIndices;
+	}
+	else {
+		createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+	}
+
+	createInfo.preTransform = pWindow->capabilities.currentTransform;
+	createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+	createInfo.presentMode = pWindow->presentMode;
+	createInfo.clipped = VK_TRUE;
+
+	createInfo.oldSwapchain = pWindow->swapChain;
+	if (vkCreateSwapchainKHR(pWindow->pGPU->device, &createInfo, nullptr, &pWindow->swapChain) != VK_SUCCESS) {
+		return DG_VK_SWAPCHAIN_CREATION_FAILED;
+	}
+
+	if (vkGetSwapchainImagesKHR(pWindow->pGPU->device, pWindow->swapChain, &imageCount, nullptr) != VK_SUCCESS) {
+		return DG_VK_GET_SWAPCHAIN_IMAGES_FAILED;
+	}
+
+	pWindow->swapChainImages.resize(imageCount);
+	if (vkGetSwapchainImagesKHR(pWindow->pGPU->device, pWindow->swapChain, &imageCount, pWindow->swapChainImages.data()) != VK_SUCCESS) {
+		return DG_VK_GET_SWAPCHAIN_IMAGES_FAILED;
+	}
+	if (_dgCreateImageViews(pWindow) != DG_SUCCESS) {
+		return DG_VK_IMAGE_VIEW_CREATION_FAILED;
+	}
+	return DG_SUCCESS;
 }
 
 DGAPI DgResult _dgChooseSwapSurfaceFormat(DgWindow* pWindow, const std::vector<VkSurfaceFormatKHR>& pFormats) {
@@ -63,7 +227,6 @@ DGAPI DgResult _dgChooseSwapSurfaceFormat(DgWindow* pWindow, const std::vector<V
 
 	// Loop through all formats to find one that is good
 	for (const VkSurfaceFormatKHR format : pFormats) {
-		std::cout << "format:" << format.format << std::endl;
 		if (format.format == VK_FORMAT_B8G8R8A8_SRGB && format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
 			pWindow->surfaceFormat = format;
 			return DG_SUCCESS;
@@ -123,7 +286,7 @@ DGAPI DgResult _dgCreateImageViews(DgWindow* pWindow) {
 		return DG_ARGUMENT_IS_NULL;
 	}
 
-	pWindow->swapChainImages.resize(pWindow->swapChainImages.size());
+	pWindow->swapChainImageViews.resize(pWindow->swapChainImages.size());
 
 	for (int i = 0; i < pWindow->swapChainImages.size(); i++) {
 		VkImageViewCreateInfo createInfo{};
@@ -147,9 +310,6 @@ DGAPI DgResult _dgCreateImageViews(DgWindow* pWindow) {
 		VkResult result = vkCreateImageView(pWindow->pGPU->device, &createInfo, nullptr, &pWindow->swapChainImageViews[i]);
 
 		if (result != VK_SUCCESS) {
-			#ifndef NDEBUG
-			std::cerr << "vkCreateImageView failed with " << dgConvertVkResultToString(result) << std::endl;
-			#endif
 			return DG_VK_IMAGE_VIEW_CREATION_FAILED;
 		}
 	}
@@ -169,9 +329,6 @@ DGAPI DgResult _dgGenerateGraphicsPipeline(DgWindow* pWindow) {
 	VkShaderModule vertModule;
 	VkResult result = vkCreateShaderModule(pWindow->pGPU->device, &vertCreateInfo, nullptr, &vertModule);
 	if (result != VK_SUCCESS) {
-		#ifndef NDEBUG
-		std::cerr << "Dragon: vkCreateShaderModule returned " << dgConvertVkResultToString(result) << std::endl;
-		#endif
 		vkDestroyShaderModule(pWindow->pGPU->device, vertModule, nullptr);
 		return DG_VK_SHADER_MODULE_CREATION_FAILED;
 	}
@@ -185,9 +342,6 @@ DGAPI DgResult _dgGenerateGraphicsPipeline(DgWindow* pWindow) {
 	VkShaderModule fragModule = nullptr;
 	result = vkCreateShaderModule(pWindow->pGPU->device, &fragCreateInfo, nullptr, &fragModule);
 	if (result != VK_SUCCESS) {
-		#ifndef NDEBUG
-		std::cerr << "Dragon: vkCreateShaderModule returned " << dgConvertVkResultToString(result) << std::endl;
-		#endif
 		vkDestroyShaderModule(pWindow->pGPU->device, fragModule, nullptr);
 		return DG_VK_SHADER_MODULE_CREATION_FAILED;
 	}
@@ -260,9 +414,6 @@ DGAPI DgResult _dgGenerateGraphicsPipeline(DgWindow* pWindow) {
 	result = vkCreatePipelineLayout(pWindow->pGPU->device, &pipelineLayoutInfo, nullptr, &pWindow->pipelineLayout);
 
 	if (result != VK_SUCCESS) {
-		#ifndef NDEBUG
-		std::cerr << "vkCreatePipelineLayout failed with " << dgConvertVkResultToString(result) << std::endl;
-		#endif
 		vkDestroyPipelineLayout(pWindow->pGPU->device, pWindow->pipelineLayout, nullptr);
 		return DG_VK_PIPELINE_CREATION_FAILED;
 	}
@@ -376,13 +527,15 @@ DGAPI DgResult _dgCreateCommandPool(DgWindow* pWindow) {
 }
 
 DGAPI DgResult _dgCreateCommandBuffer(DgWindow* pWindow) {
+	pWindow->commandBuffers.resize(DRAGON_RENDER_FRAME_MAX);
+
 	VkCommandBufferAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 	allocInfo.commandPool = pWindow->commandPool;
 	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-	allocInfo.commandBufferCount = 1;
+	allocInfo.commandBufferCount = pWindow->commandBuffers.size();
 
-	VkResult result = vkAllocateCommandBuffers(pWindow->pGPU->device, &allocInfo, &pWindow->commandBuffer);
+	VkResult result = vkAllocateCommandBuffers(pWindow->pGPU->device, &allocInfo, pWindow->commandBuffers.data());
 
 	if (result != VK_SUCCESS) {
 		return DG_VK_COMMAND_BUFFER_CREATION_FAILED;
@@ -390,11 +543,11 @@ DGAPI DgResult _dgCreateCommandBuffer(DgWindow* pWindow) {
 	return DG_SUCCESS;
 }
 
-DGAPI DgResult _dgRecordCommandBuffer(DgWindow* pWindow, uint32_t imageIndex) {
+DGAPI DgResult _dgRecordCommandBuffer(DgWindow* pWindow, uint32_t frame, uint32_t imageIndex) {
 	VkCommandBufferBeginInfo beginInfo{};
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
-	if (vkBeginCommandBuffer(pWindow->commandBuffer, &beginInfo) != VK_SUCCESS) {
+	if (vkBeginCommandBuffer(pWindow->commandBuffers.at(frame), &beginInfo) != VK_SUCCESS) {
 		return DG_VK_COMMAND_BUFFER_FAILED_RECORD_START;
 	}
 
@@ -409,9 +562,9 @@ DGAPI DgResult _dgRecordCommandBuffer(DgWindow* pWindow, uint32_t imageIndex) {
 	renderPassInfo.clearValueCount = 1;
 	renderPassInfo.pClearValues = &clearColor;
 
-	vkCmdBeginRenderPass(pWindow->commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+	vkCmdBeginRenderPass(pWindow->commandBuffers.at(frame), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-	vkCmdBindPipeline(pWindow->commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pWindow->graphicsPipeline);
+	vkCmdBindPipeline(pWindow->commandBuffers.at(frame), VK_PIPELINE_BIND_POINT_GRAPHICS, pWindow->graphicsPipeline);
 
 	VkViewport viewport{};
 	viewport.x = 0.0f;
@@ -420,78 +573,154 @@ DGAPI DgResult _dgRecordCommandBuffer(DgWindow* pWindow, uint32_t imageIndex) {
 	viewport.height = (float)pWindow->extent2D.height;
 	viewport.minDepth = 0.0f;
 	viewport.maxDepth = 1.0f;
-	vkCmdSetViewport(pWindow->commandBuffer, 0, 1, &viewport);
+	vkCmdSetViewport(pWindow->commandBuffers.at(frame), 0, 1, &viewport);
 
 	VkRect2D scissor{};
 	scissor.offset = { 0, 0 };
 	scissor.extent = pWindow->extent2D;
-	vkCmdSetScissor(pWindow->commandBuffer, 0, 1, &scissor);
+	vkCmdSetScissor(pWindow->commandBuffers.at(frame), 0, 1, &scissor);
 
-	vkCmdDraw(pWindow->commandBuffer, 3, 1, 0, 0);
+	vkCmdDraw(pWindow->commandBuffers.at(frame), 3, 1, 0, 0);
 
-	vkCmdEndRenderPass(pWindow->commandBuffer);
+	vkCmdEndRenderPass(pWindow->commandBuffers.at(frame));
 
-	if (vkEndCommandBuffer(pWindow->commandBuffer) != VK_SUCCESS) {
+	if (vkEndCommandBuffer(pWindow->commandBuffers.at(frame)) != VK_SUCCESS) {
 		return DG_VK_COMMAND_BUFFER_RECORD_FAILED;
 	}
 	return DG_SUCCESS;
 }
 
 DGAPI DgResult _dgCreateSyncObjects(DgWindow* pWindow) {
+	pWindow->imageAvailableSemaphores.resize(DRAGON_RENDER_FRAME_MAX);
+	pWindow->renderFinishedSemaphores.resize(DRAGON_RENDER_FRAME_MAX);
+	pWindow->inFlightFences.resize(DRAGON_RENDER_FRAME_MAX);
+
 	VkSemaphoreCreateInfo semaphoreInfo{};
 	semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
 	VkFenceCreateInfo fenceInfo{};
 	fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+	fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-	VkResult result = vkCreateSemaphore(pWindow->pGPU->device, &semaphoreInfo, nullptr, &pWindow->imageAvailableSemaphore);
+	for(VkSemaphore semaphore : pWindow->imageAvailableSemaphores)
+		if (vkCreateSemaphore(pWindow->pGPU->device, &semaphoreInfo, nullptr, &semaphore) != VK_SUCCESS) {
+			return DG_VK_SEMAPHORE_CREATION_FAILED;
+		}
+	for (VkSemaphore semaphore : pWindow->renderFinishedSemaphores)
+		if (vkCreateSemaphore(pWindow->pGPU->device, &semaphoreInfo, nullptr, &semaphore) != VK_SUCCESS) {
+			return DG_VK_SEMAPHORE_CREATION_FAILED;
+		}
+	for(int i = 0 ; i < pWindow->inFlightFences.size(); i++)
+		if (vkCreateFence(pWindow->pGPU->device, &fenceInfo, nullptr, &pWindow->inFlightFences.at(i)) != VK_SUCCESS) {
+			return DG_VK_FENCE_CREATION_FAILED;
+		}
 
-	if (result != VK_SUCCESS)
-		return DG_VK_SEMAPHORE_CREATION_FAILED;
+	return DG_SUCCESS;
+}
 
-
-	result = vkCreateSemaphore(pWindow->pGPU->device, &semaphoreInfo, nullptr, &pWindow->renderFinishedSemaphore);
-
-	if (result != VK_SUCCESS)
-		return DG_VK_SEMAPHORE_CREATION_FAILED;
-
-	result = vkCreateFence(pWindow->pGPU->device, &fenceInfo, nullptr, &pWindow->inFlightFence);
-
-	if (result != VK_SUCCESS) {
-		return DG_VK_FENCE_CREATION_FAILED;
+DGAPI DgResult _dgRecreateSwapchain(DgWindow* pWindow) {
+	std::cout << "Recreating swapchain" << std::endl;
+	_dgDestroySwapchain(pWindow);
+	DgResult r = _dgCreateSwapchain(pWindow);
+	if (r != DG_SUCCESS) {
+		return r;
 	}
 	return DG_SUCCESS;
 }
 
 DGAPI DgResult _dgRenderWindow(DgWindow* pWindow) {
-	vkWaitForFences(pWindow->pGPU->device, 1, &pWindow->inFlightFence, VK_TRUE, UINT64_MAX);
-	vkResetFences(pWindow->pGPU->device, 1, &pWindow->inFlightFence);
+	if (vkWaitForFences(pWindow->pGPU->device, 1, &(pWindow->inFlightFences.at(pWindow->currentFrame)), VK_TRUE, UINT64_MAX) != VK_SUCCESS) {
+		return DG_VK_FENCE_WAIT_FAILED;
+	}
+	vkResetFences(pWindow->pGPU->device, 1, &pWindow->inFlightFences.at(pWindow->currentFrame));
+
+	uint32_t imageIndex;
+	DgResult r;
+	switch(vkAcquireNextImageKHR(pWindow->pGPU->device, pWindow->swapChain, UINT64_MAX, pWindow->imageAvailableSemaphores.at(pWindow->currentFrame), VK_NULL_HANDLE, &imageIndex)) {
+		case VK_ERROR_OUT_OF_DATE_KHR:
+			r = _dgRecreateSwapchain(pWindow);
+			return r;
+		default:
+			return DG_VK_ACQUIRE_NEXT_IMAGE_FAILED;
+	}
+
+	vkResetCommandBuffer(pWindow->commandBuffers.at(pWindow->currentFrame), /*VkCommandBufferResetFlagBits*/ 0);
+	_dgRecordCommandBuffer(pWindow, pWindow->currentFrame, imageIndex);
+
+	VkSubmitInfo submitInfo{};
+	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+	VkSemaphore waitSemaphores[] = { pWindow->imageAvailableSemaphores.at(pWindow->currentFrame) };
+	VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+	submitInfo.waitSemaphoreCount = 1;
+	submitInfo.pWaitSemaphores = waitSemaphores;
+	submitInfo.pWaitDstStageMask = waitStages;
+
+	submitInfo.commandBufferCount = 1;
+	submitInfo.pCommandBuffers = &pWindow->commandBuffers.at(pWindow->currentFrame);
+
+	VkSemaphore signalSemaphores[] = { pWindow->renderFinishedSemaphores.at(pWindow->currentFrame) };
+	submitInfo.signalSemaphoreCount = 1;
+	submitInfo.pSignalSemaphores = signalSemaphores;
+
+	if(vkQueueSubmit(pWindow->pGPU->graphicsQueue, 1, &submitInfo, pWindow->inFlightFences.at(pWindow->currentFrame)) != VK_SUCCESS) {
+		return DG_VK_QUEUE_SUBMISSION_FAILED;
+	}
+
+	VkPresentInfoKHR presentInfo{};
+	presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+
+	presentInfo.waitSemaphoreCount = 1;
+	presentInfo.pWaitSemaphores = signalSemaphores;
+
+	VkSwapchainKHR swapChains[] = { pWindow->swapChain };
+	presentInfo.swapchainCount = 1;
+	presentInfo.pSwapchains = swapChains;
+
+	presentInfo.pImageIndices = &imageIndex;
+
+	if (vkQueuePresentKHR(pWindow->pGPU->presentationQueue, &presentInfo) != VK_SUCCESS) {
+		return DG_VK_QUEUE_PRESENT_FAILED;
+	}
+	
+	pWindow->currentFrame = (pWindow->currentFrame + 1) % DRAGON_RENDER_FRAME_MAX;
+
 	return DG_SUCCESS;
 }
 
 DGAPI void dgDestroyWindow(VkInstance instance, DgWindow* pWindow) {
-	vkDestroySemaphore(pWindow->pGPU->device, pWindow->imageAvailableSemaphore, nullptr);
-	vkDestroySemaphore(pWindow->pGPU->device, pWindow->renderFinishedSemaphore, nullptr);
-	vkDestroyFence(pWindow->pGPU->device, pWindow->inFlightFence, nullptr);
+	assert(pWindow != nullptr);
+	assert(instance != nullptr);
+
+	vkDeviceWaitIdle(pWindow->pGPU->device);
+	if(!pWindow->imageAvailableSemaphores.empty())
+		for(VkSemaphore semaphore : pWindow->imageAvailableSemaphores)
+			vkDestroySemaphore(pWindow->pGPU->device, semaphore, nullptr);
+	if(!pWindow->renderFinishedSemaphores.empty())
+		for(VkSemaphore semaphore : pWindow->renderFinishedSemaphores)
+			vkDestroySemaphore(pWindow->pGPU->device, semaphore, nullptr);
+	if(!pWindow->inFlightFences.empty())
+		for(VkFence fence : pWindow->inFlightFences)
+			vkDestroyFence(pWindow->pGPU->device, fence, nullptr);
 
 	vkDestroyCommandPool(pWindow->pGPU->device, pWindow->commandPool, nullptr);
+
+	_dgDestroySwapchain(pWindow);
+
+	vkDestroySurfaceKHR(instance, pWindow->surface, nullptr);
+	glfwDestroyWindow(pWindow->window);
+}
+
+DGAPI void _dgDestroySwapchain(DgWindow* pWindow) {
+	vkDeviceWaitIdle(pWindow->pGPU->device);
 
 	for (VkFramebuffer framebuffer : pWindow->swapChainFramebuffers) {
 		vkDestroyFramebuffer(pWindow->pGPU->device, framebuffer, nullptr);
 	}
-
-	if(pWindow->graphicsPipeline != VK_NULL_HANDLE)
-		vkDestroyPipeline(pWindow->pGPU->device, pWindow->graphicsPipeline, nullptr);
-	if(pWindow->graphicsPipeline != VK_NULL_HANDLE)
-		vkDestroyPipelineLayout(pWindow->pGPU->device, pWindow->pipelineLayout, nullptr);
-	if(pWindow->renderPass != VK_NULL_HANDLE)
-		vkDestroyRenderPass(pWindow->pGPU->device, pWindow->renderPass, nullptr);
 
 	for (VkImageView imageView : pWindow->swapChainImageViews) {
 		vkDestroyImageView(pWindow->pGPU->device, imageView, nullptr);
 	}
 
 	vkDestroySwapchainKHR(pWindow->pGPU->device, pWindow->swapChain, nullptr);
-	vkDestroySurfaceKHR(instance, pWindow->surface, nullptr);
-	glfwDestroyWindow(pWindow->window);
 }

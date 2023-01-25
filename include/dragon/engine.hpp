@@ -6,7 +6,6 @@
 
 #include "dragon_core.h"
 #include "gpu.hpp"
-#include "message.hpp"
 #include "window.hpp"
 
 /**
@@ -52,7 +51,7 @@ typedef struct DgEngine {
     /**
      * @brief Callback function for handling messages
      */
-    std::function<void(DgMessage*)> fCallback;
+    std::function<void(int, const char*, void*)> fCallback;
     
 } DgEngine;
 

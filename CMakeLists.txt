@@ -18,7 +18,7 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 20)
 
 # Define the project and its version and languages
-project(Dragon VERSION 1.0.2.2 LANGUAGES CXX C)
+project(Dragon VERSION 1.0.2.3 LANGUAGES CXX C)
 
 # Include the CTest and build_vars modules
 include(CTest)

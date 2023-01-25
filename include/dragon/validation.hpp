@@ -3,7 +3,6 @@
 #include <iostream>
 
 #include "dragon_core.h"
-#include "message.hpp"
 #include "result.hpp"
 
 /**
@@ -53,7 +52,7 @@ DGAPI void dgDestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMess
  * @param pEngine Pointer to the engine
  * @param message Pointer to the message to be sent
  */
-DGAPI void _dgSendMessage(DgEngine* pEngine, DgMessage* message);
+DGAPI void _dgSendMessage(int code, const char* pMessage, void* pCallbackData);
 
 /**
  * @brief Convert a VkResult to a string representation

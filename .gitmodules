@@ -4,3 +4,6 @@
 [submodule "external/pysimplegui"]
 	path = external/pysimplegui
 	url = https://github.com/PySimpleGUI/PySimpleGUI
+[submodule "external/glm"]
+	path = external/glm
+	url = https://github.com/g-truc/glm

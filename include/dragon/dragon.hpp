@@ -25,7 +25,6 @@
 #include "dragon_core.h"
 #include "engine.hpp"
 #include "gpu.hpp"
-#include "message.hpp"
 #include "result.hpp"
 #include "shaders.hpp"
 #include "uiElement.hpp"
@@ -49,6 +48,7 @@ DGAPI DgResult dgAddLayerToEngine(DgEngine* pEngine, std::string layerName);
 * @return A boolean on if initializing the engine was successful
 */
 DGAPI DgResult dgCreateEngine(DgEngine* pEngine);
+DGAPI DgResult _dgStartQueueBuffers(DgEngine* pEngine, DgGPU* pGPU);
 /**
 * Creates a window with the settings described according to the engine settings, and the other parameters of this function.
 * @param pEngine A pointer to the engine to create the window with
@@ -56,14 +56,15 @@ DGAPI DgResult dgCreateEngine(DgEngine* pEngine);
 * @param width an unsigned int, stating how wide the window should be at creation, in pixels.
 * @param height an unsigned int, stating how tall the window should be at creation, in pixels.
 * @param isResizable A boolean, stating if the window's size is allowed to be changed by the user.
+* @param isFullscreen A boolean, stating if the window should take up the entire screen.
 */
-DGAPI DgResult dgCreateWindow(DgEngine* pEngine, std::string title, unsigned int width, unsigned int height, DgBool32 isResizable);
+DGAPI DgResult dgCreateWindow(DgEngine* pEngine, std::string title, unsigned int width, unsigned int height, DgBool32 isResizable, DgBool32 isFullscreen);
 /**
 * Adds a user-defined function to be used for debugging potential issues with the engine, including potentially unoptimal code order / function calls.
 * @param pEngine the engine instance to set the callback for
 * @param fCallback a function, of type void, that takes a pointer of a DgMessage
 */
-DGAPI void dgSetCallback(DgEngine* pEngine, std::function<void(DgMessage*)> fCallback);
+DGAPI void dgSetCallback(DgEngine* pEngine, std::function<void(int, const char*, void*)> fCallback);
 // Runtime functions
 /**
 * Checks to see how many windows are on this specific engine instance.
@@ -77,7 +78,7 @@ DGAPI int dgGetWindowCount(DgEngine* pEngine);
 * If not called in the main loop, the program will crash.
 * @param pEngine A pointer to the engine instance to update
 */
-DGAPI void dgUpdate(DgEngine* pEngine);
+DGAPI DgResult dgUpdate(DgEngine* pEngine);
 // Destruction functions
 /**
 * Terminates an engine instance, immediately closing all still-open windows, the Vulkan instance, stopping queues, and rendering the whole engine null and void.
@@ -103,7 +104,7 @@ DGAPI DgResult _dgGeneratePresentationQueue(DgWindow* pWindow);
 * @param pGPU the GPU to check for swap chain support
 * @param pWindow the window to use for swap chain support checking
 */
-DGAPI DgResult _dgGetSwapChainSupport(DgWindow* pWindow);
+DGAPI DgResult _dgCreateSwapchain(DgWindow* pWindow);
 /**
 * INTERNAL METHOD
 * @param pWindow The window to generate a swap surface format for
@@ -133,8 +134,9 @@ DGAPI DgResult _dgCreateFramebuffers(DgWindow* pWindow);
 DGAPI DgResult _dgCreateCommandPool(DgWindow* pWindow);
 DGAPI DgResult _dgCreateCommandBuffer(DgWindow* pWindow);
 DGAPI DgResult _dgCreateSyncObjects(DgWindow* pWindow);
+DGAPI DgResult _dgRecreateSwapchain(DgWindow* pWindow);
 
 DGAPI DgResult _dgRenderWindow(DgWindow* pWindow);
 
 DGAPI void dgDestroyWindow(VkInstance instance, DgWindow* pWindow);
-
+DGAPI void _dgDestroySwapchain(DgWindow* pWindow);

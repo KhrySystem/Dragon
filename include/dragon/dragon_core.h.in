@@ -17,29 +17,10 @@ extern "C" {
 #include "predef/platform.h"
 #include "predef/version.h"
 
-#ifdef _cplusplus
-    #include <vulkan/vulkan.hpp>
-#else
-    #include <vulkan/vulkan.h>
-#endif
-
-#define GLFW_INCLUDE_NONE
 #define GLFW_INCLUDE_VULKAN
-// Include GLFW Headers
 #include <GLFW/glfw3.h>
 
-/**
- * @brief Macro for finding the source directory of Dragon
- */
-#ifndef DRAGON_SOURCE_DIR
-    #define DRAGON_SOURCE_DIR "@Dragon_SOURCE_DIR@"
-#endif'
-/**
- * @brief Macro for finding the binary directory of Dragon
- */
-#ifndef DRAGON_BIN_PATH
-    #define DRAGON_BIN_PATH "@Dragon_BINARY_DIR@"
-#endif
+#include <glm/glm.hpp>
 
 /**
  * @brief Macro for defining the export/import attribute of a function 
@@ -64,6 +45,14 @@ extern "C" {
     #else
         #define DGAPI 
     #endif
+#endif
+
+/**
+ * @brief Macro for how many frames Dragon should prepare before waiting on the GPU. 
+ * NOTE: The default is 2, and should not be changed for most applications.
+ */
+#ifndef DRAGON_RENDER_FRAME_MAX 
+    #define DRAGON_RENDER_FRAME_MAX 2
 #endif
 
 /**
@@ -102,6 +91,13 @@ typedef int_fast64_t DgInt64;
 typedef uint_fast32_t DgUInt32;
 typedef int_fast32_t DgInt32;
 
+#define dgEnumerateVkInstanceExtensionProperties(pExtName, pPropertyCount, pProperties) ((PFN_vkEnumerateInstanceExtensionProperties)glfwGetInstanceProcAddress(NULL, "vkEnumerateInstanceExtensionProperties"))(pExtName, pPropertyCount, pProperties)
+#define dgEnumerateVkInstanceLayerProperties(pPropertyCount, pProperties) ((PFN_vkEnumerateInstanceLayerProperties)glfwGetInstanceProcAddress(NULL, "vkEnumerateInstanceLayerProperties"))(pPropertyCount, pProperties)
+#define dgCreateVkInstance(pCreateInfo, pAllocation, pInstance) ((PFN_vkCreateInstance)glfwGetInstanceProcAddress(NULL, "vkCreateInstance"))(pCreateInfo, pAllocation, pInstance)
+#ifndef NDEBUG
+#define dgCreateVkDebugUtilsMessengerEXT(instance, pCreateInfo, pAllocator, pDebugMessenger) ((PFN_vkCreateDebugUtilsMessengerEXT)glfwGetInstanceProcAddress(instance, "vkCreateDebugUtilsMessengerEXT"))(instance, pCreateInfo, pAllocator, pDebugMessenger)
+#endif
+#define dgEnumerateVkPhysicalDevices(instance, pPhysicalDeviceCount, pPhysicalDevices) ((PFN_vkEnumeratePhysicalDevices)glfwGetInstanceProcAddress(instance, "vkEnumeratePhysicalDevices"))(instance, pPhysicalDeviceCount, pPhysicalDevices)
 #ifdef _cplusplus
 } // dragon/dragon_core.h
 #endif
