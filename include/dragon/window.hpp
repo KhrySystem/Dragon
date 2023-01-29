@@ -4,12 +4,23 @@
 
 #include "dragon_core.h"
 #include "gpu.hpp"
+#include "result.hpp"
+#include "uiElement.hpp"
+
+
+/**
+ * @brief Dynamic states for graphics pipeline
+ */
+const std::vector<VkDynamicState> dynamicStates = {
+    VK_DYNAMIC_STATE_VIEWPORT,
+    VK_DYNAMIC_STATE_SCISSOR
+};
 
 /**
  * @struct DgWindow
  * @brief Structure that holds all the data for a window
  */
-typedef struct DgWindow {
+struct DgWindow {
     /**
      * @brief Pointer to the GPU that renders this window
      */
@@ -55,13 +66,6 @@ typedef struct DgWindow {
      */
     std::vector<VkShaderModule> shaderModules;
     /**
-     * @brief Dynamic states for graphics pipeline
-     */
-    std::vector<VkDynamicState> dynamicStates = {
-        VK_DYNAMIC_STATE_VIEWPORT,
-        VK_DYNAMIC_STATE_SCISSOR
-    };
-    /**
      * @brief Layout for the graphics pipeline of the window
      */
     VkPipelineLayout pipelineLayout;
@@ -81,5 +85,5 @@ typedef struct DgWindow {
     std::vector<VkSemaphore> renderFinishedSemaphores;
     std::vector<VkFence> inFlightFences;
     uint32_t currentFrame;
-} DgWindow;
-
+    std::vector<DgUiElement> uiElements;
+};

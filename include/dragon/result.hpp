@@ -1,7 +1,10 @@
 #pragma once
 
-typedef enum DgResult {
-	DG_SUCCESS = DG_TRUE,
+#ifndef DG_RESULT_HPP
+#define DG_RESULT_HPP
+
+enum DgResult {
+	DG_SUCCESS,
 	// Dragon errors that dragon throws
 	DG_ENGINE_NOT_INITIALIZED,
 	DG_ARGUMENT_IS_NULL,
@@ -52,4 +55,6 @@ typedef enum DgResult {
 	// General things
 	DG_ERROR_UNKNOWN,
 	DG_WARNING_UNKNOWN
-} DgResult;
+};
+
+#endif

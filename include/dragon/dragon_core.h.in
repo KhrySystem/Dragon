@@ -9,26 +9,8 @@ extern "C" {
 #include <fstream>
 #include <string>
 
-#include "predef/architecture.h"
-#include "predef/compiler.h"
-#include "predef/language.h"
-#include "predef/os.h"
-#include "predef/other.h"
-#include "predef/platform.h"
-#include "predef/version.h"
-
-#include "thread/thread.hpp""
-#include "thread/condition_variable.hpp"
-#include "thread/exceptions.hpp"
-#include "thread/mutex.hpp"
-#include "thread/once.hpp"
-#include "thread/recursive_mutex.hpp"
-#include "thread/tss.hpp"
-#include "thread/thread_time.hpp"
-#include "thread/locks.hpp"
-#include "thread/shared_mutex.hpp"
-#include "thread/barrier.hpp"
-#include "thread/future.hpp"
+#include <boost/predef.h>
+#include <boost/thread.hpp>
 
 #define GLFW_INCLUDE_NONE
 #define GLFW_INCLUDE_VULKAN

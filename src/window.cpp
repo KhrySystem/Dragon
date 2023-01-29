@@ -46,12 +46,12 @@ DGAPI DgResult dgCreateWindow(DgEngine* pEngine, std::string title, unsigned int
 	if (!window.pGPU->queueFamilies.presentationQueueFamily.has_value()) {
 		 r = _dgGeneratePresentationQueue(&window);
 		 if (r != DG_SUCCESS) {
-			 dgDestroyWindow(pEngine->vulkan, &window);
+			 _dgDestroyWindow(pEngine->vulkan, &window);
 			 return r;
 		 }
 		 r = _dgStartQueueBuffers(pEngine, window.pGPU);
 		 if (r != DG_SUCCESS) {
-			 dgDestroyWindow(pEngine->vulkan, &window);
+			 _dgDestroyWindow(pEngine->vulkan, &window);
 			 return r;
 		 }
 	}
@@ -59,43 +59,43 @@ DGAPI DgResult dgCreateWindow(DgEngine* pEngine, std::string title, unsigned int
 	r = _dgCreateSwapchain(&window);
 
 	if (r != DG_SUCCESS) {
-		dgDestroyWindow(pEngine->vulkan, &window);
+		_dgDestroyWindow(pEngine->vulkan, &window);
 		return r;
 	}
 
 	r = _dgGenerateGraphicsPipeline(&window);
 	if (r != DG_SUCCESS) {
-		dgDestroyWindow(pEngine->vulkan, &window);
+		_dgDestroyWindow(pEngine->vulkan, &window);
 		return r;
 	}
 
 	r = _dgCreateFramebuffers(&window);
 	if (r != DG_SUCCESS) {
-		dgDestroyWindow(pEngine->vulkan, &window);
+		_dgDestroyWindow(pEngine->vulkan, &window);
 		return r;
 	}
 
 	r = _dgGenerateGraphicsPipeline(&window);
 	if (r != DG_SUCCESS) {
-		dgDestroyWindow(pEngine->vulkan, &window);
+		_dgDestroyWindow(pEngine->vulkan, &window);
 		return r;
 	}
 
 	r = _dgCreateCommandPool(&window);
 	if (r != DG_SUCCESS) {
-		dgDestroyWindow(pEngine->vulkan, &window);
+		_dgDestroyWindow(pEngine->vulkan, &window);
 		return r;
 	}
 
 	r = _dgCreateCommandBuffer(&window);
 	if (r != DG_SUCCESS) {
-		dgDestroyWindow(pEngine->vulkan, &window);
+		_dgDestroyWindow(pEngine->vulkan, &window);
 		return r;
 	}
 
 	r = _dgCreateSyncObjects(&window);
 	if (r != DG_SUCCESS) {
-		dgDestroyWindow(pEngine->vulkan, &window);
+		_dgDestroyWindow(pEngine->vulkan, &window);
 		return r;
 	}
 
@@ -350,7 +350,6 @@ DGAPI DgResult _dgGenerateGraphicsPipeline(DgWindow* pWindow) {
 	VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
 	vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 	vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-
 	vertShaderStageInfo.module = vertModule;
 	vertShaderStageInfo.pName = "main";
 
@@ -409,7 +408,6 @@ DGAPI DgResult _dgGenerateGraphicsPipeline(DgWindow* pWindow) {
 
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-
 
 	result = vkCreatePipelineLayout(pWindow->pGPU->device, &pipelineLayoutInfo, nullptr, &pWindow->pipelineLayout);
 
@@ -543,11 +541,11 @@ DGAPI DgResult _dgCreateCommandBuffer(DgWindow* pWindow) {
 	return DG_SUCCESS;
 }
 
-DGAPI DgResult _dgRecordCommandBuffer(DgWindow* pWindow, uint32_t frame, uint32_t imageIndex) {
+DGAPI DgResult _dgRecordCommandBuffer(DgWindow* pWindow, uint32_t imageIndex) {
 	VkCommandBufferBeginInfo beginInfo{};
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
-	if (vkBeginCommandBuffer(pWindow->commandBuffers.at(frame), &beginInfo) != VK_SUCCESS) {
+	if (vkBeginCommandBuffer(pWindow->commandBuffers.at(pWindow->currentFrame), &beginInfo) != VK_SUCCESS) {
 		return DG_VK_COMMAND_BUFFER_FAILED_RECORD_START;
 	}
 
@@ -562,9 +560,9 @@ DGAPI DgResult _dgRecordCommandBuffer(DgWindow* pWindow, uint32_t frame, uint32_
 	renderPassInfo.clearValueCount = 1;
 	renderPassInfo.pClearValues = &clearColor;
 
-	vkCmdBeginRenderPass(pWindow->commandBuffers.at(frame), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+	vkCmdBeginRenderPass(pWindow->commandBuffers.at(pWindow->currentFrame), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-	vkCmdBindPipeline(pWindow->commandBuffers.at(frame), VK_PIPELINE_BIND_POINT_GRAPHICS, pWindow->graphicsPipeline);
+	vkCmdBindPipeline(pWindow->commandBuffers.at(pWindow->currentFrame), VK_PIPELINE_BIND_POINT_GRAPHICS, pWindow->graphicsPipeline);
 
 	VkViewport viewport{};
 	viewport.x = 0.0f;
@@ -573,18 +571,18 @@ DGAPI DgResult _dgRecordCommandBuffer(DgWindow* pWindow, uint32_t frame, uint32_
 	viewport.height = (float)pWindow->extent2D.height;
 	viewport.minDepth = 0.0f;
 	viewport.maxDepth = 1.0f;
-	vkCmdSetViewport(pWindow->commandBuffers.at(frame), 0, 1, &viewport);
+	vkCmdSetViewport(pWindow->commandBuffers.at(pWindow->currentFrame), 0, 1, &viewport);
 
 	VkRect2D scissor{};
 	scissor.offset = { 0, 0 };
 	scissor.extent = pWindow->extent2D;
-	vkCmdSetScissor(pWindow->commandBuffers.at(frame), 0, 1, &scissor);
+	vkCmdSetScissor(pWindow->commandBuffers.at(pWindow->currentFrame), 0, 1, &scissor);
 
-	vkCmdDraw(pWindow->commandBuffers.at(frame), 3, 1, 0, 0);
+	vkCmdDraw(pWindow->commandBuffers.at(pWindow->currentFrame), 3, 1, 0, 0);
 
-	vkCmdEndRenderPass(pWindow->commandBuffers.at(frame));
+	vkCmdEndRenderPass(pWindow->commandBuffers.at(pWindow->currentFrame));
 
-	if (vkEndCommandBuffer(pWindow->commandBuffers.at(frame)) != VK_SUCCESS) {
+	if (vkEndCommandBuffer(pWindow->commandBuffers.at(pWindow->currentFrame)) != VK_SUCCESS) {
 		return DG_VK_COMMAND_BUFFER_RECORD_FAILED;
 	}
 	return DG_SUCCESS;
@@ -602,15 +600,15 @@ DGAPI DgResult _dgCreateSyncObjects(DgWindow* pWindow) {
 	fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
 	fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-	for(VkSemaphore semaphore : pWindow->imageAvailableSemaphores)
-		if (vkCreateSemaphore(pWindow->pGPU->device, &semaphoreInfo, nullptr, &semaphore) != VK_SUCCESS) {
+	for(int i = 0; i < pWindow->imageAvailableSemaphores.size(); i++)
+		if (vkCreateSemaphore(pWindow->pGPU->device, &semaphoreInfo, nullptr, &pWindow->imageAvailableSemaphores.at(i)) != VK_SUCCESS) {
 			return DG_VK_SEMAPHORE_CREATION_FAILED;
 		}
-	for (VkSemaphore semaphore : pWindow->renderFinishedSemaphores)
-		if (vkCreateSemaphore(pWindow->pGPU->device, &semaphoreInfo, nullptr, &semaphore) != VK_SUCCESS) {
+	for(int i = 0; i < pWindow->renderFinishedSemaphores.size(); i++)
+		if (vkCreateSemaphore(pWindow->pGPU->device, &semaphoreInfo, nullptr, &pWindow->renderFinishedSemaphores.at(i)) != VK_SUCCESS) {
 			return DG_VK_SEMAPHORE_CREATION_FAILED;
 		}
-	for(int i = 0 ; i < pWindow->inFlightFences.size(); i++)
+	for(int i = 0; i < pWindow->inFlightFences.size(); i++)
 		if (vkCreateFence(pWindow->pGPU->device, &fenceInfo, nullptr, &pWindow->inFlightFences.at(i)) != VK_SUCCESS) {
 			return DG_VK_FENCE_CREATION_FAILED;
 		}
@@ -629,23 +627,24 @@ DGAPI DgResult _dgRecreateSwapchain(DgWindow* pWindow) {
 }
 
 DGAPI DgResult _dgRenderWindow(DgWindow* pWindow) {
-	if (vkWaitForFences(pWindow->pGPU->device, 1, &(pWindow->inFlightFences.at(pWindow->currentFrame)), VK_TRUE, UINT64_MAX) != VK_SUCCESS) {
-		return DG_VK_FENCE_WAIT_FAILED;
-	}
-	vkResetFences(pWindow->pGPU->device, 1, &pWindow->inFlightFences.at(pWindow->currentFrame));
+	vkWaitForFences(pWindow->pGPU->device, 1, &pWindow->inFlightFences.at(pWindow->currentFrame), VK_TRUE, UINT64_MAX);
 
 	uint32_t imageIndex;
-	DgResult r;
-	switch(vkAcquireNextImageKHR(pWindow->pGPU->device, pWindow->swapChain, UINT64_MAX, pWindow->imageAvailableSemaphores.at(pWindow->currentFrame), VK_NULL_HANDLE, &imageIndex)) {
-		case VK_ERROR_OUT_OF_DATE_KHR:
-			r = _dgRecreateSwapchain(pWindow);
-			return r;
-		default:
-			return DG_VK_ACQUIRE_NEXT_IMAGE_FAILED;
+	VkResult result = vkAcquireNextImageKHR(pWindow->pGPU->device, pWindow->swapChain, UINT64_MAX, pWindow->imageAvailableSemaphores.at(pWindow->currentFrame), VK_NULL_HANDLE, &imageIndex);
+	std::cout << result << std::endl;
+
+	if (result == VK_ERROR_OUT_OF_DATE_KHR) {
+		DgResult r = _dgRecreateSwapchain(pWindow);
+		return r;
+	}
+	else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
+		return DG_VK_ACQUIRE_NEXT_IMAGE_FAILED;
 	}
 
+	vkResetFences(pWindow->pGPU->device, 1, &pWindow->inFlightFences.at(pWindow->currentFrame));
+
 	vkResetCommandBuffer(pWindow->commandBuffers.at(pWindow->currentFrame), /*VkCommandBufferResetFlagBits*/ 0);
-	_dgRecordCommandBuffer(pWindow, pWindow->currentFrame, imageIndex);
+	_dgRecordCommandBuffer(pWindow, imageIndex);
 
 	VkSubmitInfo submitInfo{};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -663,7 +662,7 @@ DGAPI DgResult _dgRenderWindow(DgWindow* pWindow) {
 	submitInfo.signalSemaphoreCount = 1;
 	submitInfo.pSignalSemaphores = signalSemaphores;
 
-	if(vkQueueSubmit(pWindow->pGPU->graphicsQueue, 1, &submitInfo, pWindow->inFlightFences.at(pWindow->currentFrame)) != VK_SUCCESS) {
+	if (vkQueueSubmit(pWindow->pGPU->graphicsQueue, 1, &submitInfo, pWindow->inFlightFences.at(pWindow->currentFrame)) != VK_SUCCESS) {
 		return DG_VK_QUEUE_SUBMISSION_FAILED;
 	}
 
@@ -679,16 +678,20 @@ DGAPI DgResult _dgRenderWindow(DgWindow* pWindow) {
 
 	presentInfo.pImageIndices = &imageIndex;
 
-	if (vkQueuePresentKHR(pWindow->pGPU->presentationQueue, &presentInfo) != VK_SUCCESS) {
+	result = vkQueuePresentKHR(pWindow->pGPU->presentationQueue, &presentInfo);
+
+	if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR) {
+		_dgRecreateSwapchain(pWindow);
+	}
+	else if (result != VK_SUCCESS) {
 		return DG_VK_QUEUE_PRESENT_FAILED;
 	}
-	
-	pWindow->currentFrame = (pWindow->currentFrame + 1) % DRAGON_RENDER_FRAME_MAX;
 
+	pWindow->currentFrame = (pWindow->currentFrame + 1) % DRAGON_RENDER_FRAME_MAX;
 	return DG_SUCCESS;
 }
 
-DGAPI void dgDestroyWindow(VkInstance instance, DgWindow* pWindow) {
+DGAPI void _dgDestroyWindow(VkInstance instance, DgWindow* pWindow) {
 	assert(pWindow != nullptr);
 	assert(instance != nullptr);
 
@@ -702,6 +705,14 @@ DGAPI void dgDestroyWindow(VkInstance instance, DgWindow* pWindow) {
 	if(!pWindow->inFlightFences.empty())
 		for(VkFence fence : pWindow->inFlightFences)
 			vkDestroyFence(pWindow->pGPU->device, fence, nullptr);
+
+	if (!pWindow->shaderModules.empty())
+		for (VkShaderModule shaderModule : pWindow->shaderModules)
+			vkDestroyShaderModule(pWindow->pGPU->device, shaderModule, nullptr);
+
+	vkDestroyPipelineLayout(pWindow->pGPU->device, pWindow->pipelineLayout, nullptr);
+	vkDestroyPipeline(pWindow->pGPU->device, pWindow->graphicsPipeline, nullptr);
+	vkDestroyRenderPass(pWindow->pGPU->device, pWindow->renderPass, nullptr);
 
 	vkDestroyCommandPool(pWindow->pGPU->device, pWindow->commandPool, nullptr);
 

@@ -1,4 +1,55 @@
 set(Dragon_INCLUDE_DIRS
+	${Dragon_SOURCE_DIR}/external/boost/algorithm/include
+	${Dragon_SOURCE_DIR}/external/boost/align/include
+	${Dragon_SOURCE_DIR}/external/boost/array/include
+	${Dragon_SOURCE_DIR}/external/boost/assert/include
+	${Dragon_SOURCE_DIR}/external/boost/atomic/include
+	${Dragon_SOURCE_DIR}/external/boost/bind/include
+	${Dragon_SOURCE_DIR}/external/boost/chrono/include
+	${Dragon_SOURCE_DIR}/external/boost/concept_check/include
+	${Dragon_SOURCE_DIR}/external/boost/config/include
+	${Dragon_SOURCE_DIR}/external/boost/container/include
+	${Dragon_SOURCE_DIR}/external/boost/container_hash/include
+	${Dragon_SOURCE_DIR}/external/boost/conversion/include
+	${Dragon_SOURCE_DIR}/external/boost/core/include
+	${Dragon_SOURCE_DIR}/external/boost/date_time/include
+	${Dragon_SOURCE_DIR}/external/boost/describe/include
+	${Dragon_SOURCE_DIR}/external/boost/detail/include
+	${Dragon_SOURCE_DIR}/external/boost/exception/include
+	${Dragon_SOURCE_DIR}/external/boost/function/include
+	${Dragon_SOURCE_DIR}/external/boost/function_types/include
+	${Dragon_SOURCE_DIR}/external/boost/functional/include
+	${Dragon_SOURCE_DIR}/external/boost/fusion/include
+	${Dragon_SOURCE_DIR}/external/boost/integer/include
+	${Dragon_SOURCE_DIR}/external/boost/intrusive/include
+	${Dragon_SOURCE_DIR}/external/boost/io/include
+	${Dragon_SOURCE_DIR}/external/boost/iterator/include
+	${Dragon_SOURCE_DIR}/external/boost/lexical_cast/include
+	${Dragon_SOURCE_DIR}/external/boost/move/include
+	${Dragon_SOURCE_DIR}/external/boost/mp11/include
+	${Dragon_SOURCE_DIR}/external/boost/mpl/include
+	${Dragon_SOURCE_DIR}/external/boost/numeric_conversion/include
+	${Dragon_SOURCE_DIR}/external/boost/optional/include
+	${Dragon_SOURCE_DIR}/external/boost/predef/include
+	${Dragon_SOURCE_DIR}/external/boost/preprocessor/include
+	${Dragon_SOURCE_DIR}/external/boost/range/include
+	${Dragon_SOURCE_DIR}/external/boost/ratio/include
+	${Dragon_SOURCE_DIR}/external/boost/rational/include
+	${Dragon_SOURCE_DIR}/external/boost/regex/include
+	${Dragon_SOURCE_DIR}/external/boost/smart_ptr/include
+	${Dragon_SOURCE_DIR}/external/boost/static_assert/include
+	${Dragon_SOURCE_DIR}/external/boost/system/include
+	${Dragon_SOURCE_DIR}/external/boost/thread/include
+	${Dragon_SOURCE_DIR}/external/boost/throw_exception/include
+	${Dragon_SOURCE_DIR}/external/boost/tokenizer/include
+	${Dragon_SOURCE_DIR}/external/boost/tuple/include
+	${Dragon_SOURCE_DIR}/external/boost/type_index/include
+	${Dragon_SOURCE_DIR}/external/boost/type_traits/include
+	${Dragon_SOURCE_DIR}/external/boost/typeof/include
+	${Dragon_SOURCE_DIR}/external/boost/unordered/include
+	${Dragon_SOURCE_DIR}/external/boost/utility/include
+	${Dragon_SOURCE_DIR}/external/boost/variant2/include
+	${Dragon_SOURCE_DIR}/external/boost/winapi/include
     ${Dragon_SOURCE_DIR}/external/glfw/include
 	${Dragon_SOURCE_DIR}/external/glm
 	#${Dragon_SOURCE_DIR}/external/openal/include

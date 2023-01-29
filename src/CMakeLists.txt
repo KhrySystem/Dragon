@@ -108,10 +108,12 @@ endif()
 execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${Dragon_BINARY_DIR}/shaders)
 if(${Vulkan_glslc_FOUND})
     message(STATUS "Using glslc to build SPIR-V Binaries")
-    execute_process(COMMAND ${Vulkan_GLSLC_EXECUTABLE} ${Dragon_SOURCE_DIR}/src/shaders/shader.frag -o ${Dragon_BINARY_DIR}/shaders/frag.spv --target-env=vulkan1.2)
-    execute_process(COMMAND ${Vulkan_GLSLC_EXECUTABLE} ${Dragon_SOURCE_DIR}/src/shaders/shader.vert -o ${Dragon_BINARY_DIR}/shaders/vert.spv --target-env=vulkan1.2)
+    execute_process(
+        COMMAND ${Vulkan_GLSLC_EXECUTABLE} ${Dragon_SOURCE_DIR}/src/shaders/shader.frag -o ${Dragon_BINARY_DIR}/shaders/frag.spv --target-env=vulkan1.3
+        COMMAND ${Vulkan_GLSLC_EXECUTABLE} ${Dragon_SOURCE_DIR}/src/shaders/shader.vert -o ${Dragon_BINARY_DIR}/shaders/vert.spv --target-env=vulkan1.3
+    )
 
-    add_custom_target(Shaders DEPENDS ${Dragon_BINARY_DIR}/shaders/vert.spv ${Dragon_BINARY_DIR}/shaders/frag.spv SOURCES ${Dragon_SOURCE_DIR}/src/shaders/shader.frag ${Dragon_SOURCE_DIR}/src/shaders/shader.vert)
+    add_custom_target(Shaders SOURCES ${Dragon_BINARY_DIR}/shaders/vert.spv ${Dragon_BINARY_DIR}/shaders/frag.spv DEPENDS ${Dragon_SOURCE_DIR}/src/shaders/shader.frag ${Dragon_SOURCE_DIR}/src/shaders/shader.vert)
 
     file(REMOVE "${Dragon_SOURCE_DIR}/include/dragon/shaders.hpp")
 	bin2h(SOURCE_FILE "${Dragon_BINARY_DIR}/shaders/frag.spv" HEADER_FILE "${Dragon_SOURCE_DIR}/include/dragon/shaders.hpp" VARIABLE_NAME DRAGON_FRAG_SHADER APPEND NULL_TERMINATE)
@@ -119,10 +121,12 @@ if(${Vulkan_glslc_FOUND})
 elseif(${Vulkan_glslangValidator_FOUND})
     message(STATUS "Using glslangValidator to build SPIR-V Binaries")
 
-    execute_process(COMMAND ${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE} -V ${Dragon_SOURCE_DIR}/src/shaders/shader.frag -o ${Dragon_BINARY_DIR}/shaders/frag.spv --target-env vulkan1.2)
-    execute_process(COMMAND ${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE} -V ${Dragon_SOURCE_DIR}/src/shaders/shader.vert -o ${Dragon_BINARY_DIR}/shaders/vert.spv --target-env vulkan1.2)
+    execute_process(
+        COMMAND ${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE} -V ${Dragon_SOURCE_DIR}/src/shaders/shader.frag -o ${Dragon_BINARY_DIR}/shaders/frag.spv --target-env vulkan1.3
+        COMMAND ${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE} -V ${Dragon_SOURCE_DIR}/src/shaders/shader.vert -o ${Dragon_BINARY_DIR}/shaders/vert.spv --target-env vulkan1.3
+    )
 
-    add_custom_target(Shaders DEPENDS ${Dragon_BINARY_DIR}/shaders/vert.spv ${Dragon_BINARY_DIR}/shaders/frag.spv SOURCES ${Dragon_SOURCE_DIR}/src/shaders/shader.frag ${Dragon_SOURCE_DIR}/src/shaders/shader.vert)
+    add_custom_target(Shaders SOURCES ${Dragon_BINARY_DIR}/shaders/vert.spv ${Dragon_BINARY_DIR}/shaders/frag.spv DEPENDS ${Dragon_SOURCE_DIR}/src/shaders/shader.frag ${Dragon_SOURCE_DIR}/src/shaders/shader.vert)
 
     file(REMOVE "${Dragon_SOURCE_DIR}/include/dragon/shaders.hpp")
 	bin2h(SOURCE_FILE "${Dragon_BINARY_DIR}/shaders/frag.spv" HEADER_FILE "${Dragon_SOURCE_DIR}/include/dragon/shaders.hpp" VARIABLE_NAME DRAGON_FRAG_SHADER APPEND NULL_TERMINATE)
@@ -142,6 +146,9 @@ target_link_libraries(${Dragon_LIB_NAME} PUBLIC Vulkan::Vulkan)
 
 # Link the library with the glfw library
 target_link_libraries(${Dragon_LIB_NAME} PUBLIC glfw)
+
+# Link the library with Boost::Thread
+target_link_libraries(${Dragon_LIB_NAME} PUBLIC Boost::thread)
 
 # Create an alias for the library
 add_library(Dragon::Dragon ALIAS ${Dragon_LIB_NAME})

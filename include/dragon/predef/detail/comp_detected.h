@@ -1,5 +1,0 @@
-#pragma once
-
-#ifndef BOOST_PREDEF_DETAIL_COMP_DETECTED
-    #define BOOST_PREDEF_DETAIL_COMP_DETECTED 1
-#endif

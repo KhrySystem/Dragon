@@ -46,6 +46,7 @@ DGAPI void dgGLFWErrorCallback(int code, const char* description);
  */
 DGAPI void dgDestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator);
 
+DGAPI void _dgGlfwCallback(int code, const char* description);
 /**
  * @brief Send a message to the user-defined callback in this engine instance
  *

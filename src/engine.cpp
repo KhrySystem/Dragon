@@ -1,7 +1,4 @@
-#include <iterator>
-#include <vector>
-
-#include <dragon/dragon.hpp>
+ #include <dragon/dragon.hpp>
 
 DGAPI DgResult dgAddLayerToEngine(DgEngine* pEngine, std::string layerName) {
 	#ifndef NDEBUG
@@ -49,7 +46,7 @@ DgResult _dgSetupVulkan(DgEngine* pEngine) {
 	// App info. Contains info about the Engine, the user app, etc.
 	VkApplicationInfo appInfo{};
 	// Use the version that matches the shaders
-	appInfo.apiVersion = VK_API_VERSION_1_2;
+	appInfo.apiVersion = VK_API_VERSION_1_3;
 	appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
 	appInfo.pApplicationName = APP_NAME;
 	appInfo.applicationVersion = APP_VERSION;
@@ -152,7 +149,6 @@ DGAPI DgResult dgCreateEngine(DgEngine* pEngine) {
 	std::vector<const char*> glfwExtensions(extensions, extensions + count);
 
 	for (const char* required : glfwExtensions) {
-		std::cout << required << std::endl;
 		dgAddVkExtensionToEngine(pEngine, required);
 	}
 	r = _dgSetupVulkan(pEngine);
@@ -184,14 +180,21 @@ DGAPI DgResult dgUpdate(DgEngine* pEngine) {
 	glfwPollEvents();
 	for (int i = 0; i < pEngine->windows.size(); i++) {
 		DgWindow window = pEngine->windows.at(i);
-		if (_dgRenderWindow(&window) != DG_SUCCESS) {
-			dgDestroyWindow(pEngine->vulkan, &window);
+
+		DgResult r = _dgRenderWindow(&window);
+		if (r != DG_SUCCESS) {
+			_dgDestroyWindow(pEngine->vulkan, &window);
+			pEngine->windows.erase(pEngine->windows.begin() + i);
+			return r;
 		}
 
-		if(glfwWindowShouldClose(window.window)) {
-			dgDestroyWindow(pEngine->vulkan, &window);
+		if (glfwWindowShouldClose(window.window)) {
+			_dgDestroyWindow(pEngine->vulkan, &window);
+			pEngine->windows.erase(pEngine->windows.begin() + i);
 		}
 	}
+
+	return DG_SUCCESS;
 }
 
 DGAPI void dgTerminateEngine(DgEngine* pEngine) {
@@ -201,7 +204,7 @@ DGAPI void dgTerminateEngine(DgEngine* pEngine) {
 	
 	for (DgWindow window : pEngine->windows) {
 		vkDeviceWaitIdle(window.pGPU->device);
-		dgDestroyWindow(pEngine->vulkan, &window);
+		_dgDestroyWindow(pEngine->vulkan, &window);
 	}
 
 	for (DgGPU gpu : pEngine->gpus) {

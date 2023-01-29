@@ -6,6 +6,7 @@
 
 #include "dragon_core.h"
 #include "gpu.hpp"
+#include "result.hpp"
 #include "window.hpp"
 
 /**
@@ -54,5 +55,4 @@ typedef struct DgEngine {
     std::function<void(int, const char*, void*)> fCallback;
     
 } DgEngine;
-
 

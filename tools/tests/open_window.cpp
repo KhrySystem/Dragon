@@ -8,7 +8,7 @@ int main(void) {
 		dgTerminateEngine(&e);
 		return result;
 	}
-	result = dgCreateWindow(&e, "", 800, 600, DG_TRUE, DG_TRUE);
+	result = dgCreateWindow(&e, "", 800, 600, DG_TRUE, DG_FALSE);
 	if (result != DG_SUCCESS) {
 		std::cout << result << std::endl;
 		dgTerminateEngine(&e);
