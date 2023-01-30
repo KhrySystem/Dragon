@@ -5,4 +5,5 @@ struct _DgVertex {
 	glm::vec3 color;
 };
 
-DGAPI VkVertexInputBindingDescription dgGenerateVertexBindingDescription(_DgVertex* pVertex);
+DGAPI VkVertexInputBindingDescription _dgGenerateVertexBindingDescription(_DgVertex* pVertex);
+DGAPI boost::array<VkVertexInputAttributeDescription, 2> _dgGetAttributeDescriptions();

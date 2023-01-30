@@ -91,6 +91,7 @@ if(${Dragon_BUILD_STATIC})
 		"window.cpp"
 		"gpu.cpp"
 		"validation.cpp"
+        "vertex.cpp"
 	)
 else() 
 	# Create a shared library with the given name, and specify the sources to be compiled
@@ -99,7 +100,8 @@ else()
 		"window.cpp"
 		"gpu.cpp"
 		"validation.cpp"
-	)
+	    "vertex.cpp"
+    )
 	# Define the preprocessor symbol for shared library build
 	target_compile_definitions(${Dragon_LIB_NAME} PUBLIC -DDRAGON_BUILD_DLL)
 endif()
@@ -113,7 +115,7 @@ if(${Vulkan_glslc_FOUND})
         COMMAND ${Vulkan_GLSLC_EXECUTABLE} ${Dragon_SOURCE_DIR}/src/shaders/shader.vert -o ${Dragon_BINARY_DIR}/shaders/vert.spv --target-env=vulkan1.3
     )
 
-    add_custom_target(Shaders SOURCES ${Dragon_BINARY_DIR}/shaders/vert.spv ${Dragon_BINARY_DIR}/shaders/frag.spv DEPENDS ${Dragon_SOURCE_DIR}/src/shaders/shader.frag ${Dragon_SOURCE_DIR}/src/shaders/shader.vert)
+    add_custom_target(Shaders SOURCES ${Dragon_BINARY_DIR}/shaders/vert.spv ${Dragon_BINARY_DIR}/shaders/frag.spv DEPENDS ${Dragon_SOURCE_DIR}/src/shaders/shader.frag ${Dragon_SOURCE_DIR}/src/shaders/shader.vert "vertex.cpp")
 
     file(REMOVE "${Dragon_SOURCE_DIR}/include/dragon/shaders.hpp")
 	bin2h(SOURCE_FILE "${Dragon_BINARY_DIR}/shaders/frag.spv" HEADER_FILE "${Dragon_SOURCE_DIR}/include/dragon/shaders.hpp" VARIABLE_NAME DRAGON_FRAG_SHADER APPEND NULL_TERMINATE)

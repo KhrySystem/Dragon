@@ -3,12 +3,13 @@
 extern "C" {
 #endif
 
-#include <algorithm>
 #include <cstdio>
 #include <cstring>
 #include <fstream>
 #include <string>
 
+#include <boost/algorithm/algorithm.hpp>
+#include <boost/array.hpp>
 #include <boost/predef.h>
 #include <boost/thread.hpp>
 

@@ -7,6 +7,9 @@ endmacro()
 
 dragon_create_test(test_dg_open_window open_window.cpp)
 dragon_create_test(test_dg_compute compute_test.cpp)
-dragon_create_test(unit_eval_functions unit_test_eval_functions.cpp)
 
-add_test(NAME unit_eval_functions COMMAND $<TARGET_FILE:unit_eval_functions>)
+add_executable(unit_test unit_test.cpp ${Dragon_SOURCE_DIR}/external/munit/munit.c)
+target_include_directories(unit_test PUBLIC ${Dragon_INCLUDE_DIRS} ${Dragon_SOURCE_DIR}/external/munit)
+target_link_libraries(unit_test Dragon::Dragon)
+
+add_test(NAME tests COMMAND $<TARGET_FILE:unit_test>)
