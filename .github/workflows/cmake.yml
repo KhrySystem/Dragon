@@ -37,6 +37,34 @@ jobs:
           cmake --build ${{github.workspace}}/build
 
 
+  build-mac:
+    name: MacOS
+    runs-on: macos-latest
+
+    strategy:
+      matrix:
+        type:  [ BUILD_SHARED_LIBS=ON, BUILD_SHARED_LIBS=OFF ]
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Update Git Subdirectories
+      run: |
+        git submodule update --init
+
+    - name: Prepare Vulkan SDK
+        uses: humbletim/setup-vulkan-sdk@v1.2.0
+        with:
+          vulkan-query-version: latest 
+          vulkan-components: Vulkan-Headers, Vulkan-Loader, Glslang
+          vulkan-use-cache: true
+
+    - name: Build Dragon
+      run: |
+        cmake . -B build -D${{ matrix.type }} -DCMAKE_BUILD_TYPE=Release
+        cmake --build build
+
   build-windows:
     name: Windows
     runs-on: windows-latest
