@@ -18,11 +18,12 @@
 
 #include "dragon_core.h"
 #include "engine.hpp"
+#include "frag.hpp"
 #include "gpu.hpp"
 #include "result.hpp"
-#include "shaders.hpp"
 #include "uiElement.hpp"
 #include "validation.hpp"
+#include "vert.hpp"
 #include "vertex.hpp"
 #include "window.hpp"
 

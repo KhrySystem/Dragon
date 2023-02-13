@@ -120,7 +120,7 @@ add_subdirectory(external/glm)
 add_subdirectory(include/dragon)
 add_subdirectory(src)
 
-# If Dragon_BUILD_TESTS is true, add the tools/tests directory as a subdirectory
+# If Dragon_BUILD_TESTS is true, add the tools/tests directory and GoogleTest as a subdirectory
 if(Dragon_BUILD_TESTS)
 	add_subdirectory(external/googletest)
 	add_subdirectory(tools/tests)

@@ -108,30 +108,32 @@ else()
 	target_compile_definitions(${Dragon_LIB_NAME} PUBLIC -DDRAGON_BUILD_DLL)
 endif()
 
-configure_file(${Dragon_SOURCE_DIR}/src/shaders/shader.frag.in ${Dragon_SOURCE_DIR}/src/shaders/shader.frag)
-configure_file(${Dragon_SOURCE_DIR}/src/shaders/shader.vert.in ${Dragon_SOURCE_DIR}/src/shaders/shader.vert)
+configure_file(${Dragon_SOURCE_DIR}/src/shaders/shader.frag.in ${Dragon_BINARY_DIR}/src/shaders/shader.frag)
+configure_file(${Dragon_SOURCE_DIR}/src/shaders/shader.vert.in ${Dragon_BINARY_DIR}/src/shaders/shader.vert)
 
 if(${Vulkan_glslc_FOUND})
     message(STATUS "Using glslc to build SPIR-V Binaries")
     execute_process(
-        COMMAND ${Vulkan_GLSLC_EXECUTABLE} ${Dragon_SOURCE_DIR}/src/shaders/shader.frag -o ${Dragon_SOURCE_DIR}/src/shaders/frag.spv --target-env=vulkan1.3
-        COMMAND ${Vulkan_GLSLC_EXECUTABLE} ${Dragon_SOURCE_DIR}/src/shaders/shader.vert -o ${Dragon_SOURCE_DIR}/src/shaders/vert.spv --target-env=vulkan1.3
+        COMMAND ${Vulkan_GLSLC_EXECUTABLE} ${Dragon_BINARY_DIR}/src/shaders/shader.frag -o ${Dragon_BINARY_DIR}/src/shaders/frag.spv --target-env=vulkan1.3
+        COMMAND ${Vulkan_GLSLC_EXECUTABLE} ${Dragon_BINARY_DIR}/src/shaders/shader.vert -o ${Dragon_BINARY_DIR}/src/shaders/vert.spv --target-env=vulkan1.3
     )
 
-    file(REMOVE "${Dragon_SOURCE_DIR}/include/dragon/shaders.hpp")
-	bin2h(SOURCE_FILE "${Dragon_SOURCE_DIR}/src/shaders/frag.spv" HEADER_FILE "${Dragon_SOURCE_DIR}/include/dragon/shaders.hpp" VARIABLE_NAME DRAGON_FRAG_SHADER APPEND NULL_TERMINATE)
-	bin2h(SOURCE_FILE "${Dragon_SOURCE_DIR}/src/shaders/vert.spv" HEADER_FILE "${Dragon_SOURCE_DIR}/include/dragon/shaders.hpp" VARIABLE_NAME DRAGON_VERT_SHADER APPEND NULL_TERMINATE)
+    file(REMOVE "${Dragon_SOURCE_DIR}/include/dragon/frag.hpp")
+    file(REMOVE "${Dragon_SOURCE_DIR}/include/dragon/vert.hpp")
+	bin2h(SOURCE_FILE "${Dragon_BINARY_DIR}/src/shaders/frag.spv" HEADER_FILE "${Dragon_SOURCE_DIR}/include/dragon/frag.hpp" VARIABLE_NAME DRAGON_FRAG_SHADER APPEND NULL_TERMINATE)
+	bin2h(SOURCE_FILE "${Dragon_BINARY_DIR}/src/shaders/vert.spv" HEADER_FILE "${Dragon_SOURCE_DIR}/include/dragon/vert.hpp" VARIABLE_NAME DRAGON_VERT_SHADER APPEND NULL_TERMINATE)
 elseif(${Vulkan_glslangValidator_FOUND})
     message(STATUS "Using glslangValidator to build SPIR-V Binaries")
 
     execute_process(
-        COMMAND ${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE} -V ${Dragon_SOURCE_DIR}/src/shaders/shader.frag -o ${Dragon_BINARY_DIR}/shaders/frag.spv --target-env vulkan1.3
-        COMMAND ${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE} -V ${Dragon_SOURCE_DIR}/src/shaders/shader.vert -o ${Dragon_BINARY_DIR}/shaders/vert.spv --target-env vulkan1.3
+        COMMAND ${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE} -V ${Dragon_BINARY_DIR}/src/shaders/shader.frag -o ${Dragon_BINARY_DIR}/src/shaders/frag.spv --target-env vulkan1.3
+        COMMAND ${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE} -V ${Dragon_BINARY_DIR}/src/shaders/shader.vert -o ${Dragon_BINARY_DIR}/src/shaders/vert.spv --target-env vulkan1.3
     )
 
-    file(REMOVE "${Dragon_SOURCE_DIR}/include/dragon/shaders.hpp")
-	bin2h(SOURCE_FILE "${Dragon_BINARY_DIR}/shaders/frag.spv" HEADER_FILE "${Dragon_SOURCE_DIR}/include/dragon/shaders.hpp" VARIABLE_NAME DRAGON_FRAG_SHADER APPEND NULL_TERMINATE)
-	bin2h(SOURCE_FILE "${Dragon_BINARY_DIR}/shaders/vert.spv" HEADER_FILE "${Dragon_SOURCE_DIR}/include/dragon/shaders.hpp" VARIABLE_NAME DRAGON_VERT_SHADER APPEND NULL_TERMINATE)
+    file(REMOVE "${Dragon_SOURCE_DIR}/include/dragon/frag.hpp")
+    file(REMOVE "${Dragon_SOURCE_DIR}/include/dragon/vert.hpp")
+	bin2h(SOURCE_FILE "${Dragon_BINARY_DIR}/src/shaders/frag.spv" HEADER_FILE "${Dragon_SOURCE_DIR}/include/dragon/frag.hpp" VARIABLE_NAME DRAGON_FRAG_SHADER APPEND NULL_TERMINATE)
+	bin2h(SOURCE_FILE "${Dragon_BINARY_DIR}/src/shaders/vert.spv" HEADER_FILE "${Dragon_SOURCE_DIR}/include/dragon/vert.hpp" VARIABLE_NAME DRAGON_VERT_SHADER APPEND NULL_TERMINATE)
 else()
     message(WARNING "Using prebuilt SPIR-V Binaries")
 endif()
