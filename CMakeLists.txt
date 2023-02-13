@@ -28,7 +28,6 @@ include(tools/cmake/build_vars.cmake)
 find_package(Python REQUIRED COMPONENTS Interpreter)
 find_package(Vulkan REQUIRED)
 find_package(Doxygen)
-find_package(GTest)
 
 # Check if the library is to be built as shared or static
 if(NOT BUILD_SHARED_LIBS)
@@ -43,21 +42,26 @@ set(BUILD_SHARED_LIBS ${Dragon_BUILD_SHARED})
 set(DYNAMIC_LOADER ${Dragon_BUILD_SHARED})
 set(USE_MSVC_RUNTIME_LIBRARY_DLL ${Dragon_BUILD_SHARED})
 
+if(NOT DEFINED Dragon_MAX_POINT_LIGHTS)
+	set(Dragon_MAX_POINT_LIGHTS 128)
+endif()
+
+if(NOT DEFINED Dragon_MAX_DIRECTIONAL_LIGHTS)
+	set(Dragon_MAX_DIRECTIONAL_LIGHTS 4)
+endif()
+
 # Create an option to build Dragon specific tests
 option(Dragon_BUILD_TESTS "Build Dragon-specific tests" ON)
 # Create an option to build Dragon documentation
 option(Dragon_BUILD_DOCS "Build Dragon Documentation" ON)
 # Set the name of the library to "dragon-{version}"
-set(Dragon_LIB_NAME dragon-${Dragon_VERSION})
+set(Dragon_LIB_NAME dragon-${Dragon_VERSION_MAJOR})
 
 #Remove GLFW options
 set(GLFW_BUILD_TESTS OFF)
 set(GLFW_BUILD_EXAMPLES OFF)
 set(GLFW_BUILD_DOCS OFF)
-# Add the GLFW library as a subdirectory
-add_subdirectory(external/glfw)
-
-# Add the Boost submodules as subdirectories
+# Add all the third-party code repos
 add_subdirectory(external/boost/algorithm)
 add_subdirectory(external/boost/align)
 add_subdirectory(external/boost/array)
@@ -109,6 +113,8 @@ add_subdirectory(external/boost/unordered)
 add_subdirectory(external/boost/utility)
 add_subdirectory(external/boost/variant2)
 add_subdirectory(external/boost/winapi)
+add_subdirectory(external/glfw)
+add_subdirectory(external/glm)
 
 # Add subdirectories for the engine
 add_subdirectory(include/dragon)
@@ -116,7 +122,7 @@ add_subdirectory(src)
 
 # If Dragon_BUILD_TESTS is true, add the tools/tests directory as a subdirectory
 if(Dragon_BUILD_TESTS)
-
+	add_subdirectory(external/googletest)
 	add_subdirectory(tools/tests)
 endif()
 

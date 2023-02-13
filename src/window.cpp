@@ -1,6 +1,6 @@
 #include <dragon/dragon.hpp>
 
-DGAPI DgResult dgCreateWindow(DgEngine* pEngine, std::string title, unsigned int width, unsigned int height, DgBool32 isResizable, DgBool32 isFullscreen) {
+DGAPI DgResult dgCreateWindow(DgEngine* pEngine, std::string title, unsigned int width, unsigned int height, DgBool32 isResizable, DgBool32 isFullscreen, DgWindow* pWindow) {
 	if (pEngine == nullptr) {
 		return DG_ARGUMENT_IS_NULL;
 	}

@@ -1,9 +1,10 @@
+#pragma once
+
 #include "dragon_core.h"
 
-struct _DgVertex {
+struct DgVertex {
 	glm::vec3 position;
 	glm::vec3 color;
+	glm::vec3 normalVec;
 };
 
-DGAPI VkVertexInputBindingDescription _dgGenerateVertexBindingDescription(_DgVertex* pVertex);
-DGAPI boost::array<VkVertexInputAttributeDescription, 2> _dgGetAttributeDescriptions();

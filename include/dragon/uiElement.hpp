@@ -1,7 +1,10 @@
 #pragma once
 
+#include "dragon_core.h"
 #include "vertex.hpp"
 
 typedef struct {
-	std::vector<_DgVertex> verticies;
-} DgUiElement;
+	std::vector<DgVertex> verticies;
+	glm::vec4 rotation;
+	
+} DgUIElement;

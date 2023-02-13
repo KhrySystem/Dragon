@@ -1,0 +1,54 @@
+#version 450
+
+#define MAX_POINT_LIGHTS       @Dragon_MAX_POINT_LIGHTS@
+#define MAX_DIRECTIONAL_LIGHTS @Dragon_MAX_DIRECTIONAL_LIGHTS@
+
+struct PointLight {
+  vec3  position;
+  vec3  color;
+  vec3  ambient;
+  float falloff;
+  float radius;
+};
+
+struct DirLight {
+  vec3  color;
+  vec4  angle;
+  float falloff;
+  float radius;
+};
+
+layout(location = 0) in Inputs {
+	vec4 fragColor;
+    vec3 fragPos;
+    vec3 normal;
+	float shininess;
+};
+
+layout(binding = 0)  uniform lights {
+	int        pointLightCount;
+	PointLight pointLights[MAX_POINT_LIGHTS];
+	int        dirLightCount;
+	DirLight   dirLights[MAX_DIRECTIONAL_LIGHTS];
+};
+
+layout(location = 0) out vec4 outColor;
+
+void main() {
+	vec3 viewPos = vec3(0.0, 0.0, 1.0);
+
+	// Calculate all point lighting
+    for(int i = 0; i < pointLightCount; i++) {
+		PointLight light = pointLights[i];
+
+		vec3 lightDir    = normalize(light.position - fragPos);
+		vec3 viewDir     = normalize(viewPos - fragPos);
+		vec3 halfwayDir  = normalize(lightDir + viewDir);
+
+		float spec = pow(max(dot(normal, halfwayDir), 0.0), shininess);
+		vec3 specular = light.color * spec;
+	}
+
+	// Add Directional lighting
+    outColor = fragColor;
+}

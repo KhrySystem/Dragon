@@ -160,6 +160,6 @@
 [submodule "external/boost/winapi"]
 	path = external/boost/winapi
 	url = https://github.com/Boostorg/winapi
-[submodule "external/munit"]
-	path = external/munit
-	url = https://github.com/nemequ/munit
+[submodule "external/googletest"]
+	path = external/googletest
+	url = https://github.com/google/googletest

@@ -23,6 +23,7 @@
 #include "shaders.hpp"
 #include "uiElement.hpp"
 #include "validation.hpp"
+#include "vertex.hpp"
 #include "window.hpp"
 
 
@@ -97,8 +98,8 @@ DGAPI void dgTerminateEngine(DgEngine* pEngine);
   * @param isResizable A boolean, stating if the window's size is allowed to be changed by the user.
   * @param isFullscreen A boolean, stating if the window should take up the entire screen.
   */
-DGAPI DgResult dgCreateWindow(DgEngine* pEngine, std::string title, unsigned int width, unsigned int height, DgBool32 isResizable, DgBool32 isFullscreen);
-
+DGAPI DgResult dgCreateWindow(DgEngine* pEngine, std::string title, unsigned int width, unsigned int height, DgBool32 isResizable, DgBool32 isFullscreen, DgWindow* pWindow);
+DGAPI DgResult dgCreateUIElement(DgWindow* pWindow, std::vector<DgVertex> verts);
 /**
  * INTERNAL METHOD
  * @param pWindow The window to use for presentation
@@ -227,5 +228,6 @@ DGAPI DgResult _dgFindQueueFamilies(DgGPU* pGPU);
  * @param pGPU The GPU to generate the Queue Buffers
  */
 DGAPI DgResult _dgStartQueueBuffers(DgEngine* pEngine, DgGPU* pGPU);
-
+DGAPI VkVertexInputBindingDescription _dgGenerateVertexBindingDescription();
+DGAPI boost::array<VkVertexInputAttributeDescription, 3> _dgGetAttributeDescriptions();
 /** @} */

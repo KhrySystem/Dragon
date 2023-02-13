@@ -85,5 +85,5 @@ struct DgWindow {
     std::vector<VkSemaphore> renderFinishedSemaphores;
     std::vector<VkFence> inFlightFences;
     uint32_t currentFrame;
-    std::vector<DgUiElement> uiElements;
+    std::vector<DgUIElement> uiElements;
 };
