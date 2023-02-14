@@ -1,17 +1,18 @@
 ![example event parameter](https://github.com/KhrySystem/Dragon/actions/workflows/cmake.yml/badge.svg?event=push)
 # DragonEngine
-DragonEngine is a C++, code-first, thin and lightweight Vulkan 3D game engine designed with gaming, AR, and VR in mind; designed to keep functions tucked away when you don't want to see them, and give access to the APIs beneath it when you want it. 
+DragonEngine is a C++, code-first, thin and lightweight Vulkan 3D game engine designed for gaming, AR, and VR. It is designed to keep functions tucked away when you don't need them and provide access to the APIs beneath it when you do.
 
 ## Documentation
- - The authoritative home for the HTML documentation is found [here](https://khrysystem.dev/docs/dragon), along with example usage.
- - Documentation can be generated using Doxygen locally.
+ - The authoritative source of HTML documentation can be found [here](https://khrysystem.dev/docs/dragon) along with some example usage.
+ - Documentation can be generated locally using Doxygen.
  - GitHub Issues is a good way to ask questions.
 
 ## SDK Structure
-### Pre-Build
+
 ```txt
  - docs/                             Doxygen build scripts for Dragon
  - external/
+      - boost/                       The required Boost packages are found here
       - glfw/                        GLFW submodule for the window
  - include/dragon/                   Dragon Headers for the main library.
  - src/                              C++ Source for Dragon
@@ -22,16 +23,6 @@ DragonEngine is a C++, code-first, thin and lightweight Vulkan 3D game engine de
       - tests/                       Assorted tests from Dragon
 ```
 
-### Post-Build
-```txt
- - bin/                              Test, debug, and info executables, may also be bin32/ on Linux / MacOS
- - lib/                              Dragon library binaries
- - docs/                             Documentation for Dragon, and GLFW interface through the engine
- - include/                          Single include directory for Dragon
-      - dragon/                      Dragon Headers
-      - glfw/                        GLFW Headers
-```
-
 ## Build Dependencies
 Several libraries are required for DragonEngine to be built on your computer. 
 
@@ -39,7 +30,7 @@ Several libraries are required for DragonEngine to be built on your computer.
  - [Vulkan](https://khronos.org/vulkan): Dragon requires a version of Vulkan 1, and supports up to Vulkan 1.3, tested up to Vulkan 1.2. 
 
 ### Optional Dependencies
- - [OpenXR](https://khronos.org/openxr): Dragon's XR capability extension module requires OpenXR to support the AR and VR capabilities of this engine. If it can't find it at compile time / install time, no worries. Currently OpenXR is not production-ready, so it will not be used by the engine. We shall wait for Khronos to release an official version.
+ - [OpenXR](https://khronos.org/openxr): Dragon's XR capability extension module requires OpenXR to support AR and VR capabilities. If OpenXR is not found at compile time/install time, the engine will not use it. Currently, OpenXR is not production-ready, so the engine will not use it until an official version is released by Khronos.
 
 ### Test and Documentation Dependencies
  - Doxygen: Doxygen is required when building the documentation for Dragon.  
