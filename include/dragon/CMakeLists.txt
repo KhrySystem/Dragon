@@ -4,5 +4,11 @@ add_library(Dragon-Headers INTERFACE
 	"dragon.hpp"
 	"dragon_core.h.in"
 	"engine.hpp"
+	"gpu.hpp"
+	"result.hpp"
+	"uiElement.hpp"
+	"validation.hpp"
 	"window.hpp"
 )
+
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/dragon FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")

@@ -13,7 +13,6 @@ build/*
 include/dragon/dragon_core.h
 
 # Remove configured shader files
-src/shaders/*
 
 /include/dragon/vert.hpp
 /include/dragon/frag.hpp

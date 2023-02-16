@@ -25,12 +25,12 @@ layout(location = 0) in Inputs {
 	float shininess;
 };
 
-layout(binding = 0)  uniform lights {
-	int        pointLightCount;
-	PointLight pointLights[MAX_POINT_LIGHTS];
-	int        dirLightCount;
-	DirLight   dirLights[MAX_DIRECTIONAL_LIGHTS];
-};
+//layout(binding = 0)  uniform lights {
+//	int        pointLightCount;
+//	PointLight pointLights[MAX_POINT_LIGHTS];
+//  int        dirLightCount;
+//	DirLight   dirLights[MAX_DIRECTIONAL_LIGHTS];
+//};
 
 layout(location = 0) out vec4 outColor;
 
@@ -38,16 +38,16 @@ void main() {
 	vec3 viewPos = vec3(0.0, 0.0, 1.0);
 
 	// Calculate all point lighting
-    for(int i = 0; i < pointLightCount; i++) {
-		PointLight light = pointLights[i];
+//    for(int i = 0; i < pointLightCount; i++) {
+//		PointLight light = pointLights[i];
 
-		vec3 lightDir    = normalize(light.position - fragPos);
-		vec3 viewDir     = normalize(viewPos - fragPos);
-		vec3 halfwayDir  = normalize(lightDir + viewDir);
+//		vec3 lightDir    = normalize(light.position - fragPos);
+//		vec3 viewDir     = normalize(viewPos - fragPos);
+//		vec3 halfwayDir  = normalize(lightDir + viewDir);
 
-		float spec = pow(max(dot(normal, halfwayDir), 0.0), shininess);
-		vec3 specular = light.color * spec;
-	}
+//		float spec = pow(max(dot(normal, halfwayDir), 0.0), shininess);
+//		vec3 specular = light.color * spec;
+//	}
 
 	// Add Directional lighting
     outColor = fragColor;

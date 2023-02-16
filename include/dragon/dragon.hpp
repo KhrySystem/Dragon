@@ -230,5 +230,5 @@ DGAPI DgResult _dgFindQueueFamilies(DgGPU* pGPU);
  */
 DGAPI DgResult _dgStartQueueBuffers(DgEngine* pEngine, DgGPU* pGPU);
 DGAPI VkVertexInputBindingDescription _dgGenerateVertexBindingDescription();
-DGAPI boost::array<VkVertexInputAttributeDescription, 3> _dgGetAttributeDescriptions();
+DGAPI boost::array<VkVertexInputAttributeDescription, DRAGON_VERTEX_ATTRIBUTE_COUNT> _dgGetAttributeDescriptions();
 /** @} */

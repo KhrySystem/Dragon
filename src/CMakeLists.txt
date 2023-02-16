@@ -150,5 +150,8 @@ target_link_libraries(${Dragon_LIB_NAME} PUBLIC glfw)
 # Link the library with Boost::Thread
 target_link_libraries(${Dragon_LIB_NAME} PUBLIC Boost::thread)
 
+# Add the Dragon header files 
+target_link_libraries(${Dragon_LIB_NAME} INTERFACE Dragon-Headers)
+
 # Create an alias for the library
 add_library(Dragon::Dragon ALIAS ${Dragon_LIB_NAME})

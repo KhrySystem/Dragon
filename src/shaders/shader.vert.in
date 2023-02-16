@@ -3,7 +3,7 @@
 layout(location = 0) in vec3 position;
 layout(location = 1) in vec3 color;
 layout(location = 2) in vec3 normalVec;
-layout(location = 3) in vec4 rotation;
+//layout(location = 3) in vec4 rotation;
 
 layout(location = 0) out Output {
     vec4 fragColor;
@@ -16,25 +16,26 @@ void main() {
     fragColor = vec4(color, 0.0);
     normal = normalize(normalVec);
 
-    vec4 q = vec4(rotation.x, -rotation.y, -rotation.z, -rotation.w);
-    vec4 p = vec4(0.0, position);
+//    vec4 q = vec4(rotation.x, -rotation.y, -rotation.z, -rotation.w);
+//    vec4 p = vec4(0.0, position);
 
-    vec4 hold = vec4(
-        -(q.y * p.y) - (q.z * p.z) - (q.w * p.w),
-        (q.x * p.y) - (q.z * p.w) + (q.w * p.z), 
-        (q.x * p.z) + (q.y * p.w) - (q.w * p.y),
-        (q.x * p.w) - (q.y * p.z) - (q.z * p.y)
-    );
+//    vec4 hold = vec4(
+//        -(q.y * p.y) - (q.z * p.z) - (q.w * p.w),
+//        (q.x * p.y) - (q.z * p.w) + (q.w * p.z), 
+//        (q.x * p.z) + (q.y * p.w) - (q.w * p.y),
+//        (q.x * p.w) - (q.y * p.z) - (q.z * p.y)
+//    );
 
-    q = hold;
-    p = rotation;
+//    q = hold;
+//    p = rotation;
 
-    hold = vec4(
-        -(q.y * p.y) - (q.z * p.z) - (q.w * p.w),
-        (q.x * p.y) - (q.z * p.w) + (q.w * p.z), 
-        (q.x * p.z) + (q.y * p.w) - (q.w * p.y),
-        (q.x * p.w) - (q.y * p.z) - (q.z * p.y)
-    );
+//    hold = vec4(
+//        -(q.y * p.y) - (q.z * p.z) - (q.w * p.w),
+//        (q.x * p.y) - (q.z * p.w) + (q.w * p.z), 
+//        (q.x * p.z) + (q.y * p.w) - (q.w * p.y),
+//        (q.x * p.w) - (q.y * p.z) - (q.z * p.y)
+//    );
 
-    fragPos = hold.yzw;
+//    fragPos = hold.yzw;
+      fragPos = position;
 }
