@@ -1,9 +1,6 @@
 [submodule "external/glfw"]
 	path = external/glfw
 	url = https://github.com/glfw/glfw
-[submodule "external/pysimplegui"]
-	path = external/pysimplegui
-	url = https://github.com/PySimpleGUI/PySimpleGUI
 [submodule "external/glm"]
 	path = external/glm
 	url = https://github.com/g-truc/glm
@@ -163,3 +160,6 @@
 [submodule "external/googletest"]
 	path = external/googletest
 	url = https://github.com/google/googletest
+[submodule "tools/installer/pysimplegui"]
+	path = tools/installer/pysimplegui
+	url = https://github.com/PySimpleGUI/PySimpleGUI

@@ -15,3 +15,6 @@ include/dragon/dragon_core.h
 # Remove configured shader files
 src/shaders/*
 
+# Remove Python cacbe files
+*.pyc
+

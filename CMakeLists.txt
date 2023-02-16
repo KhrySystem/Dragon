@@ -128,3 +128,5 @@ endif()
 
 # Include the tools/cmake/install.cmake file
 include(tools/cmake/install.cmake)
+
+install(TARGETS ${Dragon_LIB_NAME})
