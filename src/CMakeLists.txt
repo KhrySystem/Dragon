@@ -84,28 +84,37 @@ endfunction()
     
 
 # Check if the library is to be built as static or shared
-if(${Dragon_BUILD_STATIC})
+if(Dragon_BUILD_STATIC)
 	# Create a static library with the given name, and specify the sources to be compiled
 	add_library(${Dragon_LIB_NAME} STATIC
-		"engine.cpp"
-		"window.cpp"
+		"engine_init.cpp"
+		"engine_runtime.cpp"
+		"engine_close.cpp"
 		"gpu.cpp"
-        "uiElement.cpp"
+        "model.cpp"
 		"validation.cpp"
         "vertex.cpp"
+        "window_init.cpp"
+        "window_runtime.cpp"
+        "window_close.cpp"
 	)
 else() 
 	# Create a shared library with the given name, and specify the sources to be compiled
 	add_library(${Dragon_LIB_NAME} SHARED 
-		"engine.cpp"
-		"window.cpp"
+		"engine_init.cpp"
+		"engine_runtime.cpp"
+		"engine_close.cpp"
 		"gpu.cpp"
-        "uiElement.cpp"
+        "model.cpp"
 		"validation.cpp"
-	    "vertex.cpp"
+        "vertex.cpp"
+        "window_init.cpp"
+        "window_runtime.cpp"
+        "window_close.cpp"
     )
 	# Define the preprocessor symbol for shared library build
 	target_compile_definitions(${Dragon_LIB_NAME} PUBLIC -DDRAGON_BUILD_DLL)
+	add_compile_definitions(DRAGON_DLL)
 endif()
 
 configure_file(${Dragon_SOURCE_DIR}/src/shaders/shader.frag.in ${Dragon_BINARY_DIR}/src/shaders/shader.frag)

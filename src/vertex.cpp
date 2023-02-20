@@ -20,7 +20,7 @@ DGAPI boost::array<VkVertexInputAttributeDescription, DRAGON_VERTEX_ATTRIBUTE_CO
 
 	attributeDescriptions.at(1).binding = 0;
 	attributeDescriptions.at(1).location = 1;
-	attributeDescriptions.at(1).format = VK_FORMAT_R32G32B32_SFLOAT;
+	attributeDescriptions.at(1).format = VK_FORMAT_R32G32B32A32_SFLOAT;
 	attributeDescriptions.at(1).offset = offsetof(DgVertex, color);
 
 	attributeDescriptions.at(2).binding = 0;
@@ -30,8 +30,13 @@ DGAPI boost::array<VkVertexInputAttributeDescription, DRAGON_VERTEX_ATTRIBUTE_CO
 
 	attributeDescriptions.at(3).binding = 0;
 	attributeDescriptions.at(3).location = 3;
-	attributeDescriptions.at(3).format = VK_FORMAT_R32G32B32A32_SFLOAT;
-	attributeDescriptions.at(3).offset = sizeof(DgVertex);
+	attributeDescriptions.at(3).format = VK_FORMAT_R64_SFLOAT;
+	attributeDescriptions.at(3).offset = offsetof(DgVertex, shininess);
+
+	attributeDescriptions.at(4).binding = 0;
+	attributeDescriptions.at(4).location = 4;
+	attributeDescriptions.at(4).format = VK_FORMAT_R32G32B32A32_SFLOAT;
+	attributeDescriptions.at(4).offset = sizeof(DgVertex);
 
 	return attributeDescriptions;
 }

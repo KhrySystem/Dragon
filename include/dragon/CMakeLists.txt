@@ -6,7 +6,7 @@ add_library(Dragon-Headers INTERFACE
 	"engine.hpp"
 	"gpu.hpp"
 	"result.hpp"
-	"uiElement.hpp"
+	"model.hpp"
 	"validation.hpp"
 	"window.hpp"
 )

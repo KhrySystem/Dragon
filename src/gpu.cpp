@@ -1,6 +1,6 @@
 #include <dragon/dragon.hpp>
 
-DGAPI DgResult _dgFindQueueFamilies(DgGPU* pGPU) {
+DGAPI DgResult _dgFindQueueFamilies(boost::shared_ptr<DgGPU> pGPU) {
 	if (pGPU == nullptr) {
 		return DG_ARGUMENT_IS_NULL;
 	}
@@ -23,7 +23,7 @@ DGAPI DgResult _dgFindQueueFamilies(DgGPU* pGPU) {
 	return DG_SUCCESS;
 }
 
-DGAPI DgResult _dgStartQueueBuffers(DgEngine* pEngine, DgGPU* pGPU) {
+DGAPI DgResult _dgStartQueueBuffers(boost::shared_ptr<DgEngine> pEngine, boost::shared_ptr<DgGPU> pGPU) {
 	if (pEngine == nullptr || pGPU == nullptr) {
 		return DG_ARGUMENT_IS_NULL;
 	}

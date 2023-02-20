@@ -40,7 +40,7 @@ typedef struct DgEngine {
      /**
       * @brief Pointer to the primary GPU
       */
-    DgGPU* primaryGPU;
+    boost::shared_ptr<DgGPU> primaryGPU;
     /**
      * @brief Vector of all available GPUs
      */
@@ -48,11 +48,11 @@ typedef struct DgEngine {
     /**
      * @brief Vector of all created windows
      */
-    std::vector<DgWindow> windows;
+    std::vector<boost::shared_ptr<DgWindow>> windows;
     /**
      * @brief Callback function for handling messages
      */
     std::function<void(int, const char*, void*)> fCallback;
-    
+    static inline uint32_t activeEngineCount = 0;
 } DgEngine;
 

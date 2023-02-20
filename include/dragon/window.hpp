@@ -5,7 +5,7 @@
 #include "dragon_core.h"
 #include "gpu.hpp"
 #include "result.hpp"
-#include "uiElement.hpp"
+#include "model.hpp"
 
 
 /**
@@ -24,7 +24,7 @@ struct DgWindow {
     /**
      * @brief Pointer to the GPU that renders this window
      */
-    DgGPU* pGPU;
+    boost::shared_ptr<DgGPU> pGPU;
     /**
      * @brief Pointer to the GLFW window
      */
@@ -79,11 +79,10 @@ struct DgWindow {
     VkPipeline graphicsPipeline;
     std::vector<VkFramebuffer> swapChainFramebuffers;
     VkCommandPool commandPool;
-    std::vector<VkCommandBuffer> commandBuffers;
 
     std::vector<VkSemaphore> imageAvailableSemaphores;
     std::vector<VkSemaphore> renderFinishedSemaphores;
     std::vector<VkFence> inFlightFences;
     uint32_t currentFrame;
-    std::vector<DgUIElement> uiElements;
+    std::vector < std::vector<boost::shared_ptr<DgModel>>> models;
 };
