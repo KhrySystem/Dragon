@@ -71,7 +71,7 @@ jobs:
     - name: Autobuild
       run: |
         echo "Run, Build Application using script"
-        cmake . -B ${{ github.workspace }}/build -D${{ matrix.type }} -DCMAKE_BUILD_TYPE=${{ matrix.cfg }}
+        cmake . -B ${{ github.workspace }}/build -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Release
         cmake --install ${{ github.workspace }}/build
 
     - name: Perform CodeQL Analysis
