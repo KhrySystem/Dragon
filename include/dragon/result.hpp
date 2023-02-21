@@ -1,8 +1,5 @@
 #pragma once
 
-#ifndef DG_RESULT_HPP
-#define DG_RESULT_HPP
-
 enum DgResult {
 	DG_SUCCESS,
 	// Dragon errors that dragon throws
@@ -56,5 +53,3 @@ enum DgResult {
 	DG_ERROR_UNKNOWN,
 	DG_WARNING_UNKNOWN
 };
-
-#endif

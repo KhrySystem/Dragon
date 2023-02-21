@@ -1,6 +1,6 @@
  #include <dragon/dragon.hpp>
 
-DGAPI DgResult dgAddLayerToEngine(DgEngine* pEngine, std::string layerName) {
+DGAPI DgResult dgAddLayerToEngine(boost::shared_ptr<DgEngine> pEngine, std::string layerName) {
 	#ifndef NDEBUG
 		// Check Vulkan Layers
 		uint32_t layerCount;
@@ -27,7 +27,7 @@ DGAPI DgResult dgAddLayerToEngine(DgEngine* pEngine, std::string layerName) {
 	#endif
 }
 
-DGAPI DgResult dgAddVkExtensionToEngine(DgEngine* pEngine, const char* extName) {
+DGAPI DgResult dgAddVkExtensionToEngine(boost::shared_ptr<DgEngine> pEngine, const char* extName) {
 	for (const char* name : pEngine->vkExtensions) {
 		if (strcmp(name, extName) == 0) {
 			return DG_VK_EXTENSION_ALREADY_ADDED;
@@ -38,11 +38,11 @@ DGAPI DgResult dgAddVkExtensionToEngine(DgEngine* pEngine, const char* extName) 
 	return DG_SUCCESS;
 }
 
-DGAPI void dgSetCallback(DgEngine* pEngine, std::function<void(int, const char*, void*)> fCallback) {
+DGAPI void dgSetCallback(boost::shared_ptr<DgEngine> pEngine, std::function<void(int, const char*, void*)> fCallback) {
 	pEngine->fCallback = fCallback;
 }
 
-DgResult _dgSetupVulkan(DgEngine* pEngine) {
+DgResult _dgSetupVulkan(boost::shared_ptr<DgEngine> pEngine) {
 	// App info. Contains info about the Engine, the user app, etc.
 	VkApplicationInfo appInfo{};
 	// Use the version that matches the shaders
@@ -79,7 +79,7 @@ DgResult _dgSetupVulkan(DgEngine* pEngine) {
 	return DG_SUCCESS;
 }
 #ifndef NDEBUG
-DgResult _dgSetupVulkanDebug(DgEngine* pEngine) {
+DgResult _dgSetupVulkanDebug(boost::shared_ptr<DgEngine> pEngine) {
 	VkDebugUtilsMessengerCreateInfoEXT messengerCreateInfo{};
 	messengerCreateInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
 	messengerCreateInfo.messageSeverity =  VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
@@ -95,7 +95,7 @@ DgResult _dgSetupVulkanDebug(DgEngine* pEngine) {
 	return DG_SUCCESS;
 }
 #endif
-DgResult _dgSetupGPUs(DgEngine* pEngine) {
+DgResult _dgSetupGPUs(boost::shared_ptr<DgEngine> pEngine) {
 	uint32_t deviceCount = 0;
 	dgEnumerateVkPhysicalDevices(pEngine->vulkan, &deviceCount, nullptr);
 
@@ -111,30 +111,36 @@ DgResult _dgSetupGPUs(DgEngine* pEngine) {
 
 	for (VkPhysicalDevice dev : devices) {
 		DgGPU gpu;
+		boost::shared_ptr<DgGPU> gpuRef(&gpu);
 		gpu.handle = dev;
 		vkGetPhysicalDeviceFeatures(dev, &(gpu.features));
 		vkGetPhysicalDeviceProperties(dev, &(gpu.properties));
-		_dgFindQueueFamilies(&gpu);
+		_dgFindQueueFamilies(gpuRef);
 		pEngine->gpus.push_back(gpu);
+		gpuRef.reset();
 	}
+
 	if (!pEngine->gpus.at(0).queueFamilies.graphicsQueueFamily.has_value()) {
 		return DG_NO_GRAPHICS_QUEUE_FOUND;
 	}
-	pEngine->primaryGPU = &pEngine->gpus.at(0);
+	pEngine->primaryGPU = boost::shared_ptr<DgGPU>(&pEngine->gpus.at(0));
 	return DG_SUCCESS;
 }
 
-DGAPI DgResult dgCreateEngine(DgEngine* pEngine) {
+DGAPI DgResult dgCreateEngine(boost::shared_ptr<DgEngine> pEngine) {
 	if (pEngine == nullptr) {
 		return DG_ARGUMENT_IS_NULL;
 	}
 	DgResult r;
 
-	if (!glfwInit()) {
-		return DG_GLFW_INITIALIZATION_FAILED;
+	if (DgEngine::activeEngineCount <= 0) {
+		if (!glfwInit()) {
+			return DG_GLFW_INITIALIZATION_FAILED;
+		}
 	}
 
 	glfwSetErrorCallback(_dgGlfwCallback);
+	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
 	// Vulkan Initialization
 	if (!glfwVulkanSupported()) {
@@ -173,46 +179,3 @@ DGAPI DgResult dgCreateEngine(DgEngine* pEngine) {
 	return DG_SUCCESS;
 }
 
-DGAPI DgResult dgUpdate(DgEngine* pEngine) {
-	if (pEngine == nullptr) {
-		return DG_ARGUMENT_IS_NULL;
-	}
-	glfwPollEvents();
-	for (int i = 0; i < pEngine->windows.size(); i++) {
-		DgWindow window = pEngine->windows.at(i);
-
-		DgResult r = _dgRenderWindow(&window);
-		if (r != DG_SUCCESS) {
-			_dgDestroyWindow(pEngine->vulkan, &window);
-			pEngine->windows.erase(pEngine->windows.begin() + i);
-			return r;
-		}
-
-		if (glfwWindowShouldClose(window.window)) {
-			_dgDestroyWindow(pEngine->vulkan, &window);
-			pEngine->windows.erase(pEngine->windows.begin() + i);
-		}
-	}
-
-	return DG_SUCCESS;
-}
-
-DGAPI void dgTerminateEngine(DgEngine* pEngine) {
-	#ifndef NDEBUG
-	dgDestroyDebugUtilsMessengerEXT(pEngine->vulkan, pEngine->debugMessenger, nullptr);
-	#endif
-	
-	for (DgWindow window : pEngine->windows) {
-		vkDeviceWaitIdle(window.pGPU->device);
-		_dgDestroyWindow(pEngine->vulkan, &window);
-	}
-
-	for (DgGPU gpu : pEngine->gpus) {
-		if (gpu.device != VK_NULL_HANDLE) {
-			vkDestroyDevice(gpu.device, nullptr);
-		}
-	}
-	
-	vkDestroyInstance(pEngine->vulkan, nullptr);
-	glfwTerminate();
-}

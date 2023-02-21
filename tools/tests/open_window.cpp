@@ -8,26 +8,32 @@ std::vector<DgVertex> verts = {
 
 int main(void) {
 	DgEngine engine;
-	DgResult result = dgCreateEngine(&engine);
+	boost::shared_ptr<DgEngine> engineRef(&engine);
+	DgResult result = dgCreateEngine(engineRef);
 	if (result != DG_SUCCESS) {
 		std::cout << result << std::endl;
-		dgTerminateEngine(&engine);
+		dgTerminateEngine(engineRef);
 		return result;
 	}
 	DgWindow window;
-	result = dgCreateWindow(&engine, "", 800, 600, DG_TRUE, DG_FALSE, &window);
+	boost::shared_ptr<DgWindow> windowRef(&window);
+ 	result = dgCreateWindow(engineRef, "", 800, 600, DG_TRUE, DG_FALSE, windowRef);
 	if (result != DG_SUCCESS) {
 		std::cout << result << std::endl;
-		dgTerminateEngine(&engine);
+		dgTerminateEngine(engineRef);
 		return result;
 	}
 
-	result = dgCreateUIElement(&window, verts);
+	dgAddRenderLayer(windowRef);
+	DgModel model;
+	boost::shared_ptr<DgModel> modelRef(&model);
+	result = dgCreateModel(windowRef, 0, verts, modelRef);
 
-	while (dgGetWindowCount(&engine) > 0) {
-		dgUpdate(&engine);
+	while (dgGetWindowCount(engineRef) > 0) {
+		std::cout << window.currentFrame << std::endl;
+		dgUpdate(engineRef);
 	}
 
-	dgTerminateEngine(&engine);
+	dgTerminateEngine(engineRef);
 	return 0;
 }

@@ -61,6 +61,7 @@ set(Dragon_LIB_NAME dragon-${Dragon_VERSION_MAJOR})
 set(GLFW_BUILD_TESTS OFF)
 set(GLFW_BUILD_EXAMPLES OFF)
 set(GLFW_BUILD_DOCS OFF)
+set(GLFW_INSTALL ON)
 # Add all the third-party code repos
 add_subdirectory(external/boost/algorithm)
 add_subdirectory(external/boost/align)
