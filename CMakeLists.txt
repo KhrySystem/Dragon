@@ -32,7 +32,7 @@ find_package(Doxygen)
 # Check if the library is to be built as shared or static
 if(NOT BUILD_SHARED_LIBS)
 	# Create an option to build as shared or static
-	option(Dragon_BUILD_SHARED "Set to OFF to build static, ON for shared." OFF)
+	option(Dragon_BUILD_SHARED "Set to OFF to build static, ON for shared." ON)
 else()
 	# Set the option to build as shared directly
 	set(Dragon_BUILD_SHARED "Set to OFF to build static, ON for shared." ON)

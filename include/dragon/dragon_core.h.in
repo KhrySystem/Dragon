@@ -8,7 +8,15 @@ extern "C" {
 #include <fstream>
 #include <string>
 
-#define BOOST_SP_ENABLE_DEBUG_HOOKS
+#ifndef _NDEBUG
+    #ifdef DRAGON_ENABLE_DEBUG_HOOKS
+        #define BOOST_SP_ENABLE_DEBUG_HOOKS
+    #endif
+    #define _CRTDBG_MAP_ALLOC
+    #include <stdlib.h>
+    #include <crtdbg.h>
+#endif
+
 #include <boost/algorithm/algorithm.hpp>
 #include <boost/array.hpp>
 #include <boost/predef.h>

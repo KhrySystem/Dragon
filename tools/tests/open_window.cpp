@@ -35,5 +35,8 @@ int main(void) {
 	}
 
 	dgTerminateEngine(engineRef);
+	#ifndef _NDEBUG
+		_CrtDumpMemoryLeaks();
+	#endif
 	return 0;
 }
