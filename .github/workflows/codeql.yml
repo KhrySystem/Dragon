@@ -68,11 +68,8 @@ jobs:
         
     # Autobuild attempts to build any compiled languages  (C/C++, C#, Go, or Java).
     # If this step fails, then you should remove it and run the build manually (see below)
-    - name: Autobuild
-      run: |
-        echo "Run, Build Application using script"
-        cmake . -B ${{ github.workspace }}/build -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Release
-        cmake --install ${{ github.workspace }}/build
+    - name: Build
+      uses: ./.github/actions/build.yml
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
