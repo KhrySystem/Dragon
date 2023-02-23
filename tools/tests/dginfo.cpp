@@ -41,4 +41,8 @@ int main() {
 	#endif
 	<< std::endl;
 	std::cout << "\t\tGLM    Version " << GLM_VERSION_MAJOR << "." << GLM_VERSION_MINOR << "." << GLM_VERSION_REVISION << std::endl;
+	std::cout << std::endl << "Press any key to exit... ";
+	char x;
+	std::cin >> x;
+	return;
 }
