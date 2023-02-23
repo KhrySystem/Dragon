@@ -10,5 +10,3 @@ add_library(Dragon-Headers INTERFACE
 	"validation.hpp"
 	"window.hpp"
 )
-
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/dragon FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
