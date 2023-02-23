@@ -1,0 +1,44 @@
+name: MacOS Build
+
+on: 
+  push:
+    paths-ignore:
+      - '**.md'
+      - '**/LICENSE'
+      - '**/.gitignore'
+
+  pull_request_review:
+    paths-ignore:
+      - '**.md'
+      - '**/LICENSE'
+      - '**/.gitignore'
+
+jobs:
+  build-mac:
+    name: MacOS
+    runs-on: macos-latest
+
+    strategy:
+      matrix:
+        type:  [ BUILD_SHARED_LIBS=OFF, BUILD_SHARED_LIBS=ON ]
+        cfg: [ Debug, Release ]
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Update Git Subdirectories
+      run: |
+        git submodule update --init
+
+    - name: Prepare Vulkan SDK
+      uses: humbletim/setup-vulkan-sdk@v1.2.0
+      with:
+        vulkan-query-version: latest 
+        vulkan-components: Vulkan-Headers, Vulkan-Loader, Glslang
+        vulkan-use-cache: true
+
+    - name: Build Dragon
+      run: |
+        cmake . -B ${{ github.workspace }}/build -D${{ matrix.type }} -DCMAKE_BUILD_TYPE=${{ matrix.cfg }}
+        cmake --install ${{ github.workspace }}/build

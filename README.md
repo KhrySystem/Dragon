@@ -1,4 +1,6 @@
-![example event parameter](https://github.com/KhrySystem/Dragon/actions/workflows/cmake.yml/badge.svg?event=push)
+![windows build](https://github.com/KhrySystem/Dragon/actions/workflows/cmake_windows.yml/badge.svg?event=push)
+![macos build](https://github.com/KhrySystem/Dragon/actions/workflows/cmake_macos.yml/badge.svg?event=push)
+![linux build](https://github.com/KhrySystem/Dragon/actions/workflows/cmake_linux.yml/badge.svg?event=push)
 # DragonEngine
 DragonEngine is a C++, code-first, thin and lightweight Vulkan 3D game engine designed for gaming, AR, and VR. It is designed to keep functions tucked away when you don't need them and provide access to the APIs beneath it when you do.
 
