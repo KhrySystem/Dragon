@@ -45,5 +45,5 @@ jobs:
           git submodule update --init
 
       - name: Build Dragon
-        uses: ./.github/actions/build.yml
+        uses: /.github/actions/build
 

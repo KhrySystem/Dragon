@@ -44,5 +44,5 @@ int main() {
 	std::cout << std::endl << "Press any key to exit... ";
 	char x;
 	std::cin >> x;
-	return;
+	return 0;
 }
