@@ -8,6 +8,7 @@ cpp.hint
 # Remove all build directories
 out/*
 build/*
+enc_temp_folder/*
 
 # Remove configured files
 include/dragon/dragon_core.h
