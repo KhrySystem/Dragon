@@ -2,6 +2,6 @@ name: Build Dragon
 
 steps:
   - run: 
-      cmake . -B build -D${{ matrix.type }} -DCMAKE_BUILD_TYPE=${{ matrix.cfg }}
+      cmake . -B build -D${{ matrix.type }} -DCMAKE_BUILD_TYPE=${{ matrix.cfg }} -DCMAKE_INSTALL_DIR=${{ github.workspace }}/install
       cmake --build ${{ github.workspace }}/build
       cmake --install ${{ github.workspace }}/build

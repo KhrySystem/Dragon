@@ -39,4 +39,4 @@ jobs:
         vulkan-use-cache: true
 
     - name: Build Dragon
-      uses: ./.github/actions/build
+      uses: ./.github/actions/cd
