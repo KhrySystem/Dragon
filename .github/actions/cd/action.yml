@@ -10,8 +10,11 @@ inputs:
     required: true
     description: ""
 
-steps:
-  - run: 
-      cmake . -B build -D${{ inputs.type }} -DCMAKE_BUILD_TYPE=${{ inputs.cfg }} -DCMAKE_INSTALL_DIR=${{ github.workspace }}/install
-      cmake --build ${{ github.workspace }}/build
-      cmake --install ${{ github.workspace }}/build
+runs:
+  using: "composite"
+  steps:
+    - shell: bash
+      run: 
+        cmake . -B build -D${{ inputs.type }} -DCMAKE_BUILD_TYPE=${{ inputs.cfg }} -DCMAKE_INSTALL_DIR=${{ github.workspace }}/install
+        cmake --build ${{ github.workspace }}/build
+        cmake --install ${{ github.workspace }}/build
