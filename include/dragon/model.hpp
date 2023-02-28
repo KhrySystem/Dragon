@@ -6,5 +6,7 @@
 typedef struct {
 	std::vector<DgVertex> verticies;
 	glm::vec4 rotation;
-	boost::array<VkCommandBuffer, DRAGON_RENDER_FRAME_MAX> buffers;
+	std::array<VkCommandBuffer, DRAGON_RENDER_FRAME_MAX> buffers;
+	VkBuffer vertexBuffer;
+	VkDeviceMemory vertexBufferMemory;
 } DgModel;

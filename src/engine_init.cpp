@@ -1,6 +1,6 @@
  #include <dragon/dragon.hpp>
 
-DGAPI DgResult dgAddLayerToEngine(boost::shared_ptr<DgEngine> pEngine, std::string layerName) {
+DGAPI DgResult dgAddLayerToEngine(std::shared_ptr<DgEngine> pEngine, std::string layerName) {
 	#ifndef NDEBUG
 		// Check Vulkan Layers
 		uint32_t layerCount;
@@ -27,7 +27,7 @@ DGAPI DgResult dgAddLayerToEngine(boost::shared_ptr<DgEngine> pEngine, std::stri
 	#endif
 }
 
-DGAPI DgResult dgAddVkExtensionToEngine(boost::shared_ptr<DgEngine> pEngine, const char* extName) {
+DGAPI DgResult dgAddVkExtensionToEngine(std::shared_ptr<DgEngine> pEngine, const char* extName) {
 	for (const char* name : pEngine->vkExtensions) {
 		if (strcmp(name, extName) == 0) {
 			return DG_VK_EXTENSION_ALREADY_ADDED;
@@ -38,11 +38,11 @@ DGAPI DgResult dgAddVkExtensionToEngine(boost::shared_ptr<DgEngine> pEngine, con
 	return DG_SUCCESS;
 }
 
-DGAPI void dgSetCallback(boost::shared_ptr<DgEngine> pEngine, std::function<void(int, const char*, void*)> fCallback) {
+DGAPI void dgSetCallback(std::shared_ptr<DgEngine> pEngine, std::function<void(int, const char*, void*)> fCallback) {
 	pEngine->fCallback = fCallback;
 }
 
-DgResult _dgSetupVulkan(boost::shared_ptr<DgEngine> pEngine) {
+DgResult _dgSetupVulkan(std::shared_ptr<DgEngine> pEngine) {
 	// App info. Contains info about the Engine, the user app, etc.
 	VkApplicationInfo appInfo{};
 	// Use the version that matches the shaders
@@ -69,17 +69,13 @@ DgResult _dgSetupVulkan(boost::shared_ptr<DgEngine> pEngine) {
 		createInfo.ppEnabledLayerNames = nullptr;
 	#endif
 	// Officially create the VkInstance
-		VkResult result = dgCreateVkInstance(&createInfo, nullptr, &pEngine->vulkan);
-	if (result != VK_SUCCESS) {
-		#ifndef NDEBUG
-		std::cerr << "Dragon: vkCreateInstance returned " << dgConvertVkResultToString(result) << std::endl;
-		#endif
+	if (dgCreateVkInstance(&createInfo, nullptr, &pEngine->vulkan) != VK_SUCCESS) {
 		return DG_VK_INSTANCE_CREATION_FAILED;
 	}
 	return DG_SUCCESS;
 }
 #ifndef NDEBUG
-DgResult _dgSetupVulkanDebug(boost::shared_ptr<DgEngine> pEngine) {
+DgResult _dgSetupVulkanDebug(std::shared_ptr<DgEngine> pEngine) {
 	VkDebugUtilsMessengerCreateInfoEXT messengerCreateInfo{};
 	messengerCreateInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
 	messengerCreateInfo.messageSeverity =  VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
@@ -95,7 +91,7 @@ DgResult _dgSetupVulkanDebug(boost::shared_ptr<DgEngine> pEngine) {
 	return DG_SUCCESS;
 }
 #endif
-DgResult _dgSetupGPUs(boost::shared_ptr<DgEngine> pEngine) {
+DgResult _dgSetupGPUs(std::shared_ptr<DgEngine> pEngine) {
 	uint32_t deviceCount = 0;
 	dgEnumerateVkPhysicalDevices(pEngine->vulkan, &deviceCount, nullptr);
 
@@ -110,24 +106,20 @@ DgResult _dgSetupGPUs(boost::shared_ptr<DgEngine> pEngine) {
 	dgEnumerateVkPhysicalDevices(pEngine->vulkan, &deviceCount, devices.data());
 
 	for (VkPhysicalDevice dev : devices) {
-		DgGPU gpu;
-		boost::shared_ptr<DgGPU> gpuRef(&gpu);
-		gpu.handle = dev;
-		vkGetPhysicalDeviceFeatures(dev, &(gpu.features));
-		vkGetPhysicalDeviceProperties(dev, &(gpu.properties));
+		std::shared_ptr<DgGPU> gpuRef(new DgGPU);
+		gpuRef->handle = dev;
 		_dgFindQueueFamilies(gpuRef);
-		pEngine->gpus.push_back(gpu);
-		gpuRef.reset();
+		pEngine->gpus.push_back(gpuRef);
 	}
 
-	if (!pEngine->gpus.at(0).queueFamilies.graphicsQueueFamily.has_value()) {
+	if (!pEngine->gpus.at(0)->queueFamilies.graphicsQueueFamily.has_value()) {
 		return DG_NO_GRAPHICS_QUEUE_FOUND;
 	}
-	pEngine->primaryGPU = boost::shared_ptr<DgGPU>(&pEngine->gpus.at(0));
+	pEngine->primaryGPU = std::shared_ptr<DgGPU>(pEngine->gpus.at(0));
 	return DG_SUCCESS;
 }
 
-DGAPI DgResult dgCreateEngine(boost::shared_ptr<DgEngine> pEngine) {
+DGAPI DgResult dgCreateEngine(std::shared_ptr<DgEngine> pEngine) {
 	if (pEngine == nullptr) {
 		return DG_ARGUMENT_IS_NULL;
 	}

@@ -91,7 +91,7 @@ if(Dragon_BUILD_STATIC)
 		"engine_runtime.cpp"
 		"engine_close.cpp"
 		"gpu.cpp"
-        "model.cpp"
+        "model_init.cpp"
 		"validation.cpp"
         "vertex.cpp"
         "window_init.cpp"
@@ -105,7 +105,7 @@ else()
 		"engine_runtime.cpp"
 		"engine_close.cpp"
 		"gpu.cpp"
-        "model.cpp"
+        "model_init.cpp"
 		"validation.cpp"
         "vertex.cpp"
         "window_init.cpp"
@@ -148,19 +148,19 @@ else()
 endif()
 
 # Specify the include directories for the library
-target_include_directories(${Dragon_LIB_NAME} PUBLIC ${Dragon_INCLUDE_DIRS})
+target_include_directories(${Dragon_LIB_NAME} PUBLIC
+	${Dragon_SOURCE_DIR}/include
+    ${Dragon_SOURCE_DIR}/external/glm
+    ${Dragon_SOURCE_DIR}/external/boost/predef/include
+)
 
-# Link the library with the vulkan library
-target_link_libraries(${Dragon_LIB_NAME} PUBLIC Vulkan::Vulkan)
-
-# Link the library with the glfw library
-target_link_libraries(${Dragon_LIB_NAME} PUBLIC glfw)
-
-# Link the library with Boost::Thread
-target_link_libraries(${Dragon_LIB_NAME} PUBLIC Boost::thread)
-
-# Add the Dragon header files 
-target_link_libraries(${Dragon_LIB_NAME} INTERFACE Dragon-Headers)
+target_link_libraries(${Dragon_LIB_NAME}
+    PUBLIC
+        Vulkan::Vulkan
+        glfw
+    INTERFACE
+        Boost::predef
+)
 
 # Create an alias for the library
 add_library(Dragon::Dragon ALIAS ${Dragon_LIB_NAME})

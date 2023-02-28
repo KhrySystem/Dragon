@@ -24,15 +24,15 @@ struct DgWindow {
     /**
      * @brief Pointer to the GPU that renders this window
      */
-    boost::shared_ptr<DgGPU> pGPU;
+    std::shared_ptr<DgGPU> pGPU;
     /**
      * @brief Pointer to the GLFW window
      */
-    GLFWwindow* window = nullptr;
+    GLFWwindow* window;
     /**
      * @brief Handle to the vulkan surface of the window
      */
-    VkSurfaceKHR surface = nullptr;
+    VkSurfaceKHR surface;
     /**
      * @brief Surface format of the window
      */
@@ -52,7 +52,7 @@ struct DgWindow {
     /**
      * @brief Swap chain for the window
      */
-    VkSwapchainKHR swapChain = nullptr;
+    VkSwapchainKHR swapChain = VK_NULL_HANDLE;
     /**
      * @brief Images in the swap chain for the window
      */
@@ -84,5 +84,5 @@ struct DgWindow {
     std::vector<VkSemaphore> renderFinishedSemaphores;
     std::vector<VkFence> inFlightFences;
     uint32_t currentFrame;
-    std::vector < std::vector<boost::shared_ptr<DgModel>>> models;
+    std::vector < std::vector<std::shared_ptr<DgModel>>> models;
 };

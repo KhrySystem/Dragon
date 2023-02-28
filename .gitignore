@@ -4,6 +4,7 @@
 # Remove Visual Studio directories and files
 .vs/*
 cpp.hint
+CMakePresets.json
 
 # Remove all build directories
 out/*

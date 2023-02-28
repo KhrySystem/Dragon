@@ -1,6 +1,6 @@
 #include <dragon/dragon.hpp>
 
-DGAPI DgResult _dgFindQueueFamilies(boost::shared_ptr<DgGPU> pGPU) {
+DGAPI DgResult _dgFindQueueFamilies(std::shared_ptr<DgGPU> pGPU) {
 	if (pGPU == nullptr) {
 		return DG_ARGUMENT_IS_NULL;
 	}
@@ -23,7 +23,7 @@ DGAPI DgResult _dgFindQueueFamilies(boost::shared_ptr<DgGPU> pGPU) {
 	return DG_SUCCESS;
 }
 
-DGAPI DgResult _dgStartQueueBuffers(boost::shared_ptr<DgEngine> pEngine, boost::shared_ptr<DgGPU> pGPU) {
+DGAPI DgResult _dgStartQueueBuffers(std::shared_ptr<DgEngine> pEngine, std::shared_ptr<DgGPU> pGPU) {
 	if (pEngine == nullptr || pGPU == nullptr) {
 		return DG_ARGUMENT_IS_NULL;
 	}
@@ -52,7 +52,10 @@ DGAPI DgResult _dgStartQueueBuffers(boost::shared_ptr<DgEngine> pEngine, boost::
 	deviceCreateInfo.pQueueCreateInfos = queueCreateInfos.data();
 	deviceCreateInfo.queueCreateInfoCount = queueCreateInfos.size();
 
-	deviceCreateInfo.pEnabledFeatures = &pGPU->features;
+	VkPhysicalDeviceFeatures features;
+	vkGetPhysicalDeviceFeatures(pGPU->handle, &features);
+
+	deviceCreateInfo.pEnabledFeatures = &features;
 
 	deviceCreateInfo.enabledExtensionCount = pEngine->vkDeviceExtensions.size();
 	deviceCreateInfo.ppEnabledExtensionNames = pEngine->vkDeviceExtensions.data();

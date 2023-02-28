@@ -15,10 +15,6 @@
  */
 typedef struct DgEngine {
     /**
-     * @brief boolean on if the engine was initialized successfully
-     */
-    DgBool32 initialized;
-    /**
      * @brief Vulkan object instance for the engine
      */
     VkInstance vulkan;
@@ -40,15 +36,15 @@ typedef struct DgEngine {
      /**
       * @brief Pointer to the primary GPU
       */
-    boost::shared_ptr<DgGPU> primaryGPU;
+    std::shared_ptr<DgGPU> primaryGPU;
     /**
      * @brief Vector of all available GPUs
      */
-    std::vector<DgGPU> gpus;
+    std::vector<std::shared_ptr<DgGPU>> gpus;
     /**
      * @brief Vector of all created windows
      */
-    std::vector<boost::shared_ptr<DgWindow>> windows;
+    std::vector<std::shared_ptr<DgWindow>> windows;
     /**
      * @brief Callback function for handling messages
      */

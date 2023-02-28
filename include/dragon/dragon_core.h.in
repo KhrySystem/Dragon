@@ -17,11 +17,11 @@ extern "C" {
     #include <crtdbg.h>
 #endif
 
-#include <boost/algorithm/algorithm.hpp>
-#include <boost/array.hpp>
+#include <algorithm>
+#include <array>
 #include <boost/predef.h>
-#include <boost/thread.hpp>
-#include <boost/smart_ptr.hpp>
+#include <thread>
+#include <memory>
 
 #define GLFW_INCLUDE_NONE
 #define GLFW_INCLUDE_VULKAN
@@ -73,7 +73,7 @@ extern "C" {
 
 #define DRAGON_MAX_POINT_LIGHTS @Dragon_MAX_POINT_LIGHTS@
 #define DRAGON_MAX_DIRECTIONAL_LIGHTS @Dragon_MAX_DIRECTIONAL_LIGHTS@
-#define DRAGON_VERTEX_ATTRIBUTE_COUNT 5
+#define DRAGON_VERTEX_ATTRIBUTE_COUNT 2
 #define DRAGON_NOEXCEPT noexcept
 
 /**

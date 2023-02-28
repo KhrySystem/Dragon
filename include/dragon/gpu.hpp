@@ -29,14 +29,6 @@ typedef struct DgGPU {
      */
     VkPhysicalDevice handle;
     /**
-     * @brief Properties of the GPU
-     */
-    VkPhysicalDeviceProperties properties;
-    /**
-     * @brief Features of the GPU
-     */
-    VkPhysicalDeviceFeatures features;
-    /**
      * @brief Queue families of the GPU
      */
     dgQueueFamilies queueFamilies;

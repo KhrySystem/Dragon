@@ -1,6 +1,6 @@
 #include <dragon/dragon.hpp>
 
-DGAPI DgResult _dgRecordCommandBuffer(boost::shared_ptr<DgWindow> pWindow, uint32_t imageIndex, boost::shared_ptr<DgModel> pModel) {
+DgResult _dgRecordCommandBuffer(std::shared_ptr<DgWindow> pWindow, uint32_t imageIndex, std::shared_ptr<DgModel> pModel) {
 	VkCommandBuffer buffer = pModel->buffers[imageIndex];
 
 	VkCommandBufferBeginInfo beginInfo{};
@@ -32,10 +32,15 @@ DGAPI DgResult _dgRecordCommandBuffer(boost::shared_ptr<DgWindow> pWindow, uint3
 	viewport.maxDepth = 1.0f;
 	vkCmdSetViewport(buffer, 0, 1, &viewport);
 
+	VkBuffer vertexBuffers[] = { pModel->vertexBuffer };
+	VkDeviceSize offsets[] = {0};
+	vkCmdBindVertexBuffers(buffer, 0, 1, vertexBuffers, offsets);
+
 	VkRect2D scissor{};
 	scissor.offset = { 0, 0 };
 	scissor.extent = pWindow->extent2D;
 	vkCmdSetScissor(buffer, 0, 1, &scissor);
+
 
 	vkCmdDraw(buffer, 3, 1, 0, 0);
 
@@ -48,7 +53,7 @@ DGAPI DgResult _dgRecordCommandBuffer(boost::shared_ptr<DgWindow> pWindow, uint3
 	return DG_SUCCESS;
 }
 
-DGAPI DgResult _dgRecreateSwapchain(boost::shared_ptr<DgWindow> pWindow) {
+DGAPI DgResult _dgRecreateSwapchain(std::shared_ptr<DgWindow> pWindow) {
 	std::cout << "Recreating swapchain" << std::endl;
 	_dgDestroySwapchain(pWindow);
 	DgResult r = _dgCreateSwapchain(pWindow);
@@ -58,12 +63,11 @@ DGAPI DgResult _dgRecreateSwapchain(boost::shared_ptr<DgWindow> pWindow) {
 	return DG_SUCCESS;
 }
 
-DGAPI DgResult _dgRenderWindow(boost::shared_ptr<DgWindow> pWindow) {
+DGAPI DgResult _dgRenderWindow(std::shared_ptr<DgWindow> pWindow) {
 	vkWaitForFences(pWindow->pGPU->device, 1, &pWindow->inFlightFences.at(pWindow->currentFrame), VK_TRUE, UINT64_MAX);
 
 	uint32_t imageIndex;
 	VkResult result = vkAcquireNextImageKHR(pWindow->pGPU->device, pWindow->swapChain, UINT64_MAX, pWindow->imageAvailableSemaphores.at(pWindow->currentFrame), VK_NULL_HANDLE, &imageIndex);
-	std::cout << result << std::endl;
 
 	if (result == VK_ERROR_OUT_OF_DATE_KHR) {
 		DgResult r = _dgRecreateSwapchain(pWindow);
@@ -77,8 +81,8 @@ DGAPI DgResult _dgRenderWindow(boost::shared_ptr<DgWindow> pWindow) {
 
 	std::vector<VkCommandBuffer> activeBuffers;
 
-	for (std::vector<boost::shared_ptr<DgModel>> layer : pWindow->models) {
-		for (boost::shared_ptr<DgModel> model : layer) {
+	for (std::vector<std::shared_ptr<DgModel>> layer : pWindow->models) {
+		for (std::shared_ptr<DgModel> model : layer) {
 			vkResetCommandBuffer(model->buffers[pWindow->currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
 			_dgRecordCommandBuffer(pWindow, imageIndex, model);
 			activeBuffers.push_back(model->buffers[pWindow->currentFrame]);
@@ -127,10 +131,9 @@ DGAPI DgResult _dgRenderWindow(boost::shared_ptr<DgWindow> pWindow) {
 	}
 
 	pWindow->currentFrame = (pWindow->currentFrame + 1) % DRAGON_RENDER_FRAME_MAX;
-	std::cout << pWindow->currentFrame << std::endl;
 	return DG_SUCCESS;
 }
 
-DGAPI void dgAddRenderLayer(boost::shared_ptr<DgWindow> pWindow) {
-	pWindow->models.push_back(std::vector<boost::shared_ptr<DgModel>>());
+DGAPI void dgAddRenderLayer(std::shared_ptr<DgWindow> pWindow) {
+	pWindow->models.push_back(std::vector<std::shared_ptr<DgModel>>());
 }

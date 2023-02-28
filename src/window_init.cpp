@@ -1,6 +1,6 @@
 #include <dragon/dragon.hpp>
 
-DgResult _dgGeneratePresentationQueue(boost::shared_ptr<DgWindow> pWindow) {
+DgResult _dgGeneratePresentationQueue(std::shared_ptr<DgWindow> pWindow) {
 	if (pWindow == nullptr) {
 		return DG_ARGUMENT_IS_NULL;
 	}
@@ -21,7 +21,7 @@ DgResult _dgGeneratePresentationQueue(boost::shared_ptr<DgWindow> pWindow) {
 	return DG_SUCCESS;
 }
 
-DgResult _dgChooseSwapSurfaceFormat(boost::shared_ptr<DgWindow> pWindow, const std::vector<VkSurfaceFormatKHR>& pFormats) {
+DgResult _dgChooseSwapSurfaceFormat(std::shared_ptr<DgWindow> pWindow, const std::vector<VkSurfaceFormatKHR>& pFormats) {
 	// Ensure window is not null
 	if (pWindow == nullptr) {
 		return DG_ARGUMENT_IS_NULL;
@@ -39,7 +39,7 @@ DgResult _dgChooseSwapSurfaceFormat(boost::shared_ptr<DgWindow> pWindow, const s
 	return DG_SUCCESS;
 }
 
-DgResult _dgChooseSwapPresentMode(boost::shared_ptr<DgWindow> pWindow, const std::vector<VkPresentModeKHR>& pPresentModes) {
+DgResult _dgChooseSwapPresentMode(std::shared_ptr<DgWindow> pWindow, const std::vector<VkPresentModeKHR>& pPresentModes) {
 	// Ensure window is not null
 	if (pWindow == nullptr) {
 		return DG_ARGUMENT_IS_NULL;
@@ -59,7 +59,7 @@ DgResult _dgChooseSwapPresentMode(boost::shared_ptr<DgWindow> pWindow, const std
 	return DG_SUCCESS;
 }
 
-DgResult _dgChooseSwapExtent2D(boost::shared_ptr<DgWindow> pWindow, const VkSurfaceCapabilitiesKHR* pCapabilities) {
+DgResult _dgChooseSwapExtent2D(std::shared_ptr<DgWindow> pWindow, const VkSurfaceCapabilitiesKHR* pCapabilities) {
 	if (pWindow == nullptr) {
 		return DG_ARGUMENT_IS_NULL;
 	}
@@ -84,7 +84,7 @@ DgResult _dgChooseSwapExtent2D(boost::shared_ptr<DgWindow> pWindow, const VkSurf
 	return DG_SUCCESS;
 }
 
-DgResult _dgCreateImageViews(boost::shared_ptr<DgWindow> pWindow) {
+DgResult _dgCreateImageViews(std::shared_ptr<DgWindow> pWindow) {
 	if (pWindow == nullptr) {
 		return DG_ARGUMENT_IS_NULL;
 	}
@@ -119,7 +119,7 @@ DgResult _dgCreateImageViews(boost::shared_ptr<DgWindow> pWindow) {
 	return DG_SUCCESS;
 }
 
-DGAPI DgResult _dgCreateSwapchain(boost::shared_ptr<DgWindow> pWindow) {
+DGAPI DgResult _dgCreateSwapchain(std::shared_ptr<DgWindow> pWindow) {
 	if (pWindow == nullptr) {
 		return DG_ARGUMENT_IS_NULL;
 	}
@@ -207,7 +207,7 @@ DGAPI DgResult _dgCreateSwapchain(boost::shared_ptr<DgWindow> pWindow) {
 	return DG_SUCCESS;
 }
 
-DgResult _dgGenerateGraphicsPipeline(boost::shared_ptr<DgWindow> pWindow) {
+DgResult _dgGenerateGraphicsPipeline(std::shared_ptr<DgWindow> pWindow) {
 	if (pWindow == nullptr) {
 		return DG_ARGUMENT_IS_NULL;
 	}
@@ -230,7 +230,7 @@ DgResult _dgGenerateGraphicsPipeline(boost::shared_ptr<DgWindow> pWindow) {
 	fragCreateInfo.codeSize = DRAGON_FRAG_SHADER_SIZE;
 	fragCreateInfo.pCode = reinterpret_cast<const uint32_t*>(DRAGON_FRAG_SHADER);
 
-	VkShaderModule fragModule = nullptr;
+	VkShaderModule fragModule;
 	result = vkCreateShaderModule(pWindow->pGPU->device, &fragCreateInfo, nullptr, &fragModule);
 	if (result != VK_SUCCESS) {
 		vkDestroyShaderModule(pWindow->pGPU->device, fragModule, nullptr);
@@ -253,7 +253,7 @@ DgResult _dgGenerateGraphicsPipeline(boost::shared_ptr<DgWindow> pWindow) {
 	VkPipelineShaderStageCreateInfo shaderStages[] = { vertShaderStageInfo, fragShaderStageInfo };
 
 	VkVertexInputBindingDescription bindingDescription = _dgGenerateVertexBindingDescription();
-	boost::array<VkVertexInputAttributeDescription, DRAGON_VERTEX_ATTRIBUTE_COUNT> attributeDescriptions = _dgGetAttributeDescriptions();
+	std::array<VkVertexInputAttributeDescription, DRAGON_VERTEX_ATTRIBUTE_COUNT> attributeDescriptions = _dgGetAttributeDescriptions();
 
 	VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
 	vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
@@ -380,7 +380,7 @@ DgResult _dgGenerateGraphicsPipeline(boost::shared_ptr<DgWindow> pWindow) {
 	return DG_SUCCESS;
 }
 
-DgResult _dgCreateFramebuffers(boost::shared_ptr<DgWindow> pWindow) {
+DgResult _dgCreateFramebuffers(std::shared_ptr<DgWindow> pWindow) {
 	pWindow->swapChainFramebuffers.resize(pWindow->swapChainImageViews.size());
 
 	for (size_t i = 0; i < pWindow->swapChainImageViews.size(); i++) {
@@ -408,7 +408,7 @@ DgResult _dgCreateFramebuffers(boost::shared_ptr<DgWindow> pWindow) {
 	return DG_SUCCESS;
 }
 
-DgResult _dgCreateCommandPool(boost::shared_ptr<DgWindow> pWindow) {
+DgResult _dgCreateCommandPool(std::shared_ptr<DgWindow> pWindow) {
 	VkCommandPoolCreateInfo poolInfo{};
 	poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 	poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
@@ -421,7 +421,7 @@ DgResult _dgCreateCommandPool(boost::shared_ptr<DgWindow> pWindow) {
 	return DG_SUCCESS;
 }
 
-DgResult _dgCreateSyncObjects(boost::shared_ptr<DgWindow> pWindow) {
+DgResult _dgCreateSyncObjects(std::shared_ptr<DgWindow> pWindow) {
 	pWindow->imageAvailableSemaphores.resize(DRAGON_RENDER_FRAME_MAX);
 	pWindow->renderFinishedSemaphores.resize(DRAGON_RENDER_FRAME_MAX);
 	pWindow->inFlightFences.resize(DRAGON_RENDER_FRAME_MAX);
@@ -449,7 +449,7 @@ DgResult _dgCreateSyncObjects(boost::shared_ptr<DgWindow> pWindow) {
 	return DG_SUCCESS;
 }
 
-DGAPI DgResult dgCreateWindow(boost::shared_ptr<DgEngine> pEngine, std::string title, unsigned int width, unsigned int height, DgBool32 isResizable, DgBool32 isFullscreen, boost::shared_ptr<DgWindow> pWindow) {
+DGAPI DgResult dgCreateWindow(std::shared_ptr<DgEngine> pEngine, std::string title, unsigned int width, unsigned int height, DgBool32 isResizable, DgBool32 isFullscreen, std::shared_ptr<DgWindow> pWindow) {
 	if (pEngine == nullptr || pWindow == nullptr) {
 		return DG_ARGUMENT_IS_NULL;
 	}
@@ -480,7 +480,7 @@ DGAPI DgResult dgCreateWindow(boost::shared_ptr<DgEngine> pEngine, std::string t
 	}
 
 	pWindow->window = glfw;
-	pWindow->pGPU = boost::shared_ptr<DgGPU>(pEngine->primaryGPU);
+	pWindow->pGPU = std::shared_ptr<DgGPU>(pEngine->primaryGPU);
 	pWindow->imageAvailableSemaphores.resize(DRAGON_RENDER_FRAME_MAX);
 	pWindow->renderFinishedSemaphores.resize(DRAGON_RENDER_FRAME_MAX);
 	pWindow->inFlightFences.resize(DRAGON_RENDER_FRAME_MAX);
