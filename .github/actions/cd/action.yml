@@ -6,8 +6,12 @@ inputs:
     required: true
     description: ""
 
+  type:
+    required: true
+    description: ""
+
 steps:
   - run: 
-      cmake . -B build -D${{ matrix.type }} -DCMAKE_BUILD_TYPE=${{ inpuits.cfg }} -DCMAKE_INSTALL_DIR=${{ github.workspace }}/install
+      cmake . -B build -D${{ inputs.type }} -DCMAKE_BUILD_TYPE=${{ inputs.cfg }} -DCMAKE_INSTALL_DIR=${{ github.workspace }}/install
       cmake --build ${{ github.workspace }}/build
       cmake --install ${{ github.workspace }}/build
