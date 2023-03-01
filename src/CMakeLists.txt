@@ -148,7 +148,7 @@ else()
 endif()
 
 # Specify the include directories for the library
-target_include_directories(${Dragon_LIB_NAME} PUBLIC
+target_include_directories(${Dragon_LIB_NAME} PRIVATE
 	${Dragon_SOURCE_DIR}/include
     ${Dragon_SOURCE_DIR}/external/glm
     ${Dragon_SOURCE_DIR}/external/boost/predef/include

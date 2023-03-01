@@ -23,7 +23,6 @@ endforeach()
 
 include(${Dragon_SOURCE_DIR}/tools/cmake/boost_helper_install.cmake)
 
-set_target_properties(${Dragon_LIB_NAME} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "") 
 install(TARGETS ${Dragon_LIB_NAME} 
     EXPORT DragonExport
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -43,7 +42,7 @@ configure_package_config_file(${Dragon_SOURCE_DIR}/tools/cmake/DragonConfig.cmak
 write_basic_package_version_file(${Dragon_BINARY_DIR}/DragonConfigVersion.cmake VERSION ${Dragon_VERSION} COMPATIBILITY SameMajorVersion)
 
 install(DIRECTORY ${Dragon_SOURCE_DIR}/include/dragon DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
-install(DIRECTORY ${Dragon_SOURCE_DIR}/external/glm/glm DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
+install(DIRECTORY ${Dragon_SOURCE_DIR}/external/glm/glm DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp" PATTERN "*.inl")
 install(DIRECTORY ${Dragon_BINARY_DIR}/src/shaders DESTINATION ${CMAKE_INSTALL_LIBDIR} FILES_MATCHING PATTERN "*.spv")
 install(DIRECTORY ${Dragon_SOURCE_DIR}/src DESTINATION ${CMAKE_INSTALL_PREFIX} FILES_MATCHING PATTERN "*.c" PATTERN "*.cpp" PATTERN "*.glsl")
 install(TARGETS dginfo DESTINATION ${CMAKE_INSTALL_BINDIR})

@@ -14,9 +14,9 @@ find_dependency(GLFW3)
 
 add_library(Dragon::Dragon UNKNOWN IMPORTED)
 set_target_properties(Dragon::Dragon PROPERTIES 
-	IMPORTED_LOCATION Dragon_LIBRARY
-	INTERFACE_INCLUDE_DIRECTORIES ${Dragon_INCLUDE_DIR}
-	INTERFACE_LINK_LIBRARIES Vulkan::Vulkan GLFW
+	IMPORTED_LOCATION "${Dragon_LIBRARY}"
+	INTERFACE_INCLUDE_DIRECTORIES "${Dragon_INCLUDE_DIR}"
+	INTERFACE_LINK_LIBRARIES "Vulkan::Vulkan;GLFW3"
 )
 
 check_required_components(Dragon)

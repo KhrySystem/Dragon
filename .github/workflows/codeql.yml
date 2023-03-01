@@ -70,6 +70,9 @@ jobs:
     # If this step fails, then you should remove it and run the build manually (see below)
     - name: Build
       uses: ./.github/actions/cd
+      with: 
+        cfg: ${{ matrix.cfg }}
+        type: ${{ matrix.type }}
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2

@@ -42,3 +42,6 @@ jobs:
 
       - name: Build Dragon
         uses: ./.github/actions/cd
+        with: 
+          cfg: ${{ matrix.cfg }}
+          type: ${{ matrix.type }}

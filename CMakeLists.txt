@@ -50,6 +50,8 @@ endif()
 option(Dragon_BUILD_TESTS "Build Dragon-specific tests" ON)
 # Create an option to build Dragon documentation
 option(Dragon_BUILD_DOCS "Build Dragon Documentation" ON)
+#Create an option to build the Dragon installation targets
+option(Dragon_INSTALL "Create the Dragon install targets" ON)
 # Set the name of the library to "dragon-{version}"
 set(Dragon_LIB_NAME dragon-${Dragon_VERSION_MAJOR})
 
@@ -57,7 +59,7 @@ set(Dragon_LIB_NAME dragon-${Dragon_VERSION_MAJOR})
 set(GLFW_BUILD_TESTS OFF)
 set(GLFW_BUILD_EXAMPLES OFF)
 set(GLFW_BUILD_DOCS OFF)
-set(GLFW_INSTALL ON)
+set(GLFW_INSTALL ${Dragon_INSTALL})
 # Add all the third-party code repos
 add_subdirectory(external/boost/predef)
 add_subdirectory(external/glfw)
@@ -75,4 +77,6 @@ endif()
 
 
 # Include the tools/cmake/install.cmake file
-include(tools/cmake/install.cmake)
+if(Dragon_INSTALL)
+	include(tools/cmake/install.cmake)
+endif()
