@@ -41,7 +41,7 @@ jobs:
           vulkan-use-cache: true
 
       - name: Build Dragon
-        uses: ./.github/actions/cd
-        with: 
-          cfg: ${{ matrix.cfg }}
-          type: ${{ matrix.type }}
+        run: |
+            cmake . -B build -D${{ inputs.type }} -DCMAKE_BUILD_TYPE=${{ inputs.cfg }} -DCMAKE_INSTALL_DIR=${{ github.workspace }}/install
+            cmake --build ${{ github.workspace }}/build
+            cmake --install ${{ github.workspace }}/build

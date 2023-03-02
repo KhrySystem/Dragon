@@ -12,9 +12,11 @@ extern "C" {
     #ifdef DRAGON_ENABLE_DEBUG_HOOKS
         #define BOOST_SP_ENABLE_DEBUG_HOOKS
     #endif
-    #define _CRTDBG_MAP_ALLOC
-    #include <stdlib.h>
-    #include <crtdbg.h>
+    #ifdef BOOST_OS_WINDOWS
+        #define _CRTDBG_MAP_ALLOC
+        #include <stdlib.h>
+        #include <crtdbg.h>
+    #endif
 #endif
 
 #include <algorithm>
