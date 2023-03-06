@@ -18,7 +18,7 @@ on:
     # The branches below must be a subset of the branches above
     branches: [ "main" ]
   schedule:
-    - cron: '28 11 * * 6'
+    - cron: '0 1 * * 6'
 
 jobs:
   analyze:
@@ -71,8 +71,8 @@ jobs:
     - name: Build
       uses: ./.github/actions/cd
       with: 
-        cfg: ${{ matrix.cfg }}
-        type: ${{ matrix.type }}
+        type: BUILD_SHARED_LIBS=ON
+        cfg: Debug
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
