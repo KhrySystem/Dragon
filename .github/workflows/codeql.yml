@@ -70,9 +70,9 @@ jobs:
     # If this step fails, then you should remove it and run the build manually (see below)
     - name: Build
       run: |
-            cmake . -B build -D${{ inputs.type }} -DCMAKE_BUILD_TYPE=${{ inputs.cfg }} -DCMAKE_INSTALL_DIR=${{ github.workspace }}/install
+            cmake . -B build -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_DIR=${{ github.workspace }}/install
             cmake --build ${{ github.workspace }}/build
-            cmake --install ${{ github.workspace }}/install
+            cmake --install ${{ github.workspace }}/build
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
