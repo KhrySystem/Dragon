@@ -3,16 +3,15 @@
 extern "C" {
 #endif
 
+#include <boost/predef.h>
+
 #include <cstdio>
 #include <cstring>
 #include <fstream>
 #include <string>
 
 #ifndef _NDEBUG
-    #ifdef DRAGON_ENABLE_DEBUG_HOOKS
-        #define BOOST_SP_ENABLE_DEBUG_HOOKS
-    #endif
-    #ifdef BOOST_OS_WINDOWS
+    #if BOOST_OS_WINDOWS
         #define _CRTDBG_MAP_ALLOC
         #include <stdlib.h>
         #include <crtdbg.h>
@@ -21,7 +20,6 @@ extern "C" {
 
 #include <algorithm>
 #include <array>
-#include <boost/predef.h>
 #include <thread>
 #include <memory>
 
@@ -30,6 +28,18 @@ extern "C" {
 #include <GLFW/glfw3.h>
 
 #include <glm/glm.hpp>
+
+#ifndef DRAGON_DOUBLE_PRECISION_SHADER
+    #define DG_FLOAT float
+    #define DG_VEC2 glm::vec2
+    #define DG_VEC3 glm::vec3
+    #define DG_VEC4 glm::vec4
+#else
+    #define DG_FLOAT double
+    #define DG_VEC2 glm::dvec2
+    #define DG_VEC3 glm::dvec3
+    #define DG_VEC4 glm::dvec4
+#endif
 
 /**
  * @brief Macro for defining the export/import attribute of a function 

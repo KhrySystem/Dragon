@@ -12,18 +12,21 @@ DGAPI DgResult dgUpdate(std::shared_ptr<DgEngine> pEngine) {
 	}
 	glfwPollEvents();
 	for (int i = 0; i < pEngine->windows.size(); i++) {
-		std::shared_ptr<DgWindow>  pWindow = pEngine->windows[i];
+		if (std::shared_ptr<DgWindow> pWindow = pEngine->windows[i].lock()) {
+			DgResult r = _dgRenderWindow(pWindow);
+			if (r != DG_SUCCESS) {
+				_dgDestroyWindow(pEngine->vulkan, pWindow);
+				pEngine->windows.erase(pEngine->windows.begin() + i);
+				return r;
+			}
 
-		DgResult r = _dgRenderWindow(pWindow);
-		if (r != DG_SUCCESS) {
-			_dgDestroyWindow(pEngine->vulkan, pWindow);
-			pEngine->windows.erase(pEngine->windows.begin() + i);
-			return r;
+			if (glfwWindowShouldClose(pWindow->window)) {
+				_dgDestroyWindow(pEngine->vulkan, pWindow);
+				pEngine->windows.erase(pEngine->windows.begin() + i);
+			}
 		}
-
-		if (glfwWindowShouldClose(pWindow->window)) {
-			_dgDestroyWindow(pEngine->vulkan, pWindow);
-			pEngine->windows.erase(pEngine->windows.begin() + i);
+		else {
+			return DG_WINDOW_INVALID;
 		}
 	}
 

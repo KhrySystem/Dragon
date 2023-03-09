@@ -9,11 +9,12 @@ DGAPI void _dgDestroyWindow(VkInstance instance, std::shared_ptr<DgWindow> pWind
 	vkDestroyPipeline(pWindow->pGPU->device, pWindow->graphicsPipeline, nullptr);
 	vkDestroyRenderPass(pWindow->pGPU->device, pWindow->renderPass, nullptr);
 
-	for (std::vector<std::shared_ptr<DgModel>> layer : pWindow->models) {
-		for (std::shared_ptr<DgModel> model : layer) {
-			vkDestroyBuffer(pWindow->pGPU->device, model->vertexBuffer, nullptr);
-			vkFreeMemory(pWindow->pGPU->device, model->vertexBufferMemory, nullptr);
-			model.reset();
+	for (std::vector<std::weak_ptr<DgModel>> layer : pWindow->models) {
+		for (std::weak_ptr<DgModel> model : layer) {
+			if (std::shared_ptr<DgModel> pModel = model.lock()) {
+				vkDestroyBuffer(pWindow->pGPU->device, pModel->vertexBuffer, nullptr);
+				vkFreeMemory(pWindow->pGPU->device, pModel->vertexBufferMemory, nullptr);
+			}
 		}
 		layer.clear();
 	}

@@ -1,10 +1,12 @@
 #include <dragon/dragon.hpp>
 
 #ifndef NDEBUG
-	#include "windows.h"
-	#define _CRTDBG_MAP_ALLOC 
-	#include <stdlib.h>  
-	#include <crtdbg.h> 
+    #if BOOST_OS_WINDOWS
+	    #include "windows.h"
+	    #define _CRTDBG_MAP_ALLOC 
+	    #include <stdlib.h>  
+	    #include <crtdbg.h> 
+    #endif
 	#include <iostream>
 #endif
 std::vector<DgVertex> verts = {
@@ -14,7 +16,7 @@ std::vector<DgVertex> verts = {
 };
 
 int main(void) {
-	#ifndef NDEBUG
+	#if !defined(NDEBUG) && BOOST_OS_WINDOWS
 		_CrtMemState sOld;
 		_CrtMemState sNew;
 		_CrtMemState sDiff;
@@ -46,7 +48,7 @@ int main(void) {
 
 	dgTerminateEngine(engineRef);
 
-	#ifndef _NDEBUG
+	#if !defined(_NDEBUG) && BOOST_OS_WINDOWS
 		_CrtMemCheckpoint(&sNew); //take a snapshot 
 		if (_CrtMemDifference(&sDiff, &sOld, &sNew)) // if there is a difference
 		{

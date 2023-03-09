@@ -1,7 +1,5 @@
 #include <dragon/dragon.hpp>
 
-
-
 std::vector<DgVertex> verts = {
 	{{0.5, 0.5, 0.0}, {1.0, 0.0, 0.0, 1.0}, {0.0, 0.0, 1.0}, 1.0},
 	{{0.0, 0.5, 0.0}, {0.0, 1.0, 0.0, 1.0}, {0.0, 0.0, 1.0}, 1.0},
@@ -35,6 +33,10 @@ int main(void) {
 		dgUpdate(engineRef);
 	}
 
+	std::cout << engineRef.use_count() << std::endl;
+
 	dgTerminateEngine(engineRef);
-	return 0;
+	engineRef.reset();
+	windowRef.reset();
+	modelRef.reset();
 }

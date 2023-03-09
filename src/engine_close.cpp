@@ -2,23 +2,24 @@
 
 DGAPI void dgTerminateEngine(std::shared_ptr<DgEngine> pEngine) DRAGON_NOEXCEPT {
 	DgEngine::activeEngineCount--;
+	assert(pEngine->windows.size() == 0);
 
-	for (std::shared_ptr<DgWindow> pWindow : pEngine->windows) {
-		vkDeviceWaitIdle(pWindow->pGPU->device);
-		_dgDestroyWindow(pEngine->vulkan, pWindow);
-	}
+	pEngine->windows.clear();
+	pEngine->windows.resize(0);
 
 	#ifndef NDEBUG
 	dgDestroyDebugUtilsMessengerEXT(pEngine->vulkan, pEngine->debugMessenger, nullptr);
+	pEngine->debugMessenger = VK_NULL_HANDLE;
 	#endif
 
-	for (std::shared_ptr<DgGPU> gpu : pEngine->gpus) {
-		if (gpu->device != VK_NULL_HANDLE) {
-			vkDestroyDevice(gpu->device, nullptr);
+	for (std::weak_ptr<DgGPU> gpu : pEngine->gpus) {
+		if (std::shared_ptr<DgGPU> ptr = gpu.lock()) {
+			vkDestroyDevice(ptr->device, nullptr);
 		}
 	}
 
 	vkDestroyInstance(pEngine->vulkan, nullptr);
+	pEngine->vulkan = VK_NULL_HANDLE;
 	if(DgEngine::activeEngineCount >= 0) 
 		glfwTerminate();
 }

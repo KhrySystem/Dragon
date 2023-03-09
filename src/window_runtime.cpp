@@ -81,11 +81,13 @@ DGAPI DgResult _dgRenderWindow(std::shared_ptr<DgWindow> pWindow) {
 
 	std::vector<VkCommandBuffer> activeBuffers;
 
-	for (std::vector<std::shared_ptr<DgModel>> layer : pWindow->models) {
-		for (std::shared_ptr<DgModel> model : layer) {
-			vkResetCommandBuffer(model->buffers[pWindow->currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
-			_dgRecordCommandBuffer(pWindow, imageIndex, model);
-			activeBuffers.push_back(model->buffers[pWindow->currentFrame]);
+	for (std::vector<std::weak_ptr<DgModel>> layer : pWindow->models) {
+		for (std::weak_ptr<DgModel> weak : layer) {
+			if (std::shared_ptr<DgModel> model = weak.lock()) {
+				vkResetCommandBuffer(model->buffers[pWindow->currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
+				_dgRecordCommandBuffer(pWindow, imageIndex, model);
+				activeBuffers.push_back(model->buffers[pWindow->currentFrame]);
+			}
 		}
 	}
 
@@ -135,5 +137,5 @@ DGAPI DgResult _dgRenderWindow(std::shared_ptr<DgWindow> pWindow) {
 }
 
 DGAPI void dgAddRenderLayer(std::shared_ptr<DgWindow> pWindow) {
-	pWindow->models.push_back(std::vector<std::shared_ptr<DgModel>>());
+	pWindow->models.push_back(std::vector<std::weak_ptr<DgModel>>());
 }

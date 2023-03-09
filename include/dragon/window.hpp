@@ -84,5 +84,5 @@ struct DgWindow {
     std::vector<VkSemaphore> renderFinishedSemaphores;
     std::vector<VkFence> inFlightFences;
     uint32_t currentFrame;
-    std::vector < std::vector<std::shared_ptr<DgModel>>> models;
+    std::vector < std::vector<std::weak_ptr<DgModel>>> models;
 };

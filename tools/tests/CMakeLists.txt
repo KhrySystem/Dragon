@@ -9,10 +9,10 @@ macro(dragon_create_test TARGET SOURCES)
 	set_target_properties(${TARGET} PROPERTIES FOLDER ${TESTS_FOLDER})
 endmacro()
 
-dragon_create_test(test_dg_open_window open_window.cpp)
-dragon_create_test(test_dg_compute compute_test.cpp)
+dragon_create_test(window open_window.cpp)
 dragon_create_test(dginfo dginfo.cpp)
 
 dragon_create_test(unit_test unit_test.cpp)
 
 add_test(NAME tests COMMAND $<TARGET_FILE:unit_test>)
+install(TARGETS window DESTINATION ${CMAKE_INSTALL_BINDIR})

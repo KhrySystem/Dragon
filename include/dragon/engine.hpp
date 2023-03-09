@@ -36,7 +36,7 @@ typedef struct DgEngine {
      /**
       * @brief Pointer to the primary GPU
       */
-    std::shared_ptr<DgGPU> primaryGPU;
+    std::weak_ptr<DgGPU> primaryGPU;
     /**
      * @brief Vector of all available GPUs
      */
@@ -44,7 +44,7 @@ typedef struct DgEngine {
     /**
      * @brief Vector of all created windows
      */
-    std::vector<std::shared_ptr<DgWindow>> windows;
+    std::vector<std::weak_ptr<DgWindow>> windows;
     /**
      * @brief Callback function for handling messages
      */
@@ -52,3 +52,4 @@ typedef struct DgEngine {
     static inline uint32_t activeEngineCount = 0;
 } DgEngine;
 
+// FIX SHARED_PTR REFERENCES TO DGWINDOW
