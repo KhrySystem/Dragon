@@ -33,6 +33,7 @@ else()
 	# Set the option to build as shared directly
 	set(Dragon_BUILD_SHARED "Set to OFF to build static, ON for shared." ON)
 endif()
+
 # Backload variabled based on Dragon_BUILD_SHARED
 set(BUILD_SHARED_LIBS OFF)
 set(DYNAMIC_LOADER ${Dragon_BUILD_SHARED})

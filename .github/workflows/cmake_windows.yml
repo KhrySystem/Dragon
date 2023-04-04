@@ -14,8 +14,6 @@ on:
       - '**/.gitignore'
 
 jobs:
- 
-
   build-windows:
     name: Windows
     runs-on: windows-latest
@@ -42,6 +40,6 @@ jobs:
 
       - name: Build Dragon
         run: |
-            cmake . -B build -D${{ matrix.type }} -DCMAKE_BUILD_TYPE=${{ matrix.cfg }} -DCMAKE_INSTALL_DIR=${{ github.workspace }}/install
-            cmake --build ${{ github.workspace }}/build
-            cmake --install ${{ github.workspace }}/build
+            cmake . -B build -D${{ matrix.type }} --install-prefix ${{ github.workspace }}/install -DCMAKE_INSTALL_DIR=${{ github.workspace }}/install -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE
+            cmake --build ${{ github.workspace }}/build --config ${{ matrix.cfg }}
+            cmake --install ${{ github.workspace }}/build --config ${{ matrix.cfg }}

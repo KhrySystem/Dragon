@@ -15,4 +15,7 @@ dragon_create_test(dginfo dginfo.cpp)
 dragon_create_test(unit_test unit_test.cpp)
 
 add_test(NAME tests COMMAND $<TARGET_FILE:unit_test>)
-install(TARGETS window DESTINATION ${CMAKE_INSTALL_BINDIR})
+if(DRAGON_INSTALL)
+	install(TARGETS window DESTINATION ${CMAKE_INSTALL_BINDIR})
+	install(TARGETS dginfo DESTINATION ${CMAKE_INSTALL_BINDIR})
+endif()
