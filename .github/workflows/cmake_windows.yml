@@ -14,8 +14,6 @@ on:
       - '**/.gitignore'
 
 jobs:
- 
-
   build-windows:
     name: Windows
     runs-on: windows-latest
