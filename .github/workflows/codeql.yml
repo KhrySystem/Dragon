@@ -70,9 +70,9 @@ jobs:
     # If this step fails, then you should remove it and run the build manually (see below)
     - name: Build
       run: |
-            cmake . -B build  -D${{ matrix.type }}  -DCMAKE_INSTALL_DIR=${{ github.workspace }}/install -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE
+            cmake . -B build  -D${{ matrix.type }} --install-prefix ${{ github.workspace }}/install -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE
             cmake --build ${{ github.workspace }}/build --config ${{ matrix.cfg }}
-            cmake --install ${{ github.workspace }}/build
+            cmake --install ${{ github.workspace }}/build --config ${{ matrix.cfg}}
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
