@@ -2,15 +2,15 @@
 
 layout(location = 0) in vec3 position;
 layout(location = 1) in vec3 color;
-//layout(location = 2) in vec3 normalVec;
-//layout(location = 4) in float shininess;
-//layout(location = 3) in vec4 rotation;
+layout(location = 2) in vec3 normalVec;
+layout(location = 4) in float shininess;
+layout(location = 3) in vec4 rotation;
 
 layout(location = 0) out Output {
     vec4 color;
     vec3 position;
- //   vec3 normal;
-//	double shininess;
+    vec3 normal;
+	double shininess;
 } outputs;
 
 void main() {
@@ -36,9 +36,10 @@ void main() {
 //        (q.x * p.w) - (q.y * p.z) - (q.z * p.y)
 //    );
 
-//    outputs.fragPos = hold.yzw;
+    //gl_Position = vec4(hold.wyz, 0.0);
+    //outputs.fragPos = hold.yzw;
     outputs.color = vec4(color, 0.0);
     outputs.position = position;
-    //outputs.shininess = shininess;
-    //outputs.normal = normalize(normalVec);
+    outputs.shininess = shininess;
+    outputs.normal = normalize(normalVec);
 }
