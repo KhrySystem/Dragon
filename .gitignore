@@ -12,7 +12,7 @@ build/*
 enc_temp_folder/*
 
 # Remove configured files
-include/dragon/dragon_core.h
+include/dragon/dragon_core.hpp
 
 # Remove configured shader files
 

@@ -55,13 +55,22 @@ int main() {
 	std::cout << "Took " << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count() << "ms to print out information\n";
 	DgEngine engine;
 	std::shared_ptr<DgEngine> pEngine(&engine);
-	dgCreateEngine(pEngine);
+	DgEngineCreateInfo createInfo{};
+	createInfo.vkDeviceExtensions = {};
+	createInfo.vkExtensions = {};
+	createInfo.vkValidationLayers = {};
+
+	dgCreateEngine(pEngine, createInfo);
+	std::cout << "Engine reference count:" << pEngine.use_count() << "\n";
 	t1 = std::chrono::high_resolution_clock::now();
 	std::cout << "Took " << std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t2).count() << "ms to create DgEngine instance\n";
 	dgTerminateEngine(pEngine);
+	std::cout << "Engine reference count:" << pEngine.use_count() << "\n";
 	t2 = std::chrono::high_resolution_clock::now();
 	std::cout << "Took " << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count() << "ms to destroy DgEngine instance\n";
 	std::cout << "\nPress enter to exit... " << std::endl;
 	std::cin.ignore();
-
+	std::cout << "Engine reference count:" << pEngine.use_count() << "\n";
+	pEngine.reset();
+	std::cout << "Engine reference count:" << pEngine.use_count() << "\n";
 }

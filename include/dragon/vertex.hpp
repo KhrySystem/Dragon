@@ -1,6 +1,6 @@
 #pragma once
 
-#include "dragon_core.h"
+#include "dragon_core.hpp"
 
 struct DgVertex {
 	DG_VEC3 position;

@@ -24,7 +24,8 @@ int main(void) {
 	#endif
 	DgEngine engine;
 	std::shared_ptr<DgEngine> engineRef(&engine);
-	DgResult result = dgCreateEngine(engineRef);
+	DgEngineCreateInfo eci{};
+	DgResult result = dgCreateEngine(engineRef, eci);
 	if (result != DG_SUCCESS) {
 		#ifndef _NDEBUG
 			std::cout << result << std::endl;
@@ -34,7 +35,12 @@ int main(void) {
 	}
 	DgWindow window;
 	std::shared_ptr<DgWindow> windowRef(&window);
-	result = dgCreateWindow(engineRef, "", 800, 600, DG_TRUE, DG_FALSE, windowRef);
+	DgWindowCreateInfo wci{};
+	wci.pEngine = engineRef;
+	wci.title = "Unit Test";
+	wci.width = 100;
+	wci.height = 100;
+	result = dgCreateWindow(windowRef, wci);
 	if (result != DG_SUCCESS) {
 		#ifndef _NDEBUG
 			std::cout << result << std::endl;

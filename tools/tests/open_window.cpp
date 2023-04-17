@@ -9,7 +9,9 @@ std::vector<DgVertex> verts = {
 int main(void) {
 	DgEngine engine;
 	std::shared_ptr<DgEngine> engineRef(&engine);
-	DgResult result = dgCreateEngine(engineRef);
+	DgEngineCreateInfo engineCreateInfo{};
+
+	DgResult result = dgCreateEngine(engineRef, engineCreateInfo);
 	if (result != DG_SUCCESS) {
 		std::cout << result << std::endl;
 		dgTerminateEngine(engineRef);
@@ -17,7 +19,12 @@ int main(void) {
 	}
 	DgWindow window;
 	std::shared_ptr<DgWindow> windowRef(&window);
- 	result = dgCreateWindow(engineRef, "", 800, 600, DG_TRUE, DG_FALSE, windowRef);
+	DgWindowCreateInfo windowCreateInfo{};
+	windowCreateInfo.pEngine = engineRef;
+	windowCreateInfo.title = "Open Window";
+	windowCreateInfo.width = 600;
+	windowCreateInfo.height = 400;
+ 	result = dgCreateWindow(windowRef, windowCreateInfo);
 	if (result != DG_SUCCESS) {
 		std::cout << result << std::endl;
 		dgTerminateEngine(engineRef);

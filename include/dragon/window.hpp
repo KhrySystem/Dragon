@@ -1,11 +1,9 @@
 #pragma once
 
-#include <string>
-
-#include "dragon_core.h"
+#include "dragon_core.hpp"
 #include "gpu.hpp"
-#include "result.hpp"
 #include "model.hpp"
+
 
 
 /**
@@ -15,6 +13,8 @@ const std::vector<VkDynamicState> dynamicStates = {
     VK_DYNAMIC_STATE_VIEWPORT,
     VK_DYNAMIC_STATE_SCISSOR
 };
+
+
 
 /**
  * @struct DgWindow
@@ -84,5 +84,39 @@ struct DgWindow {
     std::vector<VkSemaphore> renderFinishedSemaphores;
     std::vector<VkFence> inFlightFences;
     uint32_t currentFrame;
-    std::vector < std::vector<std::weak_ptr<DgModel>>> models;
+    std::vector <std::vector<std::weak_ptr<DgModel>>> models;
 };
+
+
+
+/**
+ *  @defgroup window Window
+ *  This section is for window functions / structs / classes
+ *  @{
+ */
+
+DGAPI void dgAddRenderLayer(std::shared_ptr<DgWindow> pWindow);
+
+/**
+ * INTERNAL METHOD
+ * @param pWindow The window to render
+ * @return A DgResult stating if rendering the window was successful, or the error during rendering.
+ */
+DGAPI DgResult _dgRenderWindow(std::shared_ptr<DgWindow> pWindow);
+DGAPI DgResult dgCreateModel(std::shared_ptr<DgWindow> pWindow, uint32_t layer, std::vector<DgVertex> verts, std::shared_ptr<DgModel> pModel);
+
+DGAPI DgResult _dgCreateSwapchain(std::shared_ptr<DgWindow> pWindow);
+
+/**
+ * INTERNAL METHOD
+ * @param pWindow The window to destroy the swapchain of
+ */
+DGAPI void _dgDestroySwapchain(std::shared_ptr<DgWindow> pWindow) DRAGON_NOEXCEPT;
+
+/**
+* INTERNAL METHOD
+* @param instance The VkInstance that this window was created with
+* @param pWindow The window to destroy
+*/
+DGAPI void _dgDestroyWindow(VkInstance instance, std::shared_ptr<DgWindow> pWindow) DRAGON_NOEXCEPT;
+/** @} */

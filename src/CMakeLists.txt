@@ -104,14 +104,14 @@ else()
 		"engine_init.cpp"
 		"engine_runtime.cpp"
 		"engine_close.cpp"
-		"gpu.cpp"
+		"gpu_init.cpp"
         "model_init.cpp"
 		"validation.cpp"
         "vertex.cpp"
         "window_init.cpp"
         "window_runtime.cpp"
         "window_close.cpp"
-    )
+     "gpu_close.cpp" "model_close.cpp")
 	# Define the preprocessor symbol for shared library build
 	target_compile_definitions(${Dragon_LIB_NAME} PUBLIC -DDRAGON_BUILD_DLL)
 	add_compile_definitions(DRAGON_DLL)

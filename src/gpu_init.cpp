@@ -23,8 +23,8 @@ DGAPI DgResult _dgFindQueueFamilies(std::shared_ptr<DgGPU> pGPU) {
 	return DG_SUCCESS;
 }
 
-DGAPI DgResult _dgStartQueueBuffers(std::shared_ptr<DgEngine> pEngine, std::shared_ptr<DgGPU> pGPU) {
-	if (pEngine == nullptr || pGPU == nullptr) {
+DGAPI DgResult _dgStartQueueBuffers(std::vector<const char*> vDeviceExtensions, std::vector<const char*> validationLayers, std::shared_ptr<DgGPU> pGPU) {
+	if (pGPU == nullptr) {
 		return DG_ARGUMENT_IS_NULL;
 	}
 
@@ -57,12 +57,12 @@ DGAPI DgResult _dgStartQueueBuffers(std::shared_ptr<DgEngine> pEngine, std::shar
 
 	deviceCreateInfo.pEnabledFeatures = &features;
 
-	deviceCreateInfo.enabledExtensionCount = pEngine->vkDeviceExtensions.size();
-	deviceCreateInfo.ppEnabledExtensionNames = pEngine->vkDeviceExtensions.data();
+	deviceCreateInfo.enabledExtensionCount = vDeviceExtensions.size();
+	deviceCreateInfo.ppEnabledExtensionNames = vDeviceExtensions.data();
 
 	#ifndef NDEBUG
-		deviceCreateInfo.enabledLayerCount = static_cast<uint32_t>(pEngine->validationLayers.size());
-		deviceCreateInfo.ppEnabledLayerNames = pEngine->validationLayers.data();
+		deviceCreateInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
+		deviceCreateInfo.ppEnabledLayerNames = validationLayers.data();
 	#else
 		deviceCreateInfo.enabledLayerCount = 0;
 	#endif

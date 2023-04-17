@@ -449,92 +449,98 @@ DgResult _dgCreateSyncObjects(std::shared_ptr<DgWindow> pWindow) {
 	return DG_SUCCESS;
 }
 
-DGAPI DgResult dgCreateWindow(std::shared_ptr<DgEngine> pEngine, std::string title, unsigned int width, unsigned int height, DgBool32 isResizable, DgBool32 isFullscreen, std::shared_ptr<DgWindow> pWindow) {
-	if (pEngine == nullptr || pWindow == nullptr) {
+DGAPI DgResult dgCreateWindow(std::shared_ptr<DgWindow> pWindow, DgWindowCreateInfo createInfo) {
+	if (pWindow == nullptr) {
 		return DG_ARGUMENT_IS_NULL;
 	}
 
-	GLFWmonitor* monitor;
-	if (isFullscreen) {
-		monitor = glfwGetPrimaryMonitor();
-		if (monitor != NULL) {
-			const GLFWvidmode* mode = glfwGetVideoMode(monitor);
-			width = mode->width;
-			height = mode->height;
-			glfwWindowHint(GLFW_RED_BITS, mode->redBits);
-			glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
-			glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
-			glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+	if (std::shared_ptr<DgEngine> pEngine = createInfo.pEngine.lock()) {
+		GLFWmonitor* monitor;
+		if (createInfo.isFullscreen) {
+			monitor = glfwGetPrimaryMonitor();
+			if (monitor != NULL) {
+				const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+				createInfo.width = mode->width;
+				createInfo.height = mode->height;
+				glfwWindowHint(GLFW_RED_BITS, mode->redBits);
+				glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
+				glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
+				glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+			}
+
+		}
+		else {
+			monitor = NULL;
 		}
 
+		glfwWindowHint(GLFW_RESIZABLE, createInfo.isResizable);
+		GLFWwindow* glfw = glfwCreateWindow(createInfo.width, createInfo.height, createInfo.title.c_str(), monitor, NULL);
+		if (glfw == NULL) {
+			std::cout << "Window was null" << std::endl;
+			return DG_GLFW_WINDOW_NULL_AFTER_CREATION;
+		}
+
+		pWindow->window = glfw;
+		pWindow->pGPU = std::shared_ptr<DgGPU>();
+		pWindow->imageAvailableSemaphores.resize(DRAGON_RENDER_FRAME_MAX);
+		pWindow->renderFinishedSemaphores.resize(DRAGON_RENDER_FRAME_MAX);
+		pWindow->inFlightFences.resize(DRAGON_RENDER_FRAME_MAX);
+
+		if (glfwCreateWindowSurface(pEngine->vulkan, pWindow->window, NULL, &pWindow->surface) != VK_SUCCESS) {
+			return DG_GLFW_WINDOW_SURFACE_CREATION_FAILED;
+		}
+
+		DgResult r;
+		if (!pWindow.get()->pGPU->queueFamilies.presentationQueueFamily.has_value()) {
+			r = _dgGeneratePresentationQueue(pWindow);
+			if (r != DG_SUCCESS) {
+				_dgDestroyWindow(pEngine->vulkan, pWindow);
+				return r;
+			}
+			r = _dgStartQueueBuffers(pEngine->vkDeviceExtensions, pEngine->validationLayers, pWindow->pGPU);
+			if (r != DG_SUCCESS) {
+				_dgDestroyWindow(pEngine->vulkan, pWindow);
+				return r;
+			}
+		}
+
+		r = _dgCreateSwapchain(pWindow);
+		if (r != DG_SUCCESS) {
+			_dgDestroyWindow(pEngine->vulkan, pWindow);
+			return r;
+		}
+
+		r = _dgGenerateGraphicsPipeline(pWindow);
+		if (r != DG_SUCCESS) {
+			_dgDestroyWindow(pEngine->vulkan, pWindow);
+			return r;
+		}
+
+		r = _dgCreateFramebuffers(pWindow);
+		if (r != DG_SUCCESS) {
+			_dgDestroyWindow(pEngine->vulkan, pWindow);
+			return r;
+		}
+
+		r = _dgCreateCommandPool(pWindow);
+		if (r != DG_SUCCESS) {
+			_dgDestroyWindow(pEngine->vulkan, pWindow);
+			return r;
+		}
+
+		r = _dgCreateSyncObjects(pWindow);
+		if (r != DG_SUCCESS) {
+			_dgDestroyWindow(pEngine->vulkan, pWindow);
+			return r;
+		}
+		pWindow->currentFrame = 0;
+		pEngine->windows.push_back(pWindow);
 	}
 	else {
-		monitor = NULL;
+		return DG_WEAK_PTR_LOCK_FAIL;
 	}
+	
 
-	glfwWindowHint(GLFW_RESIZABLE, isResizable);
-	GLFWwindow* glfw = glfwCreateWindow(width, height, title.c_str(), monitor, NULL);
-	if (glfw == NULL) {
-		std::cout << "Window was null" << std::endl;
-		return DG_GLFW_WINDOW_NULL_AFTER_CREATION;
-	}
-
-	pWindow->window = glfw;
-	pWindow->pGPU = std::shared_ptr<DgGPU>(pEngine->primaryGPU);
-	pWindow->imageAvailableSemaphores.resize(DRAGON_RENDER_FRAME_MAX);
-	pWindow->renderFinishedSemaphores.resize(DRAGON_RENDER_FRAME_MAX);
-	pWindow->inFlightFences.resize(DRAGON_RENDER_FRAME_MAX);
-
-	if (glfwCreateWindowSurface(pEngine->vulkan, pWindow->window, NULL, &pWindow->surface) != VK_SUCCESS) {
-		return DG_GLFW_WINDOW_SURFACE_CREATION_FAILED;
-	}
-
-	DgResult r;
-	if (!pWindow.get()->pGPU->queueFamilies.presentationQueueFamily.has_value()) {
-		r = _dgGeneratePresentationQueue(pWindow);
-		if (r != DG_SUCCESS) {
-			_dgDestroyWindow(pEngine->vulkan, pWindow);
-			return r;
-		}
-		r = _dgStartQueueBuffers(pEngine, pWindow->pGPU);
-		if (r != DG_SUCCESS) {
-			_dgDestroyWindow(pEngine->vulkan, pWindow);
-			return r;
-		}
-	}
-
-	r = _dgCreateSwapchain(pWindow);
-	if (r != DG_SUCCESS) {
-		_dgDestroyWindow(pEngine->vulkan, pWindow);
-		return r;
-	}
-
-	r = _dgGenerateGraphicsPipeline(pWindow);
-	if (r != DG_SUCCESS) {
-		_dgDestroyWindow(pEngine->vulkan, pWindow);
-		return r;
-	}
-
-	r = _dgCreateFramebuffers(pWindow);
-	if (r != DG_SUCCESS) {
-		_dgDestroyWindow(pEngine->vulkan, pWindow);
-		return r;
-	}
-
-	r = _dgCreateCommandPool(pWindow);
-	if (r != DG_SUCCESS) {
-		_dgDestroyWindow(pEngine->vulkan, pWindow);
-		return r;
-	}
-
-	r = _dgCreateSyncObjects(pWindow);
-	if (r != DG_SUCCESS) {
-		_dgDestroyWindow(pEngine->vulkan, pWindow);
-		return r;
-	}
-
-	pWindow->currentFrame = 0;
-	pEngine->windows.push_back(pWindow);
 	return DG_SUCCESS;
 }
 

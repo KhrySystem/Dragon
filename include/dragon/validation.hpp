@@ -1,10 +1,6 @@
 #pragma once
 
-#include <iostream>
-
-#include "dragon_core.h"
-#include "result.hpp"
-
+#include "dragon_core.hpp"
 /**
  * @brief Function for handling debug messages for the vulkan validation layers
  *

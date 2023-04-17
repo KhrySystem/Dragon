@@ -27,7 +27,7 @@ DGAPI DgResult dgAddLayerToEngine(std::shared_ptr<DgEngine> pEngine, std::string
 	#endif
 }
 
-DGAPI DgResult dgAddVkExtensionToEngine(std::shared_ptr<DgEngine> pEngine, const char* extName) {
+DgResult _dgAddVkExtensionToEngine(std::shared_ptr<DgEngine> pEngine, const char* extName) {
 	for (const char* name : pEngine->vkExtensions) {
 		if (strcmp(name, extName) == 0) {
 			return DG_VK_EXTENSION_ALREADY_ADDED;
@@ -115,11 +115,11 @@ DgResult _dgSetupGPUs(std::shared_ptr<DgEngine> pEngine) {
 	if (!pEngine->gpus.at(0)->queueFamilies.graphicsQueueFamily.has_value()) {
 		return DG_NO_GRAPHICS_QUEUE_FOUND;
 	}
-	pEngine->primaryGPU = std::shared_ptr<DgGPU>(pEngine->gpus.at(0));
+	pEngine->primaryGPU = pEngine->gpus.at(0);
 	return DG_SUCCESS;
 }
 
-DGAPI DgResult dgCreateEngine(std::shared_ptr<DgEngine> pEngine) {
+DGAPI DgResult dgCreateEngine(std::shared_ptr<DgEngine> pEngine, DgEngineCreateInfo createInfo) {
 	if (pEngine == nullptr) {
 		return DG_ARGUMENT_IS_NULL;
 	}
@@ -146,9 +146,35 @@ DGAPI DgResult dgCreateEngine(std::shared_ptr<DgEngine> pEngine) {
 	}
 	std::vector<const char*> glfwExtensions(extensions, extensions + count);
 
-	for (const char* required : glfwExtensions) {
-		dgAddVkExtensionToEngine(pEngine, required);
+	pEngine->vkExtensions.insert(pEngine->vkExtensions.begin(), glfwExtensions.begin(), glfwExtensions.end());
+	pEngine->vkExtensions.insert(pEngine->vkExtensions.begin(), createInfo.vkExtensions.begin(), createInfo.vkExtensions.end());
+	
+	std::vector<const char*>::iterator itr1 = pEngine->vkExtensions.begin();
+	std::unordered_set<const char*> s1;
+
+	for (auto curr = pEngine->vkExtensions.begin(); curr != pEngine->vkExtensions.end(); ++curr)
+	{
+		if (s1.insert(*curr).second) {
+			*itr1++ = *curr;
+		}
 	}
+
+	pEngine->vkExtensions.erase(itr1, pEngine->vkExtensions.end());
+
+	pEngine->vkDeviceExtensions.insert(pEngine->vkDeviceExtensions.begin(), createInfo.vkDeviceExtensions.begin(), createInfo.vkDeviceExtensions.end());
+
+	std::vector<const char*>::iterator itr = pEngine->vkDeviceExtensions.begin();
+	std::unordered_set<const char*> s;
+
+	for (auto curr = pEngine->vkDeviceExtensions.begin(); curr != pEngine->vkDeviceExtensions.end(); ++curr)
+	{
+		if (s.insert(*curr).second) {
+			*itr++ = *curr;
+		}
+	}
+
+	pEngine->vkDeviceExtensions.erase(itr, pEngine->vkDeviceExtensions.end());
+
 	r = _dgSetupVulkan(pEngine);
 	if (r != DG_SUCCESS) {
 		return r;
@@ -167,7 +193,6 @@ DGAPI DgResult dgCreateEngine(std::shared_ptr<DgEngine> pEngine) {
 	if (r != DG_SUCCESS) {
 		return r;
 	}
-
 	return DG_SUCCESS;
 }
 
