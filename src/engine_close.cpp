@@ -1,33 +1,17 @@
-#include <dragon/dragon.hpp>
+#include <dragon/dragon.h>
 
-DGAPI void dgTerminateEngine(std::shared_ptr<DgEngine> pEngine) DRAGON_NOEXCEPT {
-	DgEngine::activeEngineCount--;
+DGAPI void dgDestroyEngine(DgEngine* pEngine) noexcept {
+    dgActiveEngineCount--;
+    for(int i = 0; i < pEngine->gpuCount; i++) {
+        vkDestroyDevice(pEngine->pGPUs[i]->device, nullptr);
+    }
 
-	for (std::weak_ptr<DgWindow> window : pEngine->windows) {
-		if ( std::shared_ptr<DgWindow> ptr = window.lock()) {	
-			_dgDestroyWindow(pEngine->vulkan, ptr);
-		}
-		window.reset();
-		std::cout << "Window Ref Count: " << window.use_count() << std::endl;
-		
-	}
-	pEngine->windows.clear();
-	pEngine->windows.resize(0);
+    #if !defined(NDEBUG) || defined(_DEBUG)
+        dgDestroyDebugUtilsMessengerEXT(pEngine->instance, pEngine->debugMessenger, nullptr);
+    #endif
 
-	#ifndef NDEBUG
-	dgDestroyDebugUtilsMessengerEXT(pEngine->vulkan, pEngine->debugMessenger, nullptr);
-	#endif
-
-	pEngine->primaryGPU.reset();
-	
-	for (int i = 0; i < pEngine->gpus.size(); i++) {
-		dgDestroyGPU(pEngine->gpus[i]);
-		pEngine->gpus[i].reset();
-		std::cout << "GPU Ref Count: " << pEngine->gpus[i].use_count() << std::endl;
-	}
-
-	vkDestroyInstance(pEngine->vulkan, nullptr);
-	pEngine->vulkan = VK_NULL_HANDLE;
-	if(DgEngine::activeEngineCount >= 0) 
-		glfwTerminate();
+    vkDestroyInstance(pEngine->instance, nullptr);
+    if(dgActiveEngineCount <= 0) {
+        glfwTerminate();
+    }
 }

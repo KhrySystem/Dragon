@@ -1,0 +1,81 @@
+#pragma once
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+#ifdef __cplusplus
+}
+#endif
+
+#include "config.h"
+
+// Shader precision info
+// Currently invalid, since shaders are only single precision
+#ifndef DRAGON_DOUBLE_PRECISION_SHADER
+    #define DG_FLOAT float
+    #define DG_VEC2 vec2
+    #define DG_VEC3 vec3
+    #define DG_VEC4 vec4
+#else
+    #define DG_FLOAT double
+    #define DG_VEC2 dvec2
+    #define DG_VEC3 dvec3
+    #define DG_VEC4 dvec4
+#endif
+
+// Use this for anything that is language-agnostic
+#pragma region
+
+/**
+ * @brief Macro for how many frames Dragon should prepare before waiting on the GPU. 
+ * NOTE: The default is 2, and should not be changed for most applications.
+ */
+#ifndef DRAGON_RENDER_FRAME_MAX 
+    #define DRAGON_RENDER_FRAME_MAX 2
+#endif
+
+/**
+ * @brief Macro for creating the version number for Dragon Engine
+ */
+#ifdef VK_MAKE_API_VERSION
+    #define DRAGON_VERSION VK_MAKE_API_VERSION(@Dragon_VERSION_TWEAK@, @Dragon_VERSION_MAJOR@, @Dragon_VERSION_MINOR@, @Dragon_VERSION_PATCH@)
+#else
+    #define DRAGON_VERSION VK_MAKE_VERSION(@Dragon_VERSION_MAJOR@, @Dragon_VERSION_MINOR@, @Dragon_VERSION_PATCH@)
+#endif
+
+#define DRAGON_MAX_POINT_LIGHTS @Dragon_MAX_POINT_LIGHTS@
+#define DRAGON_MAX_DIRECTIONAL_LIGHTS @Dragon_MAX_DIRECTIONAL_LIGHTS@
+#define DRAGON_VERTEX_ATTRIBUTE_COUNT 2
+
+/**
+ * @brief Macro for creating the version number for the application
+ */
+#ifndef APP_VERSION
+    #ifdef VK_MAKE_API_VERSION
+        #define APP_VERSION VK_MAKE_API_VERSION(1, 0, 0, 0)
+    #else  
+        #define APP_VERSION VK_MAKE_VERSION(1, 0, 0)
+    #endif
+#endif
+
+/**
+ * @brief Macro for the name of the application, should be overloaded by the user
+ */
+#ifndef APP_NAME
+    #define APP_NAME "dgEngine"
+#endif
+#pragma endregion
+
+// Dragon Types
+#pragma region
+
+// Define basic types for consistency with dependencies
+#define DG_TRUE GLFW_TRUE
+#define DG_FALSE GLFW_FALSE
+typedef VkBool32 DgBool32;
+typedef uint_fast64_t DgUInt64;
+typedef int_fast64_t DgInt64;
+typedef uint_fast32_t DgUInt32;
+typedef int_fast32_t DgInt32;
+
+#include "result.h"

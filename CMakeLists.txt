@@ -10,18 +10,18 @@ set(TOOLS_FOLDER tools)
 set(TESTS_FOLDER tests)
 
 # Set the C and C++ standards for the project
-set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD 23)
 set(CMAKE_CXX_STANDARD 20)
 
 # Define the project and its version and languages
-project(Dragon VERSION 1.0.2.5 LANGUAGES CXX C)
+project(Dragon VERSION 0.0.1.0 LANGUAGES C CXX)
 
 # Include the CTest and build_vars modules
 include(CTest)
 include(tools/cmake/build_vars.cmake)
 
 # Find and include the Python, Vulkan, Doxygen, and GTest packages
-find_package(Python REQUIRED COMPONENTS Interpreter)
+#find_package(Python REQUIRED COMPONENTS Interpreter)
 find_package(Vulkan REQUIRED)
 find_package(Doxygen)
 
@@ -63,8 +63,8 @@ set(GLFW_BUILD_DOCS OFF)
 set(GLFW_INSTALL ${Dragon_INSTALL})
 # Add all the third-party code repos
 add_subdirectory(external/boost/predef)
+add_subdirectory(external/cglm)
 add_subdirectory(external/glfw)
-add_subdirectory(external/glm)
 
 # Add subdirectories for the engine
 add_subdirectory(include/dragon)
@@ -72,7 +72,7 @@ add_subdirectory(src)
 
 # If Dragon_BUILD_TESTS is true, add the tools/tests directory and GoogleTest as a subdirectory
 if(Dragon_BUILD_TESTS)
-	add_subdirectory(external/googletest)
+	#add_subdirectory(external/googletest)
 	add_subdirectory(tools/tests)
 endif()
 

@@ -1,14 +1,14 @@
-# Doxyfile 1.9.6
+# Doxyfile 1.9.7
 
 #---------------------------------------------------------------------------
 # Project related configuration options
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = DragonEngine
-PROJECT_NUMBER         = 1.0.2.2
-PROJECT_BRIEF          = "Thin, code-first, C++ Vulkan 3D Game Engine"
-PROJECT_LOGO           =
-OUTPUT_DIRECTORY       = C:/KhrySystem/DragonSDK/build/windows/x64/docs
+PROJECT_NUMBER         = @Dragon_VERSION_MAJOR@.@Dragon_VERSION_MINOR@.@Dragon_VERSION_PATCH@.@Dragon_VERSION_TWEAK@
+PROJECT_BRIEF          = "A thin,  C/C++,  code-first Vulkan Game Engine"
+PROJECT_LOGO           = @Dragon_SOURCE_DIR@/tools/res/logo_256.png
+OUTPUT_DIRECTORY       = .
 CREATE_SUBDIRS         = NO
 CREATE_SUBDIRS_LEVEL   = 8
 ALLOW_UNICODE_NAMES    = NO
@@ -49,6 +49,7 @@ OPTIMIZE_OUTPUT_SLICE  = NO
 EXTENSION_MAPPING      =
 MARKDOWN_SUPPORT       = YES
 TOC_INCLUDE_HEADINGS   = 5
+MARKDOWN_ID_STYLE      = DOXYGEN
 AUTOLINK_SUPPORT       = YES
 BUILTIN_STL_SUPPORT    = NO
 CPP_CLI_SUPPORT        = NO
@@ -62,6 +63,7 @@ INLINE_SIMPLE_STRUCTS  = NO
 TYPEDEF_HIDES_STRUCT   = NO
 LOOKUP_CACHE_SIZE      = 0
 NUM_PROC_THREADS       = 1
+TIMESTAMP              = NO
 #---------------------------------------------------------------------------
 # Build related configuration options
 #---------------------------------------------------------------------------
@@ -113,8 +115,8 @@ WARNINGS               = YES
 WARN_IF_UNDOCUMENTED   = YES
 WARN_IF_DOC_ERROR      = YES
 WARN_IF_INCOMPLETE_DOC = YES
-WARN_NO_PARAMDOC       = YES
-WARN_IF_UNDOC_ENUM_VAL = YES
+WARN_NO_PARAMDOC       = NO
+WARN_IF_UNDOC_ENUM_VAL = NO
 WARN_AS_ERROR          = NO
 WARN_FORMAT            = "$file:$line: $text"
 WARN_LINE_FORMAT       = "at line $line of file $file"
@@ -122,7 +124,7 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 # Configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = C:/KhrySystem/DragonSDK/include
+INPUT                  = @Dragon_SOURCE_DIR@/include/dragon
 INPUT_ENCODING         = UTF-8
 INPUT_FILE_ENCODING    =
 FILE_PATTERNS          = *.c \
@@ -171,7 +173,7 @@ FILE_PATTERNS          = *.c \
                          *.ucf \
                          *.qsf \
                          *.ice
-RECURSIVE              = YES
+RECURSIVE              = NO
 EXCLUDE                =
 EXCLUDE_SYMLINKS       = NO
 EXCLUDE_PATTERNS       =
@@ -190,7 +192,7 @@ FORTRAN_COMMENT_AFTER  = 72
 # Configuration options related to source browsing
 #---------------------------------------------------------------------------
 SOURCE_BROWSER         = YES
-INLINE_SOURCES         = YES
+INLINE_SOURCES         = NO
 STRIP_CODE_COMMENTS    = YES
 REFERENCED_BY_RELATION = NO
 REFERENCES_RELATION    = NO
@@ -205,7 +207,7 @@ CLANG_DATABASE_PATH    =
 #---------------------------------------------------------------------------
 # Configuration options related to the alphabetical class index
 #---------------------------------------------------------------------------
-ALPHABETICAL_INDEX     = NO
+ALPHABETICAL_INDEX     = YES
 IGNORE_PREFIX          =
 #---------------------------------------------------------------------------
 # Configuration options related to the HTML output
@@ -222,7 +224,6 @@ HTML_COLORSTYLE        = AUTO_LIGHT
 HTML_COLORSTYLE_HUE    = 220
 HTML_COLORSTYLE_SAT    = 100
 HTML_COLORSTYLE_GAMMA  = 80
-HTML_TIMESTAMP         = NO
 HTML_DYNAMIC_MENUS     = YES
 HTML_DYNAMIC_SECTIONS  = NO
 HTML_INDEX_NUM_ENTRIES = 100
@@ -239,6 +240,7 @@ GENERATE_CHI           = NO
 CHM_INDEX_ENCODING     =
 BINARY_TOC             = NO
 TOC_EXPAND             = NO
+SITEMAP_URL            =
 GENERATE_QHP           = NO
 QCH_FILE               =
 QHP_NAMESPACE          = org.doxygen.Project
@@ -292,12 +294,11 @@ USE_PDFLATEX           = YES
 LATEX_BATCHMODE        = NO
 LATEX_HIDE_INDICES     = NO
 LATEX_BIB_STYLE        = plain
-LATEX_TIMESTAMP        = NO
 LATEX_EMOJI_DIRECTORY  =
 #---------------------------------------------------------------------------
 # Configuration options related to the RTF output
 #---------------------------------------------------------------------------
-GENERATE_RTF           = NO
+GENERATE_RTF           = YES
 RTF_OUTPUT             = rtf
 COMPACT_RTF            = NO
 RTF_HYPERLINKS         = NO
@@ -306,7 +307,7 @@ RTF_EXTENSIONS_FILE    =
 #---------------------------------------------------------------------------
 # Configuration options related to the man page output
 #---------------------------------------------------------------------------
-GENERATE_MAN           = NO
+GENERATE_MAN           = YES
 MAN_OUTPUT             = man
 MAN_EXTENSION          = .3
 MAN_SUBDIR             =
@@ -314,14 +315,14 @@ MAN_LINKS              = NO
 #---------------------------------------------------------------------------
 # Configuration options related to the XML output
 #---------------------------------------------------------------------------
-GENERATE_XML           = NO
+GENERATE_XML           = YES
 XML_OUTPUT             = xml
 XML_PROGRAMLISTING     = YES
 XML_NS_MEMB_FILE_SCOPE = NO
 #---------------------------------------------------------------------------
 # Configuration options related to the DOCBOOK output
 #---------------------------------------------------------------------------
-GENERATE_DOCBOOK       = NO
+GENERATE_DOCBOOK       = YES
 DOCBOOK_OUTPUT         = docbook
 #---------------------------------------------------------------------------
 # Configuration options for the AutoGen Definitions output
@@ -358,9 +359,8 @@ ALLEXTERNALS           = NO
 EXTERNAL_GROUPS        = YES
 EXTERNAL_PAGES         = YES
 #---------------------------------------------------------------------------
-# Configuration options related to the dot tool
+# Configuration options related to diagram generator tools
 #---------------------------------------------------------------------------
-DIA_PATH               =
 HIDE_UNDOC_RELATIONS   = YES
 HAVE_DOT               = NO
 DOT_NUM_THREADS        = 0
@@ -387,7 +387,7 @@ DOT_IMAGE_FORMAT       = png
 INTERACTIVE_SVG        = NO
 DOT_PATH               =
 DOTFILE_DIRS           =
-MSCFILE_DIRS           =
+DIA_PATH               =
 DIAFILE_DIRS           =
 PLANTUML_JAR_PATH      =
 PLANTUML_CFG_FILE      =
@@ -397,3 +397,5 @@ MAX_DOT_GRAPH_DEPTH    = 0
 DOT_MULTI_TARGETS      = NO
 GENERATE_LEGEND        = YES
 DOT_CLEANUP            = YES
+MSCGEN_TOOL            =
+MSCFILE_DIRS           =

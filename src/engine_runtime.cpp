@@ -1,34 +1,16 @@
-#include <dragon/dragon.hpp>
+#include <dragon/dragon.h>
+#include <iostream>
 
-DGAPI int dgGetWindowCount(std::shared_ptr<DgEngine> pEngine) {
-	if (pEngine == nullptr)
-		return -1;
-	return pEngine->windows.size();
+DGAPI DgBool32 dgCanEngineClose(DgEngine* pEngine) {
+    for(int i = 0; i < pEngine->windowCount; i++) {
+        if(!glfwWindowShouldClose(pEngine->pWindows[i]->pWindow)) {
+            return DG_FALSE;
+        }
+    }
+    return DG_TRUE;
 }
 
-DGAPI DgResult dgUpdate(std::shared_ptr<DgEngine> pEngine) {
-	if (pEngine == nullptr) {
-		return DG_ARGUMENT_IS_NULL;
-	}
-	glfwPollEvents();
-	for (int i = 0; i < pEngine->windows.size(); i++) {
-		if (std::shared_ptr<DgWindow> pWindow = pEngine->windows[i].lock()) {
-			DgResult r = _dgRenderWindow(pWindow);
-			if (r != DG_SUCCESS) {
-				_dgDestroyWindow(pEngine->vulkan, pWindow);
-				pEngine->windows.erase(pEngine->windows.begin() + i);
-				return r;
-			}
-
-			if (glfwWindowShouldClose(pWindow->window)) {
-				_dgDestroyWindow(pEngine->vulkan, pWindow);
-				pEngine->windows.erase(pEngine->windows.begin() + i);
-			}
-		}
-		else {
-			return DG_WINDOW_INVALID;
-		}
-	}
-
-	return DG_SUCCESS;
+DGAPI DgResult dgUpdateEngine(DgEngine* pEngine) {
+    glfwPollEvents();
+    return DG_SUCCESS;
 }
