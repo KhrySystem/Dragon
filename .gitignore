@@ -13,11 +13,12 @@ enc_temp_folder/*
 
 # Remove configured files
 include/dragon/dragon_core.hpp
+include/dragon/dragon_core.h
 
 # Remove configured shader files
 
 # Remove Python cacbe files
 *.pyc
 
-/include/dragon/vert.hpp
-/include/dragon/frag.hpp
+/include/dragon/vert.*
+/include/dragon/frag.*
