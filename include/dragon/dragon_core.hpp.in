@@ -1,13 +1,6 @@
 #pragma once
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-#ifdef __cplusplus
-}
-#endif
-
-#include "config.h"
+#include "config.hpp"
 
 // Shader precision info
 // Currently invalid, since shaders are only single precision
@@ -78,4 +71,4 @@ typedef int_fast64_t DgInt64;
 typedef uint_fast32_t DgUInt32;
 typedef int_fast32_t DgInt32;
 
-#include "result.h"
+#include "result.hpp"

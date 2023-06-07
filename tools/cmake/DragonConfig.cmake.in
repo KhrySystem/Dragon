@@ -1,23 +1,29 @@
 @PACKAGE_INIT@
 
-find_package(Vulkan REQUIRED)
 
 set_and_check(Dragon_INCLUDE_DIR "${PACKAGE_PREFIX_DIR}/@CMAKE_INSTALL_INCLUDEDIR@")
-set_and_check(Dragon_LIBRARY "${PACKAGE_PREFIX_DIR}/@CMAKE_INSTALL_LIBDIR@/@Dragon_LIB_NAME@.lib")
+if(WIN32)
+	set_and_check(Dragon_LIBRARY "${PACKAGE_PREFIX_DIR}/@CMAKE_INSTALL_LIBDIR@/@Dragon_LIB_NAME@@CMAKE_SHARED_LIBRARY_SUFFIX@")
+else()
+	set_and_check(Dragon_LIBRARY "${PACKAGE_PREFIX_DIR}/@CMAKE_INSTALL_LIBDIR@/lib@Dragon_LIB_NAME@@CMAKE_SHARED_LIBRARY_SUFFIX@")
+endif()
 mark_as_advanced(Dragon_LIBRARY)
 set_and_check(GLFW3_DIR "${PACKAGE_PREFIX_DIR}/@CMAKE_INSTALL_LIBDIR@/cmake/glfw3")
 mark_as_advanced(GLFW3_DIR)
 
 
 include(CMakeFindDependencyMacro)
+find_dependency(Vulkan)
 find_dependency(GLFW3)
 
-add_library(Dragon::Dragon UNKNOWN IMPORTED)
-set_target_properties(Dragon::Dragon PROPERTIES 
-	IMPORTED_LOCATION "${Dragon_LIBRARY}"
-	INTERFACE_INCLUDE_DIRECTORIES "${Dragon_INCLUDE_DIR}"
-	INTERFACE_LINK_LIBRARIES "Vulkan::Vulkan;GLFW3"
-)
-
-set(Dragon_LINK_LIBRARIES Dragon::Dragon Vulkan::Vulkan GLFW3)
+if(NOT TARGET Dragon::Dragon)
+	add_library(Dragon::Dragon UNKNOWN IMPORTED)
+	set_target_properties(Dragon::Dragon PROPERTIES 
+		IMPORTED_LOCATION "${Dragon_LIBRARY}"
+		INTERFACE_INCLUDE_DIRECTORIES "${Dragon_INCLUDE_DIR}"
+		INTERFACE_LINK_LIBRARIES "Vulkan::Vulkan"
+		PRIVATE_LINK_LIBRARIES "GLFW3"
+	)
+endif()
+set(Dragon_LINK_LIBRARIES Dragon::Dragon Vulkan::Vulkan)
 check_required_components(Dragon)

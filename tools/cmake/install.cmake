@@ -16,6 +16,8 @@ foreach(f ${Boost_CMAKE_INSTALL})
     include(${f})
 endforeach()
 
+include(GNUInstallDirs)
+
 #set(${Dragon_CONFIG_FILE} ${Dragon_BINARY_DIR}/lib/cmake/dragon/DragonConfig.cmake)
 #file(WRITE ${Dragon_CONFIG_FILE} "include(CMakeFindDependencyMacro)")
 #file(APPEND ${Dragon_CONFIG_FILE} "find_dependency(GLFW3)")
@@ -48,7 +50,7 @@ install(DIRECTORY ${Dragon_SOURCE_DIR}/src DESTINATION ${CMAKE_INSTALL_PREFIX} F
 install(TARGETS dginfo DESTINATION ${CMAKE_INSTALL_BINDIR})
 install(FILES ${Dragon_BINARY_DIR}/DragonConfig.cmake
               ${Dragon_BINARY_DIR}/DragonConfigVersion.cmake
-        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Dragon )
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Dragon)
 include(CPack)
 
 

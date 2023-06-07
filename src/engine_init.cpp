@@ -1,17 +1,15 @@
-#include <dragon/dragon.h>
+#include <dragon/dragon.hpp>
 
-#include <vector>
+#include "gpu_init.hpp"
 
-#include "gpu_init.h"
-
-DgResult __glfwSetup() {
+DgResult glfwSetup() {
     if(!glfwInit())             return DG_GLFW_INIT_FAILED;
     if(!glfwVulkanSupported())  return DG_GLFW_VULKAN_SUPPORT_FAILED;
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     return DG_SUCCESS;
 }
-constexpr VkApplicationInfo __createVkAppInfo() {
+constexpr VkApplicationInfo createVkAppInfo() {
     // App info. Contains info about the Engine, the user app, etc.
     VkApplicationInfo appInfo;
 
@@ -28,21 +26,19 @@ constexpr VkApplicationInfo __createVkAppInfo() {
 
     return appInfo;
 }
-VkInstanceCreateInfo __createVkInstanceCreateInfo(VkApplicationInfo appInfo, size_t enabledExtensionCount, const char** ppEnabledExtensionNames, size_t enabledLayerCount, const char** ppEnabledLayerNames) {
+constexpr VkInstanceCreateInfo createVkInstanceCreateInfo(std::vector<const char*>& vExtensions, std::vector<const char*>& vLayers) {
     // Instance Create Info. Used in the vkCreateInstance function
 	VkInstanceCreateInfo createInfo;
 
 	createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-
     createInfo.pNext = nullptr;
 
-	createInfo.pApplicationInfo = &appInfo;
-	createInfo.enabledExtensionCount = enabledExtensionCount;
-	createInfo.ppEnabledExtensionNames = ppEnabledExtensionNames;
+	createInfo.enabledExtensionCount = vExtensions.size();
+	createInfo.ppEnabledExtensionNames = vExtensions.data();
 
     #ifndef NDEBUG
-		createInfo.enabledLayerCount = enabledLayerCount;
-        createInfo.ppEnabledLayerNames = ppEnabledLayerNames;
+		createInfo.enabledLayerCount = vLayers.size();
+        createInfo.ppEnabledLayerNames = vLayers.data();
     #else
         createInfo.enabledLayerCount = 0;
         createInfo.ppEnabledLayerNames = nullptr;
@@ -52,22 +48,28 @@ VkInstanceCreateInfo __createVkInstanceCreateInfo(VkApplicationInfo appInfo, siz
     #endif
     return createInfo;
 }
-DgResult __createVkInstance(VkInstance* pInstance, size_t extensionCount, const char** ppExtensions, size_t layerCount, const char** ppLayers) {
-    VkApplicationInfo appInfo = __createVkAppInfo();
-    VkInstanceCreateInfo createInfo = __createVkInstanceCreateInfo(
-        appInfo, extensionCount, ppExtensions, layerCount, ppLayers
-    );
-    VkResult r = vkCreateInstance(&createInfo, nullptr, pInstance);
+DgResult createVkInstance(VkInstance& instance, std::vector<std::string>& vExtensions, std::vector<const char*>& vLayers) {
+    // Instance Create Info. Used in the vkCreateInstance function
+    std::vector<const char*> ext(vExtensions.size(), nullptr);
+
+    for(int i = 0; i < vExtensions.size(); i++) {
+        ext[i] = vExtensions[i].c_str();
+    }
+    VkApplicationInfo appInfo = createVkAppInfo();
+    VkInstanceCreateInfo createInfo = createVkInstanceCreateInfo(ext, vLayers);
+    createInfo.pApplicationInfo = &appInfo;
+
+    VkResult r = vkCreateInstance(&createInfo, nullptr, &instance);
     if(r != VK_SUCCESS) {
         return DG_VULKAN_CREATE_INSTANCE_FAILED;
     }
     return DG_SUCCESS;
 }
 #if !defined(NDEBUG) || defined(_DEBUG)
-DgResult __setupVulkanDebug(VkInstance instance, VkDebugUtilsMessengerEXT* pDebugMessenger) {
+DgResult setupVulkanDebug(VkInstance& instance, VkDebugUtilsMessengerEXT* pDebugMessenger) {
     VkDebugUtilsMessengerCreateInfoEXT createInfo{};
 	createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-	createInfo.messageSeverity =  VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+	createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
 	createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
 	createInfo.pfnUserCallback = dgVulkanDebugCallback;
 	createInfo.pUserData = nullptr;
@@ -79,45 +81,41 @@ DgResult __setupVulkanDebug(VkInstance instance, VkDebugUtilsMessengerEXT* pDebu
 	return DG_SUCCESS;
 }
 #endif
-DGAPI DgResult dgCreateEngine(DgEngineCreateInfo createInfo, DgEngine* pEngine) {
+DGAPI DgResult dgCreateEngine(DgEngineCreateInfo createInfo, std::unique_ptr<DgEngine>& pEngine) {
     DgResult r;
     static uint32_t glfwExtensionCount;
     static const char** ppGLFWExtensions;
-    std::vector<const char*> vpExtensions;
-    std::vector<const char*> vpLayers(createInfo.ppEnabledLayerNames, createInfo.ppEnabledLayerNames + createInfo.enabledLayerCount);
     if(dgActiveEngineCount <= 0) {
-        r = __glfwSetup();
+        r = glfwSetup();
         if(r != DG_SUCCESS) return r;
+    }
+    std::vector<const char*> lay(createInfo.vEnabledLayerNames.size(), nullptr);
+    for(int i = 0; i < createInfo.vEnabledLayerNames.size(); i++) {
+        lay[i] = createInfo.vEnabledLayerNames[i].c_str();
     }
 
     ppGLFWExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
     if (glfwExtensionCount == 0) return DG_GLFW_VULKAN_EXTENSIONS_NOT_FOUND;
     for(int i = 0; i < glfwExtensionCount; i++) {
-        vpExtensions.push_back(ppGLFWExtensions[i]);
+        createInfo.vEnabledExtensionNames.push_back(ppGLFWExtensions[i]);
     }
-    for(int i = 0; i < createInfo.enabledExtensionCount; i++) {
-        vpExtensions.push_back(createInfo.ppEnabledExtensionNames[i]);
-    }
-
-    pEngine->pWindows = (DgWindow**)malloc(0); // Temporary placeholders
-    pEngine->pGPUs = (DgGPU**)malloc(0);
 
     if(createInfo.enableVulkanDebug) {
-        vpLayers.push_back("VK_LAYER_KHRONOS_validation");
-        vpExtensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+        createInfo.vEnabledLayerNames.push_back("VK_LAYER_KHRONOS_validation");
+        createInfo.vEnabledExtensionNames.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
     }
 
     #if BOOST_OS_MACOS
-        vpExtensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+        createInfo.vEnabledExtensionNames.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
     #endif
 
     dgActiveEngineCount++;
-    r = __createVkInstance(&pEngine->instance, vpExtensions.size(), vpExtensions.data(), vpLayers.size(), vpLayers.data());
+    r = createVkInstance(pEngine->instance, createInfo.vEnabledExtensionNames, lay);
     if(r != DG_SUCCESS) return r;
     #if !defined(NDEBUG) || defined(_DEBUG)
-        r = __setupVulkanDebug(pEngine->instance, &pEngine->debugMessenger);
+        r = setupVulkanDebug(pEngine->instance, &pEngine->debugMessenger);
         if(r != DG_SUCCESS) return r;
     #endif
-    r = __createGPUs(pEngine, createInfo.pGPURatingFunc, vpLayers);
+    r = createGPUs(pEngine, createInfo.PFN_GPURatingFunc, lay);
     return r;
 }

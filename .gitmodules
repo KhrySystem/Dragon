@@ -10,6 +10,9 @@
 [submodule "external/boost/predef"]
 	path = external/boost/predef
 	url = https://github.com/boostorg/predef
-[submodule "external/cglm"]
-	path = external/cglm
-	url = https://github.com/recp/cglm
+[submodule "external/glm"]
+	path = external/glm
+	url = https://github.com/g-truc/glm
+[submodule "external/vulkan_memory_allocator"]
+	path = external/vulkan_memory_allocator
+	url = https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator

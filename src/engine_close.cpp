@@ -1,14 +1,16 @@
-#include <dragon/dragon.h>
+#include <dragon/dragon.hpp>
 
-DGAPI void dgDestroyEngine(DgEngine* pEngine) noexcept {
+DGAPI void dgDestroyEngine(std::unique_ptr<DgEngine>& pEngine) {
     dgActiveEngineCount--;
-    for(int i = 0; i < pEngine->gpuCount; i++) {
-        vkDestroyDevice(pEngine->pGPUs[i]->device, nullptr);
+
+    for(DgGPU gpu : pEngine->vGPUs) {
+        vmaDestroyAllocator(gpu.allocator);
+        vkDestroyDevice(gpu.device, nullptr);
     }
 
     #if !defined(NDEBUG) || defined(_DEBUG)
         dgDestroyDebugUtilsMessengerEXT(pEngine->instance, pEngine->debugMessenger, nullptr);
-    #endif
+    #endif 
 
     vkDestroyInstance(pEngine->instance, nullptr);
     if(dgActiveEngineCount <= 0) {

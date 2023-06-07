@@ -2,7 +2,7 @@ macro(dragon_create_test TARGET SOURCES)
 	add_executable(${TARGET} ${SOURCES})
 	target_include_directories(${TARGET} PUBLIC 
 		${Dragon_SOURCE_DIR}/include
-		${Dragon_SOURCE_DIR}/external/cglm/include
+		${Dragon_SOURCE_DIR}/external/glm
 		${Dragon_SOURCE_DIR}/external/boost/predef/include
 	)
 	target_link_libraries(${TARGET} Dragon::Dragon)
