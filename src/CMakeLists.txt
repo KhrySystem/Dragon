@@ -38,11 +38,12 @@ endif()
 configure_file(${Dragon_FRAG_SHADER} ${Dragon_BINARY_DIR}/src/shaders/shader.frag)
 configure_file(${Dragon_VERT_SHADER} ${Dragon_BINARY_DIR}/src/shaders/shader.vert)
 
-if(${Vulkan_glslc_FOUND})
+if(OFF)
     message(STATUS "Using glslc to build SPIR-V Binaries")
     execute_process(
         COMMAND ${Vulkan_GLSLC_EXECUTABLE} ${Dragon_BINARY_DIR}/src/shaders/shader.frag -o ${Dragon_BINARY_DIR}/src/shaders/frag.spv --target-env=vulkan1.2
         COMMAND ${Vulkan_GLSLC_EXECUTABLE} ${Dragon_BINARY_DIR}/src/shaders/shader.vert -o ${Dragon_BINARY_DIR}/src/shaders/vert.spv --target-env=vulkan1.2
+        OUTPUT_QUIET
     )
 
     file(REMOVE "${Dragon_SOURCE_DIR}/include/dragon/frag.hpp")
@@ -55,12 +56,13 @@ elseif(${Vulkan_glslangValidator_FOUND})
     execute_process(
         COMMAND ${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE} -V ${Dragon_BINARY_DIR}/src/shaders/shader.frag -o ${Dragon_BINARY_DIR}/src/shaders/frag.spv --target-env vulkan1.2
         COMMAND ${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE} -V ${Dragon_BINARY_DIR}/src/shaders/shader.vert -o ${Dragon_BINARY_DIR}/src/shaders/vert.spv --target-env vulkan1.2
+        OUTPUT_QUIET
     )
 
-    file(REMOVE "${Dragon_SOURCE_DIR}/include/dragon/frag.h")
-    file(REMOVE "${Dragon_SOURCE_DIR}/include/dragon/vert.h")
-	bin2h(SOURCE_FILE "${Dragon_BINARY_DIR}/src/shaders/frag.spv" HEADER_FILE "${Dragon_SOURCE_DIR}/src/shaders/frag.hpp" VARIABLE_NAME DRAGON_FRAG_SHADER APPEND NULL_TERMINATE)
-	bin2h(SOURCE_FILE "${Dragon_BINARY_DIR}/src/shaders/vert.spv" HEADER_FILE "${Dragon_SOURCE_DIR}/src/shaders/vert.hpp" VARIABLE_NAME DRAGON_VERT_SHADER APPEND NULL_TERMINATE)
+    file(REMOVE "${Dragon_SOURCE_DIR}/include/dragon/frag.hpp")
+    file(REMOVE "${Dragon_SOURCE_DIR}/include/dragon/vert.hpp")
+	bin2h(SOURCE_FILE "${Dragon_BINARY_DIR}/src/shaders/frag.spv" HEADER_FILE "${Dragon_SOURCE_DIR}/include/dragon/frag.hpp" VARIABLE_NAME DRAGON_FRAG_SHADER APPEND NULL_TERMINATE)
+	bin2h(SOURCE_FILE "${Dragon_BINARY_DIR}/src/shaders/vert.spv" HEADER_FILE "${Dragon_SOURCE_DIR}/include/dragon/vert.hpp" VARIABLE_NAME DRAGON_VERT_SHADER APPEND NULL_TERMINATE)
 else()
     message(WARNING "Using prebuilt SPIR-V Binaries")
 endif()
