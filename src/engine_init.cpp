@@ -1,198 +1,121 @@
- #include <dragon/dragon.hpp>
+#include <dragon/dragon.hpp>
 
-DGAPI DgResult dgAddLayerToEngine(std::shared_ptr<DgEngine> pEngine, std::string layerName) {
-	#ifndef NDEBUG
-		// Check Vulkan Layers
-		uint32_t layerCount;
-		dgEnumerateVkInstanceLayerProperties(&layerCount, nullptr);
+#include "gpu_init.hpp"
 
-		std::vector<VkLayerProperties> availableLayers(layerCount);
-		dgEnumerateVkInstanceLayerProperties(&layerCount, availableLayers.data());
+DgResult glfwSetup() {
+    if(!glfwInit())             return DG_GLFW_INIT_FAILED;
+    if(!glfwVulkanSupported())  return DG_GLFW_VULKAN_SUPPORT_FAILED;
 
-		for (const auto& layerProperties : availableLayers) {
-			if (strcmp(layerName.c_str(), layerProperties.layerName) == 0) {
-				for (const char* ext : pEngine->vkExtensions) {
-					if (strcmp(ext, layerName.c_str()) == 0) {
-						return DG_VK_VALIDATION_LAYER_ALREADY_ADDED;
-					}
-				}
-
-				pEngine->validationLayers.push_back(layerName.c_str());
-				return DG_SUCCESS;
-			}
-		}
-		return DG_VK_VALIDATION_LAYER_NOT_FOUND;
-	#else
-		return DG_IN_RELEASE_MODE;
-	#endif
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+    return DG_SUCCESS;
 }
+constexpr VkApplicationInfo createVkAppInfo() {
+    // App info. Contains info about the Engine, the user app, etc.
+    VkApplicationInfo appInfo;
 
-DgResult _dgAddVkExtensionToEngine(std::shared_ptr<DgEngine> pEngine, const char* extName) {
-	for (const char* name : pEngine->vkExtensions) {
-		if (strcmp(name, extName) == 0) {
-			return DG_VK_EXTENSION_ALREADY_ADDED;
-		}
-	}
-
-	pEngine->vkExtensions.push_back(extName);
-	return DG_SUCCESS;
-}
-
-DGAPI void dgSetCallback(std::shared_ptr<DgEngine> pEngine, std::function<void(int, const char*, void*)> fCallback) {
-	pEngine->fCallback = fCallback;
-}
-
-DgResult _dgSetupVulkan(std::shared_ptr<DgEngine> pEngine) {
-	// App info. Contains info about the Engine, the user app, etc.
-	VkApplicationInfo appInfo{};
-	// Use the version that matches the shaders
-	appInfo.apiVersion = VK_API_VERSION_1_3;
+    // Use the version that matches the shaders
 	appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-	appInfo.pApplicationName = APP_NAME;
+    appInfo.pNext = nullptr; // pNext is required to be null based on VkError 0x48eb8c19
+
+	appInfo.apiVersion = VK_API_VERSION_1_2;
 	appInfo.applicationVersion = APP_VERSION;
+	appInfo.pApplicationName = APP_NAME;
 	appInfo.pEngineName = "Dragon Engine";
 	appInfo.engineVersion = DRAGON_VERSION;
 
-	// Instance Create Info. Used in the vkCreateInstance function
-	VkInstanceCreateInfo createInfo{};
-	createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-	createInfo.pApplicationInfo = &appInfo;
-	createInfo.enabledExtensionCount = pEngine->vkExtensions.size();
-	createInfo.ppEnabledExtensionNames = pEngine->vkExtensions.data();
 
-	// If we're not in debug mode, no validation layers should be added to the engine
-	#ifndef NDEBUG
-		createInfo.enabledLayerCount = pEngine->validationLayers.size();
-		createInfo.ppEnabledLayerNames = pEngine->validationLayers.data();
-	#else
-		createInfo.enabledLayerCount = 0;
-		createInfo.ppEnabledLayerNames = nullptr;
-	#endif
-	// Officially create the VkInstance
-	if (dgCreateVkInstance(&createInfo, nullptr, &pEngine->vulkan) != VK_SUCCESS) {
-		return DG_VK_INSTANCE_CREATION_FAILED;
-	}
-	return DG_SUCCESS;
+    return appInfo;
 }
-#ifndef NDEBUG
-DgResult _dgSetupVulkanDebug(std::shared_ptr<DgEngine> pEngine) {
-	VkDebugUtilsMessengerCreateInfoEXT messengerCreateInfo{};
-	messengerCreateInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-	messengerCreateInfo.messageSeverity =  VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-	messengerCreateInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-	messengerCreateInfo.pfnUserCallback = dgVulkanDebugCallback;
-	messengerCreateInfo.pUserData = nullptr;
+constexpr VkInstanceCreateInfo createVkInstanceCreateInfo(std::vector<const char*>& vExtensions, std::vector<const char*>& vLayers) {
+    // Instance Create Info. Used in the vkCreateInstance function
+	VkInstanceCreateInfo createInfo;
 
-	VkResult result = dgCreateVkDebugUtilsMessengerEXT(pEngine->vulkan, &messengerCreateInfo, nullptr, &(pEngine->debugMessenger));
+	createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+    createInfo.pNext = nullptr;
+
+	createInfo.enabledExtensionCount = vExtensions.size();
+	createInfo.ppEnabledExtensionNames = vExtensions.data();
+
+    #ifndef NDEBUG
+		createInfo.enabledLayerCount = vLayers.size();
+        createInfo.ppEnabledLayerNames = vLayers.data();
+    #else
+        createInfo.enabledLayerCount = 0;
+        createInfo.ppEnabledLayerNames = nullptr;
+	#endif
+    #if BOOST_OS_MACOS
+        createInfo.flags = VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+    #endif
+    return createInfo;
+}
+DgResult createVkInstance(VkInstance& instance, std::vector<std::string>& vExtensions, std::vector<const char*>& vLayers) {
+    // Instance Create Info. Used in the vkCreateInstance function
+    std::vector<const char*> ext(vExtensions.size(), nullptr);
+
+    for(int i = 0; i < vExtensions.size(); i++) {
+        ext[i] = vExtensions[i].c_str();
+    }
+    VkApplicationInfo appInfo = createVkAppInfo();
+    VkInstanceCreateInfo createInfo = createVkInstanceCreateInfo(ext, vLayers);
+    createInfo.pApplicationInfo = &appInfo;
+
+    VkResult r = vkCreateInstance(&createInfo, nullptr, &instance);
+    if(r != VK_SUCCESS) {
+        return DG_VULKAN_CREATE_INSTANCE_FAILED;
+    }
+    return DG_SUCCESS;
+}
+#if !defined(NDEBUG) || defined(_DEBUG)
+DgResult setupVulkanDebug(VkInstance& instance, VkDebugUtilsMessengerEXT* pDebugMessenger) {
+    VkDebugUtilsMessengerCreateInfoEXT createInfo{};
+	createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+	createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+	createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+	createInfo.pfnUserCallback = dgVulkanDebugCallback;
+	createInfo.pUserData = nullptr;
+
+    VkResult result = dgCreateDebugUtilsMessengerEXT(instance, &createInfo, nullptr, pDebugMessenger);
 	if (result != VK_SUCCESS) {
-		std::cerr << "Dragon: dgCreateDebugUtilsMessengerEXT returned " << dgConvertVkResultToString(result) << std::endl;
-		return DG_VK_DEBUG_UTILS_INSTANCE_CREATION_FAILED;
+		return DG_VULKAN_DEBUG_UTILS_INSTANCE_CREATION_FAILED;
 	}
 	return DG_SUCCESS;
 }
 #endif
-DgResult _dgSetupGPUs(std::shared_ptr<DgEngine> pEngine) {
-	uint32_t deviceCount = 0;
-	dgEnumerateVkPhysicalDevices(pEngine->vulkan, &deviceCount, nullptr);
+DGAPI DgResult dgCreateEngine(DgEngineCreateInfo createInfo, std::unique_ptr<DgEngine>& pEngine) {
+    DgResult r;
+    static uint32_t glfwExtensionCount;
+    static const char** ppGLFWExtensions;
+    if(dgActiveEngineCount <= 0) {
+        r = glfwSetup();
+        if(r != DG_SUCCESS) return r;
+    }
+    std::vector<const char*> lay(createInfo.vEnabledLayerNames.size(), nullptr);
+    for(int i = 0; i < createInfo.vEnabledLayerNames.size(); i++) {
+        lay[i] = createInfo.vEnabledLayerNames[i].c_str();
+    }
 
-	if (deviceCount == 0) {
-		#ifndef NDEBUG
-		std::cerr << "Dragon: vkEnumeratePhysicalDevices gave 0 devices available for Vulkan" << std::endl;
-		#endif
-		return DG_NO_VK_PHYSICAL_DEVICES_FOUND;
-	}
+    ppGLFWExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+    if (glfwExtensionCount == 0) return DG_GLFW_VULKAN_EXTENSIONS_NOT_FOUND;
+    for(int i = 0; i < glfwExtensionCount; i++) {
+        createInfo.vEnabledExtensionNames.push_back(ppGLFWExtensions[i]);
+    }
 
-	std::vector<VkPhysicalDevice> devices(deviceCount);
-	dgEnumerateVkPhysicalDevices(pEngine->vulkan, &deviceCount, devices.data());
+    if(createInfo.enableVulkanDebug) {
+        createInfo.vEnabledLayerNames.push_back("VK_LAYER_KHRONOS_validation");
+        createInfo.vEnabledExtensionNames.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+    }
 
-	for (VkPhysicalDevice dev : devices) {
-		std::shared_ptr<DgGPU> gpuRef(new DgGPU);
-		gpuRef->handle = dev;
-		_dgFindQueueFamilies(gpuRef);
-		pEngine->gpus.push_back(gpuRef);
-	}
+    #if BOOST_OS_MACOS
+        createInfo.vEnabledExtensionNames.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+    #endif
 
-	if (!pEngine->gpus.at(0)->queueFamilies.graphicsQueueFamily.has_value()) {
-		return DG_NO_GRAPHICS_QUEUE_FOUND;
-	}
-	pEngine->primaryGPU = pEngine->gpus.at(0);
-	return DG_SUCCESS;
+    dgActiveEngineCount++;
+    r = createVkInstance(pEngine->instance, createInfo.vEnabledExtensionNames, lay);
+    if(r != DG_SUCCESS) return r;
+    #if !defined(NDEBUG) || defined(_DEBUG)
+        r = setupVulkanDebug(pEngine->instance, &pEngine->debugMessenger);
+        if(r != DG_SUCCESS) return r;
+    #endif
+    r = createGPUs(pEngine, createInfo.PFN_GPURatingFunc, lay);
+    return r;
 }
-
-DGAPI DgResult dgCreateEngine(std::shared_ptr<DgEngine> pEngine, DgEngineCreateInfo createInfo) {
-	if (pEngine == nullptr) {
-		return DG_ARGUMENT_IS_NULL;
-	}
-	DgResult r;
-
-	if (DgEngine::activeEngineCount <= 0) {
-		if (!glfwInit()) {
-			return DG_GLFW_INITIALIZATION_FAILED;
-		}
-	}
-
-	glfwSetErrorCallback(_dgGlfwCallback);
-	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-
-	// Vulkan Initialization
-	if (!glfwVulkanSupported()) {
-		return DG_GLFW_VULKAN_NOT_SUPPORTED;
-	}
-
-	uint32_t count;
-	const char** extensions = glfwGetRequiredInstanceExtensions(&count);
-	if (count == 0) {
-		return DG_GLFW_NO_INSTANCE_EXTENSIONS_FOUND;
-	}
-	std::vector<const char*> glfwExtensions(extensions, extensions + count);
-
-	pEngine->vkExtensions.insert(pEngine->vkExtensions.begin(), glfwExtensions.begin(), glfwExtensions.end());
-	pEngine->vkExtensions.insert(pEngine->vkExtensions.begin(), createInfo.vkExtensions.begin(), createInfo.vkExtensions.end());
-	
-	std::vector<const char*>::iterator itr1 = pEngine->vkExtensions.begin();
-	std::unordered_set<const char*> s1;
-
-	for (auto curr = pEngine->vkExtensions.begin(); curr != pEngine->vkExtensions.end(); ++curr)
-	{
-		if (s1.insert(*curr).second) {
-			*itr1++ = *curr;
-		}
-	}
-
-	pEngine->vkExtensions.erase(itr1, pEngine->vkExtensions.end());
-
-	pEngine->vkDeviceExtensions.insert(pEngine->vkDeviceExtensions.begin(), createInfo.vkDeviceExtensions.begin(), createInfo.vkDeviceExtensions.end());
-
-	std::vector<const char*>::iterator itr = pEngine->vkDeviceExtensions.begin();
-	std::unordered_set<const char*> s;
-
-	for (auto curr = pEngine->vkDeviceExtensions.begin(); curr != pEngine->vkDeviceExtensions.end(); ++curr)
-	{
-		if (s.insert(*curr).second) {
-			*itr++ = *curr;
-		}
-	}
-
-	pEngine->vkDeviceExtensions.erase(itr, pEngine->vkDeviceExtensions.end());
-
-	r = _dgSetupVulkan(pEngine);
-	if (r != DG_SUCCESS) {
-		return r;
-	}
-
-	// VkDebugMessenger Initialization
-	#ifndef NDEBUG
-	r = _dgSetupVulkanDebug(pEngine);
-	if (r != DG_SUCCESS) {
-		return r;
-	}
-	#endif
-
-	// Get GPUs and start compute API
-	r = _dgSetupGPUs(pEngine);
-	if (r != DG_SUCCESS) {
-		return r;
-	}
-	return DG_SUCCESS;
-}
-

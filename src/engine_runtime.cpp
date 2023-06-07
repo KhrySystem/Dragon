@@ -1,34 +1,32 @@
 #include <dragon/dragon.hpp>
 
-DGAPI int dgGetWindowCount(std::shared_ptr<DgEngine> pEngine) {
-	if (pEngine == nullptr)
-		return -1;
-	return pEngine->windows.size();
+DGAPI DgBool32 dgCanEngineClose(std::unique_ptr<DgEngine>& pEngine) {
+    for(std::weak_ptr<DgWindow> pWindow : pEngine->vpWindows) {
+        if(std::shared_ptr<DgWindow> window = pWindow.lock()) {
+            if(!glfwWindowShouldClose(window->pWindow)) {
+                return DG_FALSE;
+            }
+        }
+        
+    }
+    return DG_TRUE;
 }
 
-DGAPI DgResult dgUpdate(std::shared_ptr<DgEngine> pEngine) {
-	if (pEngine == nullptr) {
-		return DG_ARGUMENT_IS_NULL;
-	}
-	glfwPollEvents();
-	for (int i = 0; i < pEngine->windows.size(); i++) {
-		if (std::shared_ptr<DgWindow> pWindow = pEngine->windows[i].lock()) {
-			DgResult r = _dgRenderWindow(pWindow);
-			if (r != DG_SUCCESS) {
-				_dgDestroyWindow(pEngine->vulkan, pWindow);
-				pEngine->windows.erase(pEngine->windows.begin() + i);
-				return r;
-			}
+DGAPI DgResult dgUpdateEngine(std::unique_ptr<DgEngine>& pEngine) {
+    DgResult r;
+    glfwPollEvents();
+    for(std::weak_ptr<DgWindow> pWindow : pEngine->vpWindows) {
+        if(std::shared_ptr<DgWindow> ptr = pWindow.lock()) {
+            r = dgUpdateWindow(ptr, pEngine);
+            if(r != DG_SUCCESS && r != DG_SWAPCHAIN_RECREATED) {
+                return r;
+            }
+        }
+    }
+    return DG_SUCCESS;
+}
 
-			if (glfwWindowShouldClose(pWindow->window)) {
-				_dgDestroyWindow(pEngine->vulkan, pWindow);
-				pEngine->windows.erase(pEngine->windows.begin() + i);
-			}
-		}
-		else {
-			return DG_WINDOW_INVALID;
-		}
-	}
-
-	return DG_SUCCESS;
+DGAPI DgResult dgWaitForEvents(std::unique_ptr<DgEngine>& pEngine) {
+    glfwWaitEvents();
+    return DG_SUCCESS;
 }

@@ -3,120 +3,50 @@
 #include "dragon_core.hpp"
 #include "gpu.hpp"
 #include "model.hpp"
+#include "swap_chain_support.hpp"
+#include "camera.hpp"
 
+struct DgWindow_T {
+    DgBool32 framebufferResized;
+    DgGPU* pGPU;
+    DgSwapChainSupportDetails swapChainSupportDetails;
 
+    std::vector<std::vector<std::weak_ptr<DgModel>>> vvpModels;
+    std::weak_ptr<DgCamera> pCamera;
 
-/**
- * @brief Dynamic states for graphics pipeline
- */
-const std::vector<VkDynamicState> dynamicStates = {
-    VK_DYNAMIC_STATE_VIEWPORT,
-    VK_DYNAMIC_STATE_SCISSOR
-};
+    GLFWwindow* pWindow;
 
+    std::vector<VmaAllocation> uniformAllocations;
 
-
-/**
- * @struct DgWindow
- * @brief Structure that holds all the data for a window
- */
-struct DgWindow {
-    /**
-     * @brief Pointer to the GPU that renders this window
-     */
-    std::shared_ptr<DgGPU> pGPU;
-    /**
-     * @brief Pointer to the GLFW window
-     */
-    GLFWwindow* window;
-    /**
-     * @brief Handle to the vulkan surface of the window
-     */
-    VkSurfaceKHR surface;
-    /**
-     * @brief Surface format of the window
-     */
-    VkSurfaceFormatKHR surfaceFormat;
-    /**
-     * @brief Presentation mode of the window
-     */
-    VkPresentModeKHR presentMode;
-    /**
-     * @brief 2D Extent of the window
-     */
-    VkExtent2D extent2D;
-    /**
-     * @brief Capabilities of the window
-     */
-    VkSurfaceCapabilitiesKHR capabilities;
-    /**
-     * @brief Swap chain for the window
-     */
-    VkSwapchainKHR swapChain = VK_NULL_HANDLE;
-    /**
-     * @brief Images in the swap chain for the window
-     */
-    std::vector<VkImage> swapChainImages;
-    /**
-     * @brief Images views in the swap chain for the window
-     */
-    std::vector<VkImageView> swapChainImageViews;
-    /**
-     * @brief Shader modules for the graphics pipeline of the window
-     */
-    std::vector<VkShaderModule> shaderModules;
-    /**
-     * @brief Layout for the graphics pipeline of the window
-     */
-    VkPipelineLayout pipelineLayout;
-    /**
-     * @brief Render pass for the graphics pipeline of the window
-     */
-    VkRenderPass renderPass;
-    /**
-     * @brief Vulkan Pipeline object for the window
-     */
-    VkPipeline graphicsPipeline;
-    std::vector<VkFramebuffer> swapChainFramebuffers;
     VkCommandPool commandPool;
+    VkDescriptorSetLayout descriptorSetLayout;
+    VkExtent2D swapChainExtent;
+    VkFormat swapChainImageFormat;
+    VkPipelineLayout pipelineLayout;
+    VkPipeline graphicsPipeline;
+    VkRenderPass renderPass;
+    VkShaderModule vertShaderModule;
+    VkShaderModule fragShaderModule;
+    VkSurfaceKHR surface;
+    VkSwapchainKHR swapChain;
+    VkQueue presentQueue;
 
+    std::vector<VkBuffer> uniformBuffers;
+    std::vector<VkImage> swapChainImages;
+    std::vector<VkImageView> swapChainImageViews;
+    std::vector<VkFramebuffer> swapChainFramebuffers;
     std::vector<VkSemaphore> imageAvailableSemaphores;
     std::vector<VkSemaphore> renderFinishedSemaphores;
     std::vector<VkFence> inFlightFences;
-    uint32_t currentFrame;
-    std::vector <std::vector<std::weak_ptr<DgModel>>> models;
+    std::vector<VkDeviceMemory> uniformDeviceMemory;
+
+    std::function<VkSurfaceFormatKHR(const std::vector<VkSurfaceFormatKHR>& availableFormats)> PFN_chooseSwapSurfaceFormat;
+    std::function<VkPresentModeKHR(const std::vector<VkPresentModeKHR>& availablePresentModes)> PFN_chooseSwapPresentMode;
+    std::function<VkExtent2D(GLFWwindow*,const VkSurfaceCapabilitiesKHR& capabilities)> PFN_chooseSwapExtent;
+    std::vector<void*> uniformBuffersMapped;
+
+    uint32_t currentFrame = 0;
+
 };
 
-
-
-/**
- *  @defgroup window Window
- *  This section is for window functions / structs / classes
- *  @{
- */
-
-DGAPI void dgAddRenderLayer(std::shared_ptr<DgWindow> pWindow);
-
-/**
- * INTERNAL METHOD
- * @param pWindow The window to render
- * @return A DgResult stating if rendering the window was successful, or the error during rendering.
- */
-DGAPI DgResult _dgRenderWindow(std::shared_ptr<DgWindow> pWindow);
-DGAPI DgResult dgCreateModel(std::shared_ptr<DgWindow> pWindow, uint32_t layer, std::vector<DgVertex> verts, std::shared_ptr<DgModel> pModel);
-
-DGAPI DgResult _dgCreateSwapchain(std::shared_ptr<DgWindow> pWindow);
-
-/**
- * INTERNAL METHOD
- * @param pWindow The window to destroy the swapchain of
- */
-DGAPI void _dgDestroySwapchain(std::shared_ptr<DgWindow> pWindow) DRAGON_NOEXCEPT;
-
-/**
-* INTERNAL METHOD
-* @param instance The VkInstance that this window was created with
-* @param pWindow The window to destroy
-*/
-DGAPI void _dgDestroyWindow(VkInstance instance, std::shared_ptr<DgWindow> pWindow) DRAGON_NOEXCEPT;
-/** @} */
+typedef struct DgWindow_T DgWindow;

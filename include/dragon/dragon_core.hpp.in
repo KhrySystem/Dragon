@@ -1,71 +1,23 @@
 #pragma once
 
-#include <boost/predef.h>
+#include "config.hpp"
 
-
-#ifndef _NDEBUG
-    #if BOOST_OS_WINDOWS
-        #define _CRTDBG_MAP_ALLOC
-        #include <stdlib.h>
-        #include <crtdbg.h>
-    #endif
-    #include <iostream>
-#endif
-
-#include <algorithm>
-#include <array>
-#include <cstdio>
-#include <cstring>
-#include <fstream>
-#include <functional>
-#include <memory>
-#include <optional>
-#include <thread>
-#include <unordered_set>
-#include <string>
-
-#define GLFW_INCLUDE_NONE
-#define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
-
-#include <glm/glm.hpp>
-
+// Shader precision info
+// Currently invalid, since shaders are only single precision
 #ifndef DRAGON_DOUBLE_PRECISION_SHADER
     #define DG_FLOAT float
-    #define DG_VEC2 glm::vec2
-    #define DG_VEC3 glm::vec3
-    #define DG_VEC4 glm::vec4
+    #define DG_VEC2 vec2
+    #define DG_VEC3 vec3
+    #define DG_VEC4 vec4
 #else
     #define DG_FLOAT double
-    #define DG_VEC2 glm::dvec2
-    #define DG_VEC3 glm::dvec3
-    #define DG_VEC4 glm::dvec4
+    #define DG_VEC2 dvec2
+    #define DG_VEC3 dvec3
+    #define DG_VEC4 dvec4
 #endif
 
-/**
- * @brief Macro for defining the export/import attribute of a function 
- */
-#ifdef DG_C
-    #if BOOST_OS_WINDOWS && defined(DRAGON_BUILD_DLL)
-        #define DGAPI extern "C" __declspec(dllexport)
-    #elif BOOST_OS_WINDOWS && defined(DRAGON_DLL)
-        #define DGAPI extern "C" __declspec(dllimport)
-    #elif defined(__GNUC__) && defined(DRAGON_BUILD_DLL)
-        #define DGAPI extern "C" __attribute__((visibility("default")))
-    #else
-        #define DGAPI extern "C"
-    #endif
-#else
-    #if BOOST_OS_WINDOWS && defined(DRAGON_BUILD_DLL)
-        #define DGAPI __declspec(dllexport)
-    #elif BOOST_OS_WINDOWS && defined(DRAGON_DLL)
-        #define DGAPI __declspec(dllimport)
-    #elif defined(__GNUC__) && defined(DRAGON_BUILD_DLL)
-        #define DGAPI __attribute__((visibility("default")))
-    #else
-        #define DGAPI 
-    #endif
-#endif
+// Use this for anything that is language-agnostic
+#pragma region
 
 /**
  * @brief Macro for how many frames Dragon should prepare before waiting on the GPU. 
@@ -87,7 +39,6 @@
 #define DRAGON_MAX_POINT_LIGHTS @Dragon_MAX_POINT_LIGHTS@
 #define DRAGON_MAX_DIRECTIONAL_LIGHTS @Dragon_MAX_DIRECTIONAL_LIGHTS@
 #define DRAGON_VERTEX_ATTRIBUTE_COUNT 2
-#define DRAGON_NOEXCEPT noexcept
 
 /**
  * @brief Macro for creating the version number for the application
@@ -101,27 +52,23 @@
 #endif
 
 /**
- * @brief Macro for the name of the application
+ * @brief Macro for the name of the application, should be overloaded by the user
  */
 #ifndef APP_NAME
     #define APP_NAME "dgEngine"
 #endif
+#pragma endregion
+
+// Dragon Types
+#pragma region
 
 // Define basic types for consistency with dependencies
-typedef VkBool32 DgBool32;
 #define DG_TRUE GLFW_TRUE
 #define DG_FALSE GLFW_FALSE
+typedef VkBool32 DgBool32;
 typedef uint_fast64_t DgUInt64;
 typedef int_fast64_t DgInt64;
 typedef uint_fast32_t DgUInt32;
 typedef int_fast32_t DgInt32;
 
 #include "result.hpp"
-
-#define dgEnumerateVkInstanceExtensionProperties(pExtName, pPropertyCount, pProperties) ((PFN_vkEnumerateInstanceExtensionProperties)glfwGetInstanceProcAddress(NULL, "vkEnumerateInstanceExtensionProperties"))(pExtName, pPropertyCount, pProperties)
-#define dgEnumerateVkInstanceLayerProperties(pPropertyCount, pProperties) ((PFN_vkEnumerateInstanceLayerProperties)glfwGetInstanceProcAddress(NULL, "vkEnumerateInstanceLayerProperties"))(pPropertyCount, pProperties)
-#define dgCreateVkInstance(pCreateInfo, pAllocation, pInstance) ((PFN_vkCreateInstance)glfwGetInstanceProcAddress(NULL, "vkCreateInstance"))(pCreateInfo, pAllocation, pInstance)
-#ifndef NDEBUG
-#define dgCreateVkDebugUtilsMessengerEXT(instance, pCreateInfo, pAllocator, pDebugMessenger) ((PFN_vkCreateDebugUtilsMessengerEXT)glfwGetInstanceProcAddress(instance, "vkCreateDebugUtilsMessengerEXT"))(instance, pCreateInfo, pAllocator, pDebugMessenger)
-#endif
-#define dgEnumerateVkPhysicalDevices(instance, pPhysicalDeviceCount, pPhysicalDevices) ((PFN_vkEnumeratePhysicalDevices)glfwGetInstanceProcAddress(instance, "vkEnumeratePhysicalDevices"))(instance, pPhysicalDeviceCount, pPhysicalDevices)
